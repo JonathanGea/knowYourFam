@@ -1,6 +1,6 @@
 # KnowYourFam — MVP Database Design
 
-**Status:** Proposed v1 · **Database:** PostgreSQL 14+ · **Current frontend:** single-file `index.html` with `localStorage`.
+**Status:** Draft v1, superseded for authentication/portability by `docs/ADR-001-BACKEND-PORTABILITY.md` · **Database:** standard PostgreSQL 14+ · **Current frontend:** single-file `index.html` with `localStorage`.\n\n**DO NOT DEPLOY INITIAL V1 SQL UNCHANGED:** `database/migration/V1__family_tree_core.sql` is a reference draft, not the final Supabase migration. Before deployment, separate the application-owned `users` identity from auth credentials, introduce `auth_identities` mapping, and keep Supabase `auth.users` references/RLS out of the portable core schema. The approved architecture is in ADR-001.
 
 ## Goal
 
@@ -26,11 +26,11 @@ erDiagram
   persons ||--o{ sibling_relations : sibling_b
 ```
 
-Eight tables are defined in `V1__family_tree_core.sql`:
+The original draft contains eight tables in `V1__family_tree_core.sql`; the actual deployed core will also include the `auth_identities` mapping (see ADR-001):
 
 | Table | Purpose |
 |---|---|
-| `users` | Login identity and password hash |
+| `users` | **Future portable core:** application user profile and stable UUID; no password hash in domain table (V1 SQL currently draft) |
 | `family_trees` | Tree workspace, owned by a user |
 | `tree_members` | Owner/editor/viewer membership; `self_person_id` belongs here |
 | `persons` | Person profile; exactly one active profile per represented individual **within that tree** is a product goal |
@@ -38,6 +38,8 @@ Eight tables are defined in `V1__family_tree_core.sql`:
 | `partner_relations` | Undirected, explicitly stated partnership; never inferred from a child |
 | `sibling_relations` | Directly recorded sibling relation only when parent data is unknown/incomplete |
 | `tree_view_states` | Per-user Focus Person / Full Overview and optional opened branches |
+
+**Authentication portability decision (ADR-001):** add `auth_identities` (provider + provider subject mapped to stable app user), do not FK core tables to Supabase `auth.users`; Supabase Auth and RLS belong to provider-specific migrations. A future own backend uses the same domain user IDs and relationship tables with a different auth adapter. This is a required schema design change **before the first live migration**, not a claim that the current V1 SQL already implements it.
 
 **Important:** `FamilyUnit` is a *read-model / layout grouping*, not an extra table or alternative relationship source in v1. The UI may group two explicitly linked partners with their shared children, or represent a single-parent unit. Do not invent a partner relation when two parents share a child. Add persistent `family_units` later only if clear use cases require one.
 
