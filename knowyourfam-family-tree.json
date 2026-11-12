@@ -268,6 +268,552 @@
       "occupation": "",
       "photo": "",
       "self": false
+    },
+    {
+      "id": "uji-buyut-laki-laki-dari-kakek-papa",
+      "name": "Buyut laki-laki dari kakek papa (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut-perempuan-dari-kakek-papa",
+      "name": "Buyut perempuan dari kakek papa (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-saudara-kakek-papa-tambahan-1",
+      "name": "Saudara kakek papa tambahan 1 (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-saudara-kakek-papa-tambahan-1",
+      "name": "Pasangan saudara kakek papa tambahan 1 (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-jauh-papa-dari-saudara-kakek",
+      "name": "Sepupu jauh papa dari saudara kakek (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut-laki-laki-dari-nenek-papa",
+      "name": "Buyut laki-laki dari nenek papa (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut-perempuan-dari-nenek-papa",
+      "name": "Buyut perempuan dari nenek papa (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-saudara-nenek-dari-papa",
+      "name": "Pasangan saudara nenek dari papa (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-jauh-dari-nenek-papa",
+      "name": "Sepupu jauh dari nenek papa (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut-laki-laki-dari-kakek-mama",
+      "name": "Buyut laki-laki dari kakek mama (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut-perempuan-dari-kakek-mama",
+      "name": "Buyut perempuan dari kakek mama (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-saudara-kakek-dari-mama",
+      "name": "Pasangan saudara kakek dari mama (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-jauh-dari-kakek-mama-1",
+      "name": "Sepupu jauh dari kakek mama 1 (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-jauh-dari-kakek-mama-2",
+      "name": "Sepupu jauh dari kakek mama 2 (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut-laki-laki-dari-nenek-mama",
+      "name": "Buyut laki-laki dari nenek mama (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut-perempuan-dari-nenek-mama",
+      "name": "Buyut perempuan dari nenek mama (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-saudara-nenek-dari-mama",
+      "name": "Pasangan saudara nenek dari mama (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-jauh-dari-nenek-mama",
+      "name": "Sepupu jauh dari nenek mama (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-paman-tambahan-dari-papa",
+      "name": "Paman tambahan dari papa (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-paman-tambahan-dari-papa",
+      "name": "Pasangan paman tambahan dari papa (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-papa-tambahan-1",
+      "name": "Sepupu papa tambahan 1 (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-papa-tambahan-2",
+      "name": "Sepupu papa tambahan 2 (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-bibi-tambahan-dari-mama",
+      "name": "Bibi tambahan dari mama (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-bibi-tambahan-dari-mama",
+      "name": "Pasangan bibi tambahan dari mama (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-mama-tambahan-1",
+      "name": "Sepupu mama tambahan 1 (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-mama-tambahan-2",
+      "name": "Sepupu mama tambahan 2 (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-mama-talu-1",
+      "name": "Pasangan Mama talu 1 (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-dari-mama-talu-1-pertama",
+      "name": "Sepupu dari Mama talu 1 pertama (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sepupu-dari-mama-talu-1-kedua",
+      "name": "Sepupu dari Mama talu 1 kedua (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-vicktor-contoh",
+      "name": "Pasangan Vicktor contoh (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-anak-vicktor-contoh-1",
+      "name": "Anak Vicktor contoh 1 (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-anak-vicktor-contoh-2",
+      "name": "Anak Vicktor contoh 2 (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-memo-contoh",
+      "name": "Pasangan Memo contoh (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-anak-memo-contoh",
+      "name": "Anak Memo contoh (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-anak-satu-orang-tua-nita",
+      "name": "Anak satu orang tua Nita (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-syukur-contoh",
+      "name": "Pasangan Syukur contoh (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-anak-syukur-contoh",
+      "name": "Anak Syukur contoh (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pasangan-nofan-contoh",
+      "name": "Pasangan Nofan contoh (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-anak-nofan-contoh",
+      "name": "Anak Nofan contoh (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Profil fiktif untuk pengujian tata letak dan hubungan keluarga.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
     }
   ],
   "parent": [
@@ -358,6 +904,218 @@
     [
       "19638ebe-9d8d-4689-9e4a-0f0072866baf",
       "b5277662-a153-48d1-9ef3-81715e63781c"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-kakek-papa",
+      "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1"
+    ],
+    [
+      "uji-buyut-perempuan-dari-kakek-papa",
+      "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-kakek-papa",
+      "uji-saudara-kakek-papa-tambahan-1"
+    ],
+    [
+      "uji-buyut-perempuan-dari-kakek-papa",
+      "uji-saudara-kakek-papa-tambahan-1"
+    ],
+    [
+      "uji-saudara-kakek-papa-tambahan-1",
+      "uji-sepupu-jauh-papa-dari-saudara-kakek"
+    ],
+    [
+      "uji-pasangan-saudara-kakek-papa-tambahan-1",
+      "uji-sepupu-jauh-papa-dari-saudara-kakek"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-nenek-papa",
+      "31c0b154-e812-4cd8-bac3-268c51ab8c54"
+    ],
+    [
+      "uji-buyut-perempuan-dari-nenek-papa",
+      "31c0b154-e812-4cd8-bac3-268c51ab8c54"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-nenek-papa",
+      "89f799ad-7894-4655-b8c4-56aee6d074a0"
+    ],
+    [
+      "uji-buyut-perempuan-dari-nenek-papa",
+      "89f799ad-7894-4655-b8c4-56aee6d074a0"
+    ],
+    [
+      "89f799ad-7894-4655-b8c4-56aee6d074a0",
+      "uji-sepupu-jauh-dari-nenek-papa"
+    ],
+    [
+      "uji-pasangan-saudara-nenek-dari-papa",
+      "uji-sepupu-jauh-dari-nenek-papa"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-kakek-mama",
+      "19638ebe-9d8d-4689-9e4a-0f0072866baf"
+    ],
+    [
+      "uji-buyut-perempuan-dari-kakek-mama",
+      "19638ebe-9d8d-4689-9e4a-0f0072866baf"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-kakek-mama",
+      "d24338fd-9ec0-41df-a653-a6cc908edb73"
+    ],
+    [
+      "uji-buyut-perempuan-dari-kakek-mama",
+      "d24338fd-9ec0-41df-a653-a6cc908edb73"
+    ],
+    [
+      "d24338fd-9ec0-41df-a653-a6cc908edb73",
+      "uji-sepupu-jauh-dari-kakek-mama-1"
+    ],
+    [
+      "uji-pasangan-saudara-kakek-dari-mama",
+      "uji-sepupu-jauh-dari-kakek-mama-1"
+    ],
+    [
+      "d24338fd-9ec0-41df-a653-a6cc908edb73",
+      "uji-sepupu-jauh-dari-kakek-mama-2"
+    ],
+    [
+      "uji-pasangan-saudara-kakek-dari-mama",
+      "uji-sepupu-jauh-dari-kakek-mama-2"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-nenek-mama",
+      "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa"
+    ],
+    [
+      "uji-buyut-perempuan-dari-nenek-mama",
+      "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-nenek-mama",
+      "bb0d15ff-a88a-4b57-bc9b-09efc70a213d"
+    ],
+    [
+      "uji-buyut-perempuan-dari-nenek-mama",
+      "bb0d15ff-a88a-4b57-bc9b-09efc70a213d"
+    ],
+    [
+      "bb0d15ff-a88a-4b57-bc9b-09efc70a213d",
+      "uji-sepupu-jauh-dari-nenek-mama"
+    ],
+    [
+      "uji-pasangan-saudara-nenek-dari-mama",
+      "uji-sepupu-jauh-dari-nenek-mama"
+    ],
+    [
+      "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1",
+      "uji-paman-tambahan-dari-papa"
+    ],
+    [
+      "31c0b154-e812-4cd8-bac3-268c51ab8c54",
+      "uji-paman-tambahan-dari-papa"
+    ],
+    [
+      "uji-paman-tambahan-dari-papa",
+      "uji-sepupu-papa-tambahan-1"
+    ],
+    [
+      "uji-pasangan-paman-tambahan-dari-papa",
+      "uji-sepupu-papa-tambahan-1"
+    ],
+    [
+      "uji-paman-tambahan-dari-papa",
+      "uji-sepupu-papa-tambahan-2"
+    ],
+    [
+      "uji-pasangan-paman-tambahan-dari-papa",
+      "uji-sepupu-papa-tambahan-2"
+    ],
+    [
+      "19638ebe-9d8d-4689-9e4a-0f0072866baf",
+      "uji-bibi-tambahan-dari-mama"
+    ],
+    [
+      "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa",
+      "uji-bibi-tambahan-dari-mama"
+    ],
+    [
+      "uji-bibi-tambahan-dari-mama",
+      "uji-sepupu-mama-tambahan-1"
+    ],
+    [
+      "uji-pasangan-bibi-tambahan-dari-mama",
+      "uji-sepupu-mama-tambahan-1"
+    ],
+    [
+      "uji-bibi-tambahan-dari-mama",
+      "uji-sepupu-mama-tambahan-2"
+    ],
+    [
+      "uji-pasangan-bibi-tambahan-dari-mama",
+      "uji-sepupu-mama-tambahan-2"
+    ],
+    [
+      "b5277662-a153-48d1-9ef3-81715e63781c",
+      "uji-sepupu-dari-mama-talu-1-pertama"
+    ],
+    [
+      "uji-pasangan-mama-talu-1",
+      "uji-sepupu-dari-mama-talu-1-pertama"
+    ],
+    [
+      "b5277662-a153-48d1-9ef3-81715e63781c",
+      "uji-sepupu-dari-mama-talu-1-kedua"
+    ],
+    [
+      "uji-pasangan-mama-talu-1",
+      "uji-sepupu-dari-mama-talu-1-kedua"
+    ],
+    [
+      "49dbb66a-adfd-4461-aae0-df16e30ea3fd",
+      "uji-anak-vicktor-contoh-1"
+    ],
+    [
+      "uji-pasangan-vicktor-contoh",
+      "uji-anak-vicktor-contoh-1"
+    ],
+    [
+      "49dbb66a-adfd-4461-aae0-df16e30ea3fd",
+      "uji-anak-vicktor-contoh-2"
+    ],
+    [
+      "uji-pasangan-vicktor-contoh",
+      "uji-anak-vicktor-contoh-2"
+    ],
+    [
+      "0beddcc4-a6ce-48a4-b717-31cb6380b7ec",
+      "uji-anak-memo-contoh"
+    ],
+    [
+      "uji-pasangan-memo-contoh",
+      "uji-anak-memo-contoh"
+    ],
+    [
+      "42c9ace6-dbda-4596-85e6-029cccd77976",
+      "uji-anak-satu-orang-tua-nita"
+    ],
+    [
+      "94870743-717d-4035-8eee-1807a8f34050",
+      "uji-anak-syukur-contoh"
+    ],
+    [
+      "uji-pasangan-syukur-contoh",
+      "uji-anak-syukur-contoh"
+    ],
+    [
+      "7989eec8-6c14-4afa-88b1-f59681d8a5d1",
+      "uji-anak-nofan-contoh"
+    ],
+    [
+      "uji-pasangan-nofan-contoh",
+      "uji-anak-nofan-contoh"
     ]
   ],
   "partner": [
@@ -376,6 +1134,66 @@
     [
       "19638ebe-9d8d-4689-9e4a-0f0072866baf",
       "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-kakek-papa",
+      "uji-buyut-perempuan-dari-kakek-papa"
+    ],
+    [
+      "uji-saudara-kakek-papa-tambahan-1",
+      "uji-pasangan-saudara-kakek-papa-tambahan-1"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-nenek-papa",
+      "uji-buyut-perempuan-dari-nenek-papa"
+    ],
+    [
+      "89f799ad-7894-4655-b8c4-56aee6d074a0",
+      "uji-pasangan-saudara-nenek-dari-papa"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-kakek-mama",
+      "uji-buyut-perempuan-dari-kakek-mama"
+    ],
+    [
+      "d24338fd-9ec0-41df-a653-a6cc908edb73",
+      "uji-pasangan-saudara-kakek-dari-mama"
+    ],
+    [
+      "uji-buyut-laki-laki-dari-nenek-mama",
+      "uji-buyut-perempuan-dari-nenek-mama"
+    ],
+    [
+      "bb0d15ff-a88a-4b57-bc9b-09efc70a213d",
+      "uji-pasangan-saudara-nenek-dari-mama"
+    ],
+    [
+      "uji-paman-tambahan-dari-papa",
+      "uji-pasangan-paman-tambahan-dari-papa"
+    ],
+    [
+      "uji-bibi-tambahan-dari-mama",
+      "uji-pasangan-bibi-tambahan-dari-mama"
+    ],
+    [
+      "b5277662-a153-48d1-9ef3-81715e63781c",
+      "uji-pasangan-mama-talu-1"
+    ],
+    [
+      "49dbb66a-adfd-4461-aae0-df16e30ea3fd",
+      "uji-pasangan-vicktor-contoh"
+    ],
+    [
+      "0beddcc4-a6ce-48a4-b717-31cb6380b7ec",
+      "uji-pasangan-memo-contoh"
+    ],
+    [
+      "94870743-717d-4035-8eee-1807a8f34050",
+      "uji-pasangan-syukur-contoh"
+    ],
+    [
+      "7989eec8-6c14-4afa-88b1-f59681d8a5d1",
+      "uji-pasangan-nofan-contoh"
     ]
   ],
   "sibling": [
@@ -398,6 +1216,18 @@
     [
       "31c0b154-e812-4cd8-bac3-268c51ab8c54",
       "89f799ad-7894-4655-b8c4-56aee6d074a0"
+    ],
+    [
+      "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1",
+      "uji-saudara-kakek-papa-tambahan-1"
+    ],
+    [
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0",
+      "uji-paman-tambahan-dari-papa"
+    ],
+    [
+      "b288df33-4635-45fc-bf32-0752d7aef200",
+      "uji-bibi-tambahan-dari-mama"
     ]
   ]
 }
