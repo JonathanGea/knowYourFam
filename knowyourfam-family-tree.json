@@ -184,6 +184,90 @@
       "occupation": "",
       "photo": "",
       "self": false
+    },
+    {
+      "id": "19638ebe-9d8d-4689-9e4a-0f0072866baf",
+      "name": "Kakek dari mama",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa",
+      "name": "Nenek dari mama",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "b5277662-a153-48d1-9ef3-81715e63781c",
+      "name": "Mama talu 1",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "d24338fd-9ec0-41df-a653-a6cc908edb73",
+      "name": "Saudara kakek dari mama",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "bb0d15ff-a88a-4b57-bc9b-09efc70a213d",
+      "name": "Saudara nenek dari mama",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "89f799ad-7894-4655-b8c4-56aee6d074a0",
+      "name": "Saudara nenek dari mama",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
     }
   ],
   "parent": [
@@ -258,6 +342,22 @@
     [
       "31c0b154-e812-4cd8-bac3-268c51ab8c54",
       "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"
+    ],
+    [
+      "19638ebe-9d8d-4689-9e4a-0f0072866baf",
+      "b288df33-4635-45fc-bf32-0752d7aef200"
+    ],
+    [
+      "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa",
+      "b288df33-4635-45fc-bf32-0752d7aef200"
+    ],
+    [
+      "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa",
+      "b5277662-a153-48d1-9ef3-81715e63781c"
+    ],
+    [
+      "19638ebe-9d8d-4689-9e4a-0f0072866baf",
+      "b5277662-a153-48d1-9ef3-81715e63781c"
     ]
   ],
   "partner": [
@@ -272,6 +372,10 @@
     [
       "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1",
       "31c0b154-e812-4cd8-bac3-268c51ab8c54"
+    ],
+    [
+      "19638ebe-9d8d-4689-9e4a-0f0072866baf",
+      "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa"
     ]
   ],
   "sibling": [
@@ -282,6 +386,18 @@
     [
       "f1ee7baa-58fe-4c25-a778-4fba218474e0",
       "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"
+    ],
+    [
+      "19638ebe-9d8d-4689-9e4a-0f0072866baf",
+      "d24338fd-9ec0-41df-a653-a6cc908edb73"
+    ],
+    [
+      "d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa",
+      "bb0d15ff-a88a-4b57-bc9b-09efc70a213d"
+    ],
+    [
+      "31c0b154-e812-4cd8-bac3-268c51ab8c54",
+      "89f799ad-7894-4655-b8c4-56aee6d074a0"
     ]
   ]
 }
