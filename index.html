@@ -262,6 +262,11 @@ body.fullscreen-open{overflow:hidden}
 @media(max-width:950px){.rules-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.rules-hero{padding:19px 17px}.rules-hero h2{font-size:21px}.rules-card{padding:16px}.rules-card-head{gap:8px}.rules-status{font-size:9px}.rules-toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.rules-toc a{white-space:nowrap}.main.rules-active .heading h1{font-size:18px}.tree-help-button{bottom:8px;right:8px;width:32px;height:32px}.tree-help-panel{bottom:46px}}
 
+/* layout-route-fix */
+/* Every family connector stays visually distinct at crossings. */
+.connections .edge-parent{paint-order:stroke;vector-effect:non-scaling-stroke}
+.connections .edge-child-bus{stroke:#669879;stroke-width:2.7}
+.connections .edge-parent{stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
@@ -347,6 +352,7 @@ const exampleProfiles={
 };
 for(const person of sample.people)if(exampleProfiles[person.id])Object.assign(person,exampleProfiles[person.id]);
 const githubSeed={"version":1,"treeName":"Keluarga Saya","isDemo":false,"people":[{"id":"6331254c-6a7b-4e7f-9c9d-e7e322a59a94","name":"Jonathan gea","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":true},{"id":"f1ee7baa-58fe-4c25-a778-4fba218474e0","name":"Faoaro gea","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"b288df33-4635-45fc-bf32-0752d7aef200","name":"erasman zebua","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"49dbb66a-adfd-4461-aae0-df16e30ea3fd","name":"Vicktor julius gea","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"0beddcc4-a6ce-48a4-b717-31cb6380b7ec","name":"Memo Gunawan Gea","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb","name":"Pa sakhi","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"dc0d13ff-cc96-4b1b-8f01-e06a59325ea1","name":"Kakek","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"42c9ace6-dbda-4596-85e6-029cccd77976","name":"Nita","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"94870743-717d-4035-8eee-1807a8f34050","name":"Syukur","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"7af93bff-99ad-474f-bd03-8964adfd3bd9","name":"Grace","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"7989eec8-6c14-4afa-88b1-f59681d8a5d1","name":"Nofan","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"505bd551-6d72-4d2c-84ed-c525831fd89a","name":"MA SAKHI","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"31c0b154-e812-4cd8-bac3-268c51ab8c54","name":"NENEK","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"19638ebe-9d8d-4689-9e4a-0f0072866baf","name":"Kakek dari mama","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa","name":"Nenek dari mama","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"b5277662-a153-48d1-9ef3-81715e63781c","name":"Mama talu 1","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"d24338fd-9ec0-41df-a653-a6cc908edb73","name":"Saudara kakek dari mama","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"bb0d15ff-a88a-4b57-bc9b-09efc70a213d","name":"Saudara nenek dari mama","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"89f799ad-7894-4655-b8c4-56aee6d074a0","name":"Saudara nenek dari papa","gender":"unknown","birth":"","death":"","notes":"","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false}],"parent":[["f1ee7baa-58fe-4c25-a778-4fba218474e0","6331254c-6a7b-4e7f-9c9d-e7e322a59a94"],["b288df33-4635-45fc-bf32-0752d7aef200","6331254c-6a7b-4e7f-9c9d-e7e322a59a94"],["b288df33-4635-45fc-bf32-0752d7aef200","49dbb66a-adfd-4461-aae0-df16e30ea3fd"],["f1ee7baa-58fe-4c25-a778-4fba218474e0","49dbb66a-adfd-4461-aae0-df16e30ea3fd"],["f1ee7baa-58fe-4c25-a778-4fba218474e0","0beddcc4-a6ce-48a4-b717-31cb6380b7ec"],["b288df33-4635-45fc-bf32-0752d7aef200","0beddcc4-a6ce-48a4-b717-31cb6380b7ec"],["dc0d13ff-cc96-4b1b-8f01-e06a59325ea1","b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"],["dc0d13ff-cc96-4b1b-8f01-e06a59325ea1","f1ee7baa-58fe-4c25-a778-4fba218474e0"],["b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb","42c9ace6-dbda-4596-85e6-029cccd77976"],["b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb","94870743-717d-4035-8eee-1807a8f34050"],["b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb","7af93bff-99ad-474f-bd03-8964adfd3bd9"],["b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb","7989eec8-6c14-4afa-88b1-f59681d8a5d1"],["505bd551-6d72-4d2c-84ed-c525831fd89a","94870743-717d-4035-8eee-1807a8f34050"],["505bd551-6d72-4d2c-84ed-c525831fd89a","42c9ace6-dbda-4596-85e6-029cccd77976"],["505bd551-6d72-4d2c-84ed-c525831fd89a","7af93bff-99ad-474f-bd03-8964adfd3bd9"],["505bd551-6d72-4d2c-84ed-c525831fd89a","7989eec8-6c14-4afa-88b1-f59681d8a5d1"],["31c0b154-e812-4cd8-bac3-268c51ab8c54","f1ee7baa-58fe-4c25-a778-4fba218474e0"],["31c0b154-e812-4cd8-bac3-268c51ab8c54","b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"],["19638ebe-9d8d-4689-9e4a-0f0072866baf","b288df33-4635-45fc-bf32-0752d7aef200"],["d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa","b288df33-4635-45fc-bf32-0752d7aef200"],["d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa","b5277662-a153-48d1-9ef3-81715e63781c"],["19638ebe-9d8d-4689-9e4a-0f0072866baf","b5277662-a153-48d1-9ef3-81715e63781c"]],"partner":[["f1ee7baa-58fe-4c25-a778-4fba218474e0","b288df33-4635-45fc-bf32-0752d7aef200"],["b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb","505bd551-6d72-4d2c-84ed-c525831fd89a"],["dc0d13ff-cc96-4b1b-8f01-e06a59325ea1","31c0b154-e812-4cd8-bac3-268c51ab8c54"],["19638ebe-9d8d-4689-9e4a-0f0072866baf","d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa"]],"sibling":[["6331254c-6a7b-4e7f-9c9d-e7e322a59a94","49dbb66a-adfd-4461-aae0-df16e30ea3fd"],["f1ee7baa-58fe-4c25-a778-4fba218474e0","b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"],["19638ebe-9d8d-4689-9e4a-0f0072866baf","d24338fd-9ec0-41df-a653-a6cc908edb73"],["d46fb6c7-dd85-44cd-8c58-cb941ac1c6fa","bb0d15ff-a88a-4b57-bc9b-09efc70a213d"],["31c0b154-e812-4cd8-bac3-268c51ab8c54","89f799ad-7894-4655-b8c4-56aee6d074a0"]]};
+const layoutTestSeed={"version":1,"treeName":"DATA UJI • Keluarga Besar (Fiktif)","isDemo":true,"people":[{"id":"uji-focus","name":"Saya (fokus)","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":true},{"id":"uji-papa","name":"Papa","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama","name":"Mama","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib1","name":"Saudara saya 1","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib2","name":"Saudara saya 2","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sp","name":"Pasangan saya","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-fs1","name":"Anak saya 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-fs2","name":"Anak saya 2","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-fs3","name":"Anak saya 3","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-gp-papa","name":"Kakek dari papa","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-gm-papa","name":"Nenek dari papa","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-kakek-papa-1","name":"Saudara kakek dari papa 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-pas-sib-kakek-papa-1","name":"Pasangan saudara kakek dari papa 1","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-an-sib-kakek-papa-1","name":"Anak saudara kakek papa 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-kakek-papa-2","name":"Saudara kakek dari papa 2","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-nenek-papa-1","name":"Saudara nenek dari papa 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-pas-sib-nenek-papa-1","name":"Pasangan saudara nenek dari papa 1","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-an-sib-nenek-papa-1","name":"Anak saudara nenek papa 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-nenek-papa-2","name":"Saudara nenek dari papa 2","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-unc-1","name":"Paman dari papa 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-uncsp-1","name":"Pasangan paman dari papa 1","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-cous-1-1","name":"Sepupu dari papa 1.1","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-cous-1-2","name":"Sepupu dari papa 1.2","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-unc-2","name":"Bibi dari papa 2","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-uncsp-2","name":"Pasangan bibi dari papa 2","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-cous-2-1","name":"Sepupu dari papa 2.1","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-cous-2-2","name":"Sepupu dari papa 2.2","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-unc-3","name":"Paman dari papa 3","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-uncsp-3","name":"Pasangan paman dari papa 3","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-cous-3-1","name":"Sepupu dari papa 3.1","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-papa-cous-3-2","name":"Sepupu dari papa 3.2","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-gp-mama","name":"Kakek dari mama","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-gm-mama","name":"Nenek dari mama","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-kakek-mama-1","name":"Saudara kakek dari mama 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-pas-sib-kakek-mama-1","name":"Pasangan saudara kakek dari mama 1","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-an-sib-kakek-mama-1","name":"Anak saudara kakek mama 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-kakek-mama-2","name":"Saudara kakek dari mama 2","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-nenek-mama-1","name":"Saudara nenek dari mama 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-pas-sib-nenek-mama-1","name":"Pasangan saudara nenek dari mama 1","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-an-sib-nenek-mama-1","name":"Anak saudara nenek mama 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sib-nenek-mama-2","name":"Saudara nenek dari mama 2","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-unc-1","name":"Paman dari mama 1","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-uncsp-1","name":"Pasangan paman dari mama 1","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-cous-1-1","name":"Sepupu dari mama 1.1","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-cous-1-2","name":"Sepupu dari mama 1.2","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-unc-2","name":"Bibi dari mama 2","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-uncsp-2","name":"Pasangan bibi dari mama 2","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-cous-2-1","name":"Sepupu dari mama 2.1","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-cous-2-2","name":"Sepupu dari mama 2.2","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-unc-3","name":"Paman dari mama 3","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-uncsp-3","name":"Pasangan paman dari mama 3","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-cous-3-1","name":"Sepupu dari mama 3.1","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mama-cous-3-2","name":"Sepupu dari mama 3.2","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut1-kakek-papa","name":"Buyut laki-laki dari kakek papa","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut2-kakek-papa","name":"Buyut perempuan dari kakek papa","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut1-nenek-papa","name":"Buyut laki-laki dari nenek papa","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut2-nenek-papa","name":"Buyut perempuan dari nenek papa","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut1-kakek-mama","name":"Buyut laki-laki dari kakek mama","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut2-kakek-mama","name":"Buyut perempuan dari kakek mama","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut1-nenek-mama","name":"Buyut laki-laki dari nenek mama","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-buyut2-nenek-mama","name":"Buyut perempuan dari nenek mama","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-mil","name":"Ibu pasangan saya","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-fil","name":"Ayah pasangan saya","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-sp-sib","name":"Saudara pasangan saya","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-single","name":"Anak satu orang tua (contoh)","gender":"unknown","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-orphan1","name":"Saudara tanpa orang tua A","gender":"male","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false},{"id":"uji-orphan2","name":"Saudara tanpa orang tua B","gender":"female","birth":"","death":"","notes":"DATA FIKTIF untuk pengujian layout KnowYourFam","nickname":"","birthPlace":"","residence":"","occupation":"","photo":"","self":false}],"parent":[["uji-papa","uji-focus"],["uji-mama","uji-focus"],["uji-papa","uji-sib1"],["uji-mama","uji-sib1"],["uji-papa","uji-sib2"],["uji-mama","uji-sib2"],["uji-focus","uji-fs1"],["uji-sp","uji-fs1"],["uji-focus","uji-fs2"],["uji-sp","uji-fs2"],["uji-focus","uji-fs3"],["uji-sp","uji-fs3"],["uji-gp-papa","uji-papa"],["uji-gm-papa","uji-papa"],["uji-sib-kakek-papa-1","uji-an-sib-kakek-papa-1"],["uji-pas-sib-kakek-papa-1","uji-an-sib-kakek-papa-1"],["uji-sib-nenek-papa-1","uji-an-sib-nenek-papa-1"],["uji-pas-sib-nenek-papa-1","uji-an-sib-nenek-papa-1"],["uji-gp-papa","uji-papa-unc-1"],["uji-gm-papa","uji-papa-unc-1"],["uji-papa-unc-1","uji-papa-cous-1-1"],["uji-papa-uncsp-1","uji-papa-cous-1-1"],["uji-papa-unc-1","uji-papa-cous-1-2"],["uji-papa-uncsp-1","uji-papa-cous-1-2"],["uji-gp-papa","uji-papa-unc-2"],["uji-gm-papa","uji-papa-unc-2"],["uji-papa-unc-2","uji-papa-cous-2-1"],["uji-papa-uncsp-2","uji-papa-cous-2-1"],["uji-papa-unc-2","uji-papa-cous-2-2"],["uji-papa-uncsp-2","uji-papa-cous-2-2"],["uji-gp-papa","uji-papa-unc-3"],["uji-gm-papa","uji-papa-unc-3"],["uji-papa-unc-3","uji-papa-cous-3-1"],["uji-papa-uncsp-3","uji-papa-cous-3-1"],["uji-papa-unc-3","uji-papa-cous-3-2"],["uji-papa-uncsp-3","uji-papa-cous-3-2"],["uji-gp-mama","uji-mama"],["uji-gm-mama","uji-mama"],["uji-sib-kakek-mama-1","uji-an-sib-kakek-mama-1"],["uji-pas-sib-kakek-mama-1","uji-an-sib-kakek-mama-1"],["uji-sib-nenek-mama-1","uji-an-sib-nenek-mama-1"],["uji-pas-sib-nenek-mama-1","uji-an-sib-nenek-mama-1"],["uji-gp-mama","uji-mama-unc-1"],["uji-gm-mama","uji-mama-unc-1"],["uji-mama-unc-1","uji-mama-cous-1-1"],["uji-mama-uncsp-1","uji-mama-cous-1-1"],["uji-mama-unc-1","uji-mama-cous-1-2"],["uji-mama-uncsp-1","uji-mama-cous-1-2"],["uji-gp-mama","uji-mama-unc-2"],["uji-gm-mama","uji-mama-unc-2"],["uji-mama-unc-2","uji-mama-cous-2-1"],["uji-mama-uncsp-2","uji-mama-cous-2-1"],["uji-mama-unc-2","uji-mama-cous-2-2"],["uji-mama-uncsp-2","uji-mama-cous-2-2"],["uji-gp-mama","uji-mama-unc-3"],["uji-gm-mama","uji-mama-unc-3"],["uji-mama-unc-3","uji-mama-cous-3-1"],["uji-mama-uncsp-3","uji-mama-cous-3-1"],["uji-mama-unc-3","uji-mama-cous-3-2"],["uji-mama-uncsp-3","uji-mama-cous-3-2"],["uji-buyut1-kakek-papa","uji-gp-papa"],["uji-buyut2-kakek-papa","uji-gp-papa"],["uji-buyut1-kakek-papa","uji-sib-kakek-papa-1"],["uji-buyut2-kakek-papa","uji-sib-kakek-papa-1"],["uji-buyut1-nenek-papa","uji-gm-papa"],["uji-buyut2-nenek-papa","uji-gm-papa"],["uji-buyut1-nenek-papa","uji-sib-nenek-papa-1"],["uji-buyut2-nenek-papa","uji-sib-nenek-papa-1"],["uji-buyut1-kakek-mama","uji-gp-mama"],["uji-buyut2-kakek-mama","uji-gp-mama"],["uji-buyut1-kakek-mama","uji-sib-kakek-mama-1"],["uji-buyut2-kakek-mama","uji-sib-kakek-mama-1"],["uji-buyut1-nenek-mama","uji-gm-mama"],["uji-buyut2-nenek-mama","uji-gm-mama"],["uji-buyut1-nenek-mama","uji-sib-nenek-mama-1"],["uji-buyut2-nenek-mama","uji-sib-nenek-mama-1"],["uji-fil","uji-sp"],["uji-mil","uji-sp"],["uji-fil","uji-sp-sib"],["uji-mil","uji-sp-sib"],["uji-papa","uji-single"]],"partner":[["uji-papa","uji-mama"],["uji-focus","uji-sp"],["uji-gp-papa","uji-gm-papa"],["uji-sib-kakek-papa-1","uji-pas-sib-kakek-papa-1"],["uji-sib-nenek-papa-1","uji-pas-sib-nenek-papa-1"],["uji-papa-unc-1","uji-papa-uncsp-1"],["uji-papa-unc-2","uji-papa-uncsp-2"],["uji-papa-unc-3","uji-papa-uncsp-3"],["uji-gp-mama","uji-gm-mama"],["uji-sib-kakek-mama-1","uji-pas-sib-kakek-mama-1"],["uji-sib-nenek-mama-1","uji-pas-sib-nenek-mama-1"],["uji-mama-unc-1","uji-mama-uncsp-1"],["uji-mama-unc-2","uji-mama-uncsp-2"],["uji-mama-unc-3","uji-mama-uncsp-3"],["uji-buyut1-kakek-papa","uji-buyut2-kakek-papa"],["uji-buyut1-nenek-papa","uji-buyut2-nenek-papa"],["uji-buyut1-kakek-mama","uji-buyut2-kakek-mama"],["uji-buyut1-nenek-mama","uji-buyut2-nenek-mama"],["uji-fil","uji-mil"]],"sibling":[["uji-gp-papa","uji-sib-kakek-papa-1"],["uji-gp-papa","uji-sib-kakek-papa-2"],["uji-gm-papa","uji-sib-nenek-papa-1"],["uji-gm-papa","uji-sib-nenek-papa-2"],["uji-gp-mama","uji-sib-kakek-mama-1"],["uji-gp-mama","uji-sib-kakek-mama-2"],["uji-gm-mama","uji-sib-nenek-mama-1"],["uji-gm-mama","uji-sib-nenek-mama-2"],["uji-orphan1","uji-orphan2"]]};
 function validate(d){if(!d||!Array.isArray(d.people)||!Array.isArray(d.parent)||!Array.isArray(d.partner)||!Array.isArray(d.sibling))throw Error('Format data tidak valid');const ids=new Set();for(const p of d.people){if(!p.id||!p.name||ids.has(p.id))throw Error('ID/nama anggota tidak valid');ids.add(p.id);p.photo=typeof p.photo==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(p.photo)&&p.photo.length<250000?p.photo:'';p.name=String(p.name).slice(0,100);p.notes=String(p.notes||'').slice(0,500);for(const k of ['nickname','birthPlace','residence','occupation'])p[k]=String(p[k]||'').slice(0,100)}for(const k of ['parent','partner','sibling']){d[k]=d[k].filter(x=>Array.isArray(x)&&x.length===2&&ids.has(x[0])&&ids.has(x[1])&&x[0]!==x[1])}return d}
 let data;try{const saved=localStorage.getItem(STORE),previous=saved?validate(JSON.parse(saved)):null;data=previous&&!previous.isDemo?previous:validate(clone(githubSeed))}catch(e){data=validate(clone(githubSeed))}
 // Correct a known mislabeled profile in existing browser data without changing its relations.
@@ -468,19 +474,16 @@ function makeLayout(){
   if(!groups.has(gid))groups.set(gid,{id:gid,members:[],i,level:0,children:new Set(),parents:new Set()});
   const group=groups.get(gid);group.members.push(person.id);group.i=Math.min(group.i,i);idGroup.set(person.id,gid);
  }
- // Partner records define a stable visual orientation: first left, second right.
- // This must not change when people are registered in a different order.
- for(const g of groups.values())if(g.members.length===2){
-  const pair=gdata.partner.find(([a,b])=>g.members.includes(a)&&g.members.includes(b));
-  if(pair)g.members=pair.slice();
- }
  // Partner order is a stable visual orientation. Keep the first recorded partner
  // on the left and the second on the right, regardless of when Person records
  // were added/imported. This is NOT a birth-order or gender assumption.
  for(const g of groups.values()){
   if(g.members.length!==2)continue;
   const pair=gdata.partner.find(([a,b])=>g.members.includes(a)&&g.members.includes(b));
-  if(pair)g.members=pair.slice();
+  if(pair){
+   const first=byId(pair[0]),second=byId(pair[1]);
+   g.members=first?.gender==='female'&&second?.gender==='male'?[pair[1],pair[0]]:pair.slice();
+  }
  }
  // Partner groups determine card placement, but explicit sibling relations must also
  // keep people on the same GENERATION, even if neither parent is recorded.
@@ -635,6 +638,7 @@ function makeLayout(){
   const registeredParentKey=id=>gdata.parent.filter(([,child])=>child===id).map(([parent])=>parent).sort().join('|');
   for(const children of siblingsByParent.values()){
    for(let i=0;i<children.length;i++)for(let j=i+1;j<children.length;j++){
+    // Half-siblings can appear nearby but must never share one child-bus.
     if(registeredParentKey(children[i])===registeredParentKey(children[j]))connect(idGroup.get(children[i]),idGroup.get(children[j]));
    }
   }
@@ -711,40 +715,6 @@ function makeLayout(){
    }
    row.push(...block);
   }
-  // Every recorded couple anchors its own two birth-family directions.
-  // Siblings of the left partner sit BEFORE their couple group; siblings of
-  // the right partner sit AFTER it. This remains true without known parents.
-  const rowIndex=new Map(row.map((g,i)=>[g.id,i]));
-  const edges=new Map(row.map(g=>[g.id,new Set()]));
-  const incoming=new Map(row.map(g=>[g.id,0]));
-  const precedes=(a,b)=>{
-   if(!a||!b||a.id===b.id||edges.get(a.id).has(b.id))return;
-   edges.get(a.id).add(b.id);incoming.set(b.id,incoming.get(b.id)+1);
-  };
-  for(const pairGroup of row){
-   if(pairGroup.members.length!==2)continue;
-   const pair=gdata.partner.find(([a,b])=>pairGroup.members.includes(a)&&pairGroup.members.includes(b));
-   if(!pair)continue;
-   for(const siblingId of rel(pair[0]).siblings){
-    const g=groups.get(idGroup.get(siblingId));
-    if(g&&g.level===level)precedes(g,pairGroup);
-   }
-   for(const siblingId of rel(pair[1]).siblings){
-    const g=groups.get(idGroup.get(siblingId));
-    if(g&&g.level===level)precedes(pairGroup,g);
-   }
-  }
-  const ready=row.filter(g=>incoming.get(g.id)===0),sorted=[];
-  while(ready.length){
-   ready.sort((a,b)=>rowIndex.get(a.id)-rowIndex.get(b.id));
-   const g=ready.shift();sorted.push(g);
-   for(const id of edges.get(g.id)){
-    incoming.set(id,incoming.get(id)-1);
-    if(incoming.get(id)===0)ready.push(groups.get(id));
-   }
-  }
-  // Contradictory cross-family constraints: preserve the stable baseline row.
-  if(sorted.length===row.length)row.splice(0,row.length,...sorted);
   let lastRight=-Infinity,previous=null;
   for(const g of row){
    const gap=previous&&g.siblingBlock===previous.siblingBlock?56:rowGap;
@@ -759,47 +729,132 @@ function makeLayout(){
    for(const g of row)g.x+=correction;
   }
  }
- // Align each sibling cohort below its own recorded parent unit. Move whole
- // blocks together rather than interleaving children of different couples.
- for(const level of [...rows.keys()].sort((a,b)=>a-b)){
+ // Follow-up layout pass: keep every exact parent-set child cohort together,
+ // and position that cohort below its own parent unit, not by global Person input order.
+ // Partner nodes remain an indivisible group, so spouse's own birth-family stays connected.
+ const rowsAscending=[...rows.keys()].sort((a,b)=>a-b);
+ for(const level of rowsAscending){
   if(level===0)continue;
   const row=rows.get(level)||[],chunks=new Map();
-  for(const g of row){const k=g.siblingBlock||g.id;if(!chunks.has(k))chunks.set(k,[]);chunks.get(k).push(g);}
-  const parentsCenter=chunk=>{
+  for(const g of row){
+   const key=g.siblingBlock||g.id;
+   if(!chunks.has(key))chunks.set(key,[]);
+   chunks.get(key).push(g);
+  }
+  const centersFor=chunk=>{
    const anchors=[];
-   for(const g of chunk)for(const id of g.members){
-    const ids=gdata.parent.filter(([,child])=>child===id).map(([parent])=>parent);
-    const xs=ids.map(parent=>{
-     const pg=groups.get(idGroup.get(parent));
-     if(!pg||!Number.isFinite(pg.x)||pg.level>=g.level)return null;
-     return pg.x+pg.members.indexOf(parent)*(W+GAP)+W/2;
+   for(const g of chunk)for(const personId of g.members){
+    const ids=gdata.parent.filter(([,child])=>child===personId).map(([parent])=>parent);
+    const parentPositions=ids.map(id=>{
+     const parentGroup=groups.get(idGroup.get(id));
+     if(!parentGroup||!Number.isFinite(parentGroup.x)||parentGroup.level>=g.level)return null;
+     return parentGroup.x+parentGroup.members.indexOf(id)*(W+GAP)+W/2;
     }).filter(x=>x!==null);
-    if(xs.length)anchors.push(xs.reduce((a,b)=>a+b,0)/xs.length);
+    if(parentPositions.length)anchors.push(parentPositions.reduce((a,b)=>a+b,0)/parentPositions.length);
    }
    return anchors.length?anchors.reduce((a,b)=>a+b,0)/anchors.length:null;
   };
   const ordered=[...chunks.values()].sort((a,b)=>{
-   const sa=familySide(a[0]),sb=familySide(b[0]);
-   if(sa!==sb)return sa-sb;
-   const ca=parentsCenter(a),cb=parentsCenter(b);
+   const sideA=familySide(a[0]),sideB=familySide(b[0]);
+   if(sideA!==sideB)return sideA-sideB;
+   const ca=centersFor(a),cb=centersFor(b);
    if(ca!==null&&cb!==null)return ca-cb||a[0].x-b[0].x;
-   return ca!==null?-1:cb!==null?1:a[0].x-b[0].x;
+   if(ca!==null)return -1;
+   if(cb!==null)return 1;
+   return a[0].x-b[0].x;
   });
-  let right=-Infinity;
+  // Use the previous-pass group ordering INSIDE a sibling block. Only blocks move.
+  let lastRight=-Infinity;
   for(const chunk of ordered){
-   const anchor=parentsCenter(chunk);
+   const anchorX=centersFor(chunk);
    const width=chunk.reduce((n,g)=>n+ownWidth(g),0)+Math.max(0,chunk.length-1)*56;
-   let x=Math.max(0,anchor!==null?anchor-width/2:chunk[0].x,Number.isFinite(right)?right+rowGap:0);
-   for(const g of chunk){g.x=x;x+=ownWidth(g)+56;}
-   right=x-56;
+   const preferred=anchorX!==null?anchorX-width/2:chunk[0].x;
+   let start=Math.max(0,preferred,Number.isFinite(lastRight)?lastRight+rowGap:0);
+   for(const g of chunk){g.x=start;start+=ownWidth(g)+56;}
+   lastRight=start-56;
   }
  }
- // Apply male-left/female-right ONLY within a registered mixed-gender couple.
- // Unknown or same-gender couples keep their existing stable visual order.
+ // Gender controls ONLY the internal order of a registered male/female couple.
+ // It never reorders siblings or changes the saved relationship direction.
  for(const g of groups.values()){
   if(g.members.length!==2)continue;
   const [a,b]=g.members;
   if(byId(a)?.gender==='female'&&byId(b)?.gender==='male')g.members=[b,a];
+ }
+ // Overview layout repair: the previous bottom-up/top-down passes can leave
+ // grandparents attached to former locations after their children moved. Reflow
+ // complete family blocks once more, from descendants upward. When a couple has
+ // siblings, place siblings on their own spouse's outward side before packing.
+ // This changes only coordinates: it never infers or mutates relationships.
+ if(treeMode==='overview'){
+  const explicitSibling=(a,b)=>gdata.sibling.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a));
+  const shareParent=(a,b)=>gdata.parent.some(([p,c])=>c===a&&gdata.parent.some(([q,d])=>q===p&&d===b));
+  const siblings=(a,b)=>a!==b&&(explicitSibling(a,b)||shareParent(a,b));
+  const centerFor=group=>group.x+ownWidth(group)/2;
+  for(let level=maxDepth;level>=0;level--){
+   const row=rows.get(level)||[];
+   if(row.length<2)continue;
+   const descendantCenter=g=>{
+    const linked=[];
+    for(const id of g.members){
+     for(const [parent,child] of gdata.parent){
+      if(parent!==id)continue;
+      const childGroup=groups.get(idGroup.get(child));
+      if(!childGroup||childGroup.level<=g.level||!Number.isFinite(childGroup.x))continue;
+      linked.push(childGroup.x+childGroup.members.indexOf(child)*(W+GAP)+W/2);
+     }
+    }
+    return linked.length?linked.reduce((a,b)=>a+b,0)/linked.length:null;
+   };
+   const seedOrder=row.slice().sort((a,b)=>{
+    const va=descendantCenter(a),vb=descendantCenter(b);
+    return va!==null&&vb!==null?va-vb||a.i-b.i:
+     va!==null?-1:vb!==null?1:a.x-b.x||a.i-b.i;
+   });
+   // Prefer the parents of the marked 'self' profile as the visual anchor.
+   // For other layers choose the family with the largest descendant footprint.
+   const anchor=row.slice().sort((a,b)=>{
+    const score=g=>g.members.reduce((n,id)=>{
+     const kids=gdata.parent.filter(([p])=>p===id).map(([,c])=>c);
+     return n+kids.length+kids.filter(c=>byId(c)?.self).length*100;
+    },0);
+    return score(b)-score(a)||a.i-b.i;
+   })[0];
+   const anchorIdx=seedOrder.indexOf(anchor);
+   if(anchor?.members.length===2&&anchorIdx>=0){
+    const leftSiblingGroups=[],rightSiblingGroups=[];
+    for(const g of seedOrder){
+     if(g===anchor)continue;
+     const left=g.members.some(id=>siblings(id,anchor.members[0]));
+     const right=g.members.some(id=>siblings(id,anchor.members[1]));
+     if(left&&!right)leftSiblingGroups.push(g);
+     if(right&&!left)rightSiblingGroups.push(g);
+    }
+    const reserved=new Set([anchor,...leftSiblingGroups,...rightSiblingGroups]);
+    const outer=seedOrder.filter(g=>!reserved.has(g));
+    const mean=descendantCenter(anchor)??centerFor(anchor);
+    const before=outer.filter(g=>(descendantCenter(g)??centerFor(g))<mean);
+    const after=outer.filter(g=>!before.includes(g));
+    seedOrder.splice(0,seedOrder.length,...before,...leftSiblingGroups,anchor,...rightSiblingGroups,...after);
+   }
+   // Pack without overlapping cards, keeping related sibling family groups close.
+   // A second correction is applied to the complete row to minimize total trunk length.
+   let right=-Infinity;
+   for(let i=0;i<seedOrder.length;i++){
+    const g=seedOrder[i],prior=seedOrder[i-1];
+    const related=prior&&(prior.members.some(a=>g.members.some(b=>siblings(a,b))));
+    const gap=related?36:88;
+    const target=descendantCenter(g)??centerFor(g);
+    g.x=Math.max(0,target-ownWidth(g)/2,Number.isFinite(right)?right+gap:0);
+    right=g.x+ownWidth(g);
+   }
+   const anchored=seedOrder.filter(g=>descendantCenter(g)!==null);
+   if(anchored.length){
+    const dx=anchored.reduce((sum,g)=>sum+descendantCenter(g)-centerFor(g),0)/anchored.length;
+    for(const g of seedOrder)g.x+=dx;
+   }
+   row.splice(0,row.length,...seedOrder);
+  }
  }
  // Normalize all generations into the same positive coordinate system.
  const allGroups=[...groups.values()];
@@ -821,8 +876,8 @@ function drawTree({fit=false,focusNew=false}={}){
  let bg='';const demoTitle=['Kakek & Nenek','Orang Tua & Keluarga','Anak & Cucu'];
  for(let level=0;level<=maxDepth;level++){const top=level?TOPY+level*ROW-55:0;const bottom=level===maxDepth?size.h:TOPY+(level+1)*ROW-55;const label=data.isDemo&&demoTitle[level]?demoTitle[level]:'Generasi '+(level+1);bg+=`<div class="lane" style="top:${top}px;height:${bottom-top}px"></div><div class="lane-label" style="top:${TOPY+level*ROW-22}px"><div class="lane-number">${String(level+1).padStart(2,'0')}</div><div class="lane-name">${safe(label)}</div><div class="lane-description">Generasi ${level+1}</div></div>`}
  let lines='';for(const [a,b] of displayGraph.partner){const x=positions.get(a),y=positions.get(b);if(!x||!y||Math.abs(x.y-y.y)>25)continue;const left=x.x<y.x?x:y,right=x.x<y.x?y:x;lines+=`<path class="edge-partner" d="M${left.x+W} ${left.y+H/2} H${right.x}"/><circle cx="${(left.x+W+right.x)/2}" cy="${left.y+H/2}" r="4.4" fill="#fff" stroke="#c88e85" stroke-width="2"/>`}
- // A child connector belongs to the child's EXACT parent set, not its row.
- // Every pair/single parent has an independent bus; family buses never merge.
+ // Each distinct parent set owns its OWN child bus. Never connect the buses
+ // of separate couples, even if their children are at the same generation.
  const childParentSets=new Map();
  for(const [parent,child] of displayGraph.parent){
   if(!childParentSets.has(child))childParentSets.set(child,new Set());
@@ -841,30 +896,32 @@ function drawTree({fit=false,focusNew=false}={}){
   return aa.level-bb.level||Math.min(...a.childIds.map(id=>positions.get(id).x))-Math.min(...b.childIds.map(id=>positions.get(id).x));
  });
  for(let unitIndex=0;unitIndex<units.length;unitIndex++){
-  const {parentIds,childIds}=units[unitIndex];
+  const {parentIds,childIds,key}=units[unitIndex];
   const parents=parentIds.map(id=>positions.get(id)).filter(Boolean);
   const children=childIds.map(id=>positions.get(id)).filter(Boolean).sort((a,b)=>a.x-b.x);
   if(!parents.length||!children.length)continue;
-  const xs=children.map(c=>c.x+W/2),leftX=Math.min(...xs),rightX=Math.max(...xs);
-  const couple=parents.length===2&&displayGraph.partner.some(([a,b])=>parentIds.includes(a)&&parentIds.includes(b));
-  const originX=parents.reduce((sum,p)=>sum+p.x+W/2,0)/parents.length;
-  const originY=couple?parents[0].y+H/2:Math.max(...parents.map(p=>p.y+H));
+  const childCenters=children.map(c=>c.x+W/2),leftX=Math.min(...childCenters),rightX=Math.max(...childCenters);
+  const sameCouple=parents.length===2&&displayGraph.partner.some(([a,b])=>parentIds.includes(a)&&parentIds.includes(b));
+  const startX=parents.reduce((sum,p)=>sum+p.x+W/2,0)/parents.length;
+  const parentY=sameCouple?parents[0].y+H/2:Math.max(...parents.map(p=>p.y+H));
   const childY=Math.min(...children.map(c=>c.y));
   const busY=childY-35-(unitIndex%3)*7;
-  const hubX=Math.min(rightX,Math.max(leftX,originX));
-  const approachY=Math.max(originY+17,busY-24);
-  const attr=encodeURIComponent(parentIds.join('|'));
-  if(couple){
-   lines+=`<path class="edge-parent" data-family-unit="${attr}" d="M${originX} ${originY} V${approachY} H${hubX} V${busY}"/>`;
+  // If the couple midpoint lies outside its children's block, route a separate
+  // upper-level horizontal approach. The actual child bus stays local to its group.
+  const hubX=Math.min(rightX,Math.max(leftX,startX));
+  const approachY=Math.max(parentY+17,busY-24);
+  const unitAttr=encodeURIComponent(parentIds.join('|'));
+  if(sameCouple){
+   lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="M${startX} ${parentY} V${approachY} H${hubX} V${busY}"/>`;
   }else{
    for(const p of parents){const x=p.x+W/2;
-    lines+=`<path class="edge-parent" data-family-unit="${attr}" d="M${x} ${p.y+H} V${approachY} H${hubX} V${busY}"/>`;
+    lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="M${x} ${p.y+H} V${approachY} H${hubX} V${busY}"/>`;
    }
   }
-  // The horizontal segment spans ONLY the children belonging to this family.
-  if(rightX>leftX+0.1)lines+=`<path class="edge-parent edge-child-bus" data-family-unit="${attr}" d="M${leftX} ${busY} H${rightX}"/>`;
+  // Distinct family units never share a horizontal child bus.
+  if(rightX>leftX+0.1)lines+=`<path class="edge-parent edge-child-bus" data-family-unit="${unitAttr}" d="M${leftX} ${busY} H${rightX}"/>`;
   for(const c of children){const x=c.x+W/2;
-   lines+=`<path class="edge-parent" data-family-unit="${attr}" d="M${x} ${busY} V${c.y-5}"/><circle cx="${x}" cy="${c.y-5}" r="4" fill="#76a887"/>`;
+   lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="M${x} ${busY} V${c.y-5}"/><circle cx="${x}" cy="${c.y-5}" r="4" fill="#76a887"/>`;
   }
  }
  // Explicit sibling link with no shared registered parent: draw a distinct dashed
@@ -1013,7 +1070,7 @@ function renderRulesPage(){
    <article class="rules-card" id="rules-focus"><div class="rules-card-head"><span class="rules-step">03</span><div><h3>Fokus & expand/collapse</h3><p>Tampilkan relevansi lebih dahulu, bukan ribuan kartu sekaligus.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Focus Person (default).</b> Menampilkan orang tua fokus; saudara orang tua dan pasangan mereka; kakek-nenek kedua pihak; saudara kakek-nenek dan pasangan mereka; saudara fokus dan pasangan; fokus serta pasangannya; anak fokus.</li><li><b>Overview.</b> Melihat seluruh anggota yang tersedia dalam satu kanvas; dapat pan/zoom dan Fit.</li><li><b>Expand ↑.</b> Membuka orang tua orang yang dipilih. <b>Expand ↔.</b> Membuka saudaranya. <b>Expand ↓.</b> Membuka anak dari satu orang tua atau anak bersama unit pasangan yang tercatat.</li><li><b>Satu tingkat tiap aksi.</b> Cabang tidak dibuka rekursif. Jika anggota tambahan banyak, tampilkan bertahap (12 per langkah).</li><li><b>Fokus berbeda dari expand.</b> Expand tidak menggeser fokus utama. Jadikan Fokus menghitung ulang perspektif, menutup ekspansi lama, dengan riwayat Kembali.</li><li><b>Collapse hanya tampilan.</b> Menutup cabang tidak mengubah database. Pencarian/daftar anggota tetap dapat digunakan.</li></ol></article>
    <article class="rules-card" id="rules-ux"><div class="rules-card-head"><span class="rules-step">04</span><div><h3>Interaksi & pengalaman layar</h3><p>Kanvas tetap menjadi pusat pengalaman.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Ketuk kartu:</b> aksi cepat (expand, fokus, tambah hubungan, profil), tidak otomatis menutup pohon dengan panel besar.</li><li><b>Desktop:</b> Floating Profile Card untuk interaksi cepat, halaman profil lengkap untuk biodata, keluarga, dan kenangan.</li><li><b>Mobile:</b> Bottom Sheet untuk ringkasan, halaman penuh untuk profil lengkap; pan satu jari dan pinch-to-zoom dua jari.</li><li><b>Zoom adaptif:</b> saat diagram sangat kecil, detail sekunder disembunyikan agar nama dan struktur lebih jelas.</li><li><b>Petunjuk:</b> legenda warna dan gesture dibuka lewat tombol bantuan pada kanvas, tidak menumpuk di footer.</li><li><b>Orientasi:</b> saat expand/collapse, usahakan orang yang sedang dilihat tidak meloncat keluar layar; tersedia Fit dan kembali ke fokus.</li></ol></article>
    <article class="rules-card" id="rules-data"><div class="rules-card-head"><span class="rules-step">05</span><div><h3>Data, penyimpanan & privasi</h3><p>Struktur keluarga dan posisi visual punya tanggung jawab berbeda.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Struktur data:</b> people, parent, partner, sibling. ID anggota disimpan; koordinat dan nomor generasi dihitung ulang dari relasi.</li><li><b>Sumber contoh:</b> <code>knowyourfam-family-tree.json</code> di GitHub digunakan sebagai seed awal aplikasi.</li><li><b>Edit lokal:</b> perubahan dari browser disimpan dalam localStorage, bukan otomatis di-push ke GitHub. Impor/ekspor JSON digunakan untuk mencadangkan data.</li><li><b>Muat ulang GitHub:</b> memerlukan konfirmasi karena dapat mengganti data lokal. Ekspor dulu sebelum menimpa.</li><li><b>Privasi:</b> repository publik dapat dibaca orang lain; jangan mengunggah informasi keluarga sensitif tanpa persetujuan.</li></ol></article>
-   <article class="rules-card future" id="rules-future"><div class="rules-card-head"><span class="rules-step">06</span><div><h3>Pengembangan selanjutnya</h3><p>Keputusan arah desain yang belum seluruhnya tersedia di MVP.</p></div><span class="rules-status planned">Rencana</span></div><ol><li>Layout engine yang lebih kuat untuk pohon sangat besar, perkawinan silang, serta pengurangan persilangan garis secara lebih sistematis.</li><li>Pengurutan saudara berdasarkan tanggal lahir jika valid, dan opsi manual menukar posisi pasangan.</li><li>Lazy loading data keluarga per cabang, pencarian berskala besar, dan pengelompokan otomatis untuk ratusan hingga ribuan anggota.</li><li>Hak akses, persetujuan, verifikasi profil, dan kolaborasi lintas ruang keluarga.</li><li>Kenangan keluarga (foto, cerita, riwayat perubahan) dan halaman profil yang lebih lengkap.</li></ol></article>
+   <article class="rules-card future" id="rules-future"><div class="rules-card-head"><span class="rules-step">06</span><div><h3>Pengembangan selanjutnya</h3><p>Keputusan arah desain yang belum seluruhnya tersedia di MVP.</p></div><span class="rules-status planned">Rencana</span></div><ol><li>Optimasi lebih lanjut untuk jaringan keluarga dengan perkawinan silang atau graf yang tidak dapat diproyeksikan tanpa persilangan.</li><li>Pengurutan saudara berdasarkan tanggal lahir jika valid, dan opsi manual menukar posisi pasangan.</li><li>Lazy loading data keluarga per cabang, pencarian berskala besar, dan pengelompokan otomatis untuk ratusan hingga ribuan anggota.</li><li>Hak akses, persetujuan, verifikasi profil, dan kolaborasi lintas ruang keluarga.</li><li>Kenangan keluarga (foto, cerita, riwayat perubahan) dan halaman profil yang lebih lengkap.</li></ol></article>
   </div><footer class="rules-bottom">Aturan tampilan tidak membuat hubungan baru. Bila ada konflik data, kebenaran hubungan selalu diutamakan daripada estetika diagram.</footer></div>`;
 }
 function openProfilePage(id){
@@ -1060,9 +1117,10 @@ function renderModal(){if(modal==='person'){const p=ctx.id?byId(ctx.id):null,t=c
   '<button class="btn" data-cancel>Batal</button><button class="btn danger" id="confirm-unlink">Hapus hubungan</button>');return;
  }
  if(modal==='github'){modalLayout('Gunakan data JSON GitHub?', 'Memuat knowyourfam-family-tree.json sebagai pohon aktif', '<div class="hint">Data pohon saat ini akan diganti oleh data JSON di GitHub. Ekspor JSON terlebih dahulu untuk membuat cadangan. Perubahan di aplikasi ini tetap disimpan lokal dan tidak mengubah file GitHub.</div>', '<button class="btn" data-cancel>Batal</button><button class="btn primary" id="confirm-github">Gunakan data GitHub</button>');return}
+ if(modal==='layout-test'){modalLayout('Gunakan data pengujian keluarga besar?', '67 anggota fiktif lintas generasi untuk menguji posisi dan garis', '<div class="hint">Ini DATA FIKTIF terpisah dari JSON keluarga asli. Pohon aktif dalam browser akan diganti untuk pengujian. Ekspor data sekarang terlebih dahulu bila ingin mencadangkannya. Pilih Lainnya → Muat data JSON GitHub untuk kembali ke data utama.</div>', '<button class="btn" data-cancel>Batal</button><button class="btn primary" id="confirm-layout-test">Muat 67 anggota uji</button>');return}
  if(modal==='demo'){modalLayout('Muat contoh keluarga besar?', 'Contoh dengan 31 anggota dari banyak cabang keluarga', '<div class="hint">Pohon saat ini akan diganti oleh data contoh. Ekspor JSON sebagai cadangan jika ingin mempertahankan pohon yang telah dibuat.</div>', '<button class="btn" data-cancel>Batal</button><button class="btn primary" id="confirm-demo">Muat contoh</button>');return}
  if(modal==='remove'){modalLayout('Hapus anggota?',`Profil ${nameOf(ctx.id)} dan hubungan-hubungannya akan dihapus`,'<div class="hint">Tindakan ini tidak bisa dibatalkan.</div>',`<button class="btn" data-cancel>Batal</button><button class="btn danger" id="confirm-remove">Hapus</button>`);return}
- if(modal==='menu'){modalLayout('Opsi KnowYourFam','Kelola dan cadangkan pohon keluarga','<p class="hint">Pohon baru menggunakan data awal dari knowyourfam-family-tree.json di GitHub. Edit yang kamu buat disimpan lokal pada browser ini. Ekspor JSON sebelum mengganti pohon.</p><div style="display:grid;gap:8px"><button class="btn soft" id="menu-rules">▤ Aturan Family Tree</button><button class="btn" id="menu-github">♧ Muat data JSON GitHub ('+githubSeed.people.length+' orang)</button><button class="btn" id="menu-export">↓ Ekspor JSON</button><button class="btn" id="menu-import">↑ Impor JSON</button><button class="btn" id="menu-rename">✎ Ubah nama pohon</button><button class="btn" id="menu-demo">♧ Muat contoh keluarga besar (31 orang)</button><button class="btn danger" id="menu-new">＋ Buat pohon baru</button></div>','<button class="btn" data-cancel>Tutup</button>')}
+ if(modal==='menu'){modalLayout('Opsi KnowYourFam','Kelola dan cadangkan pohon keluarga','<p class="hint">Pohon baru menggunakan data awal dari knowyourfam-family-tree.json di GitHub. Edit yang kamu buat disimpan lokal pada browser ini. Ekspor JSON sebelum mengganti pohon.</p><div style="display:grid;gap:8px"><button class="btn soft" id="menu-rules">▤ Aturan Family Tree</button><button class="btn" id="menu-github">♧ Muat data JSON GitHub ('+githubSeed.people.length+' orang)</button><button class="btn" id="menu-export">↓ Ekspor JSON</button><button class="btn" id="menu-import">↑ Impor JSON</button><button class="btn" id="menu-rename">✎ Ubah nama pohon</button><button class="btn soft" id="menu-layout-test">♧ Data uji layout keluarga besar (67 anggota)</button><button class="btn" id="menu-demo">♧ Muat contoh keluarga besar (31 orang)</button><button class="btn danger" id="menu-new">＋ Buat pohon baru</button></div>','<button class="btn" data-cancel>Tutup</button>')}
 }
 function newId(){return crypto.randomUUID?crypto.randomUUID():'p-'+Date.now()+'-'+Math.random().toString(36).slice(2)}
 function isCyclic(){const parent=Object.fromEntries(data.people.map(p=>[p.id,[]]));for(const [a,b] of data.parent)parent[a]?.push(b);const visiting=new Set(),done=new Set();function walk(id){if(visiting.has(id))return true;if(done.has(id))return false;visiting.add(id);for(const child of parent[id]||[])if(walk(child))return true;visiting.delete(id);done.add(id);return false}return Object.keys(parent).some(walk)}
@@ -1152,7 +1210,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el
  if(el.id==='confirm-unlink'){const {owner,other,relation}=ctx;let kind=relation==='parent'||relation==='child'?'parent':relation;let before=data[kind].length;data[kind]=data[kind].filter(([a,b])=>kind==='parent'?(relation==='parent'?!(a===other&&b===owner):!(a===owner&&b===other)):!((a===owner&&b===other)||(a===other&&b===owner)));if(data[kind].length===before)return toast('Hubungan langsung tidak ditemukan');save();closeModal();closeDrawer();render({fit:true});toast('Hubungan dihapus, kedua profil tetap ada');return}
  if(el.id==='confirm-new'){data={version:1,treeName:'Keluarga Saya',isDemo:false,people:[],parent:[],partner:[],sibling:[]};selected=null;focusRoot=null;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');toast('Pohon baru siap');return}
  if(el.id==='confirm-remove'){data.people=data.people.filter(p=>p.id!==ctx.id);for(const k of ['parent','partner','sibling'])data[k]=data[k].filter(pair=>!pair.includes(ctx.id));selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;if(!byId(focusRoot))focusRoot=selected;expandedBranches.clear();expansionPages.clear();save();closeModal();closeDrawer();render({fit:true});toast('Anggota dihapus');return}
- if(el.id==='menu-rules'){closeModal();showView('rules');return}if(el.id==='menu-github'){openModal('github');return}if(el.id==='confirm-github'){loadGithubData();return}if(el.id==='menu-export'){closeModal();exportJSON();return}if(el.id==='menu-import'){closeModal();$('import-file').click();return}if(el.id==='menu-rename'){openModal('rename');return}if(el.id==='menu-new'){openModal('new');return}if(el.id==='menu-demo'){openModal('demo');return}if(el.id==='confirm-demo'){data=clone(sample);selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();expansionPages.clear();treeMode='focus';save();data.isDemo=true;try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}closeModal();showView('tree');toast('31 anggota contoh telah dimuat');return}
+ if(el.id==='menu-rules'){closeModal();showView('rules');return}if(el.id==='menu-github'){openModal('github');return}if(el.id==='confirm-github'){loadGithubData();return}if(el.id==='menu-export'){closeModal();exportJSON();return}if(el.id==='menu-import'){closeModal();$('import-file').click();return}if(el.id==='menu-rename'){openModal('rename');return}if(el.id==='menu-new'){openModal('new');return}if(el.id==='menu-layout-test'){openModal('layout-test');return}if(el.id==='confirm-layout-test'){data=validate(clone(layoutTestSeed));selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;focusHistory=[];expandedBranches.clear();expansionPages.clear();treeMode='focus';save();closeModal();showView('tree');toast('67 anggota pengujian fiktif telah dimuat');return}if(el.id==='menu-demo'){openModal('demo');return}if(el.id==='confirm-demo'){data=clone(sample);selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();expansionPages.clear();treeMode='focus';save();data.isDemo=true;try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}closeModal();showView('tree');toast('31 anggota contoh telah dimuat');return}
 });
 $('modal-content').addEventListener('change',e=>{
  if(e.target.id==='image-input')usePhoto(e.target.files[0]);
