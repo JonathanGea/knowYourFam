@@ -419,6 +419,12 @@ function makeLayout(){
   if(!groups.has(gid))groups.set(gid,{id:gid,members:[],i,level:0,children:new Set(),parents:new Set()});
   const group=groups.get(gid);group.members.push(person.id);group.i=Math.min(group.i,i);idGroup.set(person.id,gid);
  }
+ // Partner records define a stable visual orientation: first left, second right.
+ // This must not change when people are registered in a different order.
+ for(const g of groups.values())if(g.members.length===2){
+  const pair=gdata.partner.find(([a,b])=>g.members.includes(a)&&g.members.includes(b));
+  if(pair)g.members=pair.slice();
+ }
  // Partner order is a stable visual orientation. Keep the first recorded partner
  // on the left and the second on the right, regardless of when Person records
  // were added/imported. This is NOT a birth-order or gender assumption.
@@ -655,6 +661,40 @@ function makeLayout(){
    }
    row.push(...block);
   }
+  // Every recorded couple anchors its own two birth-family directions.
+  // Siblings of the left partner sit BEFORE their couple group; siblings of
+  // the right partner sit AFTER it. This remains true without known parents.
+  const rowIndex=new Map(row.map((g,i)=>[g.id,i]));
+  const edges=new Map(row.map(g=>[g.id,new Set()]));
+  const incoming=new Map(row.map(g=>[g.id,0]));
+  const precedes=(a,b)=>{
+   if(!a||!b||a.id===b.id||edges.get(a.id).has(b.id))return;
+   edges.get(a.id).add(b.id);incoming.set(b.id,incoming.get(b.id)+1);
+  };
+  for(const pairGroup of row){
+   if(pairGroup.members.length!==2)continue;
+   const pair=gdata.partner.find(([a,b])=>pairGroup.members.includes(a)&&pairGroup.members.includes(b));
+   if(!pair)continue;
+   for(const siblingId of rel(pair[0]).siblings){
+    const g=groups.get(idGroup.get(siblingId));
+    if(g&&g.level===level)precedes(g,pairGroup);
+   }
+   for(const siblingId of rel(pair[1]).siblings){
+    const g=groups.get(idGroup.get(siblingId));
+    if(g&&g.level===level)precedes(pairGroup,g);
+   }
+  }
+  const ready=row.filter(g=>incoming.get(g.id)===0),sorted=[];
+  while(ready.length){
+   ready.sort((a,b)=>rowIndex.get(a.id)-rowIndex.get(b.id));
+   const g=ready.shift();sorted.push(g);
+   for(const id of edges.get(g.id)){
+    incoming.set(id,incoming.get(id)-1);
+    if(incoming.get(id)===0)ready.push(groups.get(id));
+   }
+  }
+  // Contradictory cross-family constraints: preserve the stable baseline row.
+  if(sorted.length===row.length)row.splice(0,row.length,...sorted);
   let lastRight=-Infinity,previous=null;
   for(const g of row){
    const gap=previous&&g.siblingBlock===previous.siblingBlock?56:rowGap;
