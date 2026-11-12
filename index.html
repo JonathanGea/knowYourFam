@@ -419,6 +419,14 @@ function makeLayout(){
   if(!groups.has(gid))groups.set(gid,{id:gid,members:[],i,level:0,children:new Set(),parents:new Set()});
   const group=groups.get(gid);group.members.push(person.id);group.i=Math.min(group.i,i);idGroup.set(person.id,gid);
  }
+ // Partner order is a stable visual orientation. Keep the first recorded partner
+ // on the left and the second on the right, regardless of when Person records
+ // were added/imported. This is NOT a birth-order or gender assumption.
+ for(const g of groups.values()){
+  if(g.members.length!==2)continue;
+  const pair=gdata.partner.find(([a,b])=>g.members.includes(a)&&g.members.includes(b));
+  if(pair)g.members=pair.slice();
+ }
  // Partner groups determine card placement, but explicit sibling relations must also
  // keep people on the same GENERATION, even if neither parent is recorded.
  // A separate cohort graph preserves generation depth without merging sibling cards.
@@ -552,20 +560,30 @@ function makeLayout(){
     g.ideal=weighted;
    }else g.ideal=null;
   }
-  // Group explicit siblings without a shared known parent into a nearby block.
-  // IMPORTANT: this does not create a parent relationship. A spouse belongs to
-  // the same visual card group as their partner; siblings retain separate cards.
+  // Cohort groups are sorted as atomic family units. When two people are a
+  // recorded couple, the sibling family of the LEFT partner goes outward left,
+  // and the sibling family of the RIGHT partner goes outward right.
+  // No assumption about older/younger siblings is made from display position.
   const rowIds=new Set(row.map(g=>g.id));
   const sibBlock=new Map(row.map(g=>[g.id,g.id]));
   const root=id=>{const p=sibBlock.get(id);if(p!==id)sibBlock.set(id,root(p));return sibBlock.get(id)};
   const link=(a,b)=>{if(a&&b&&a!==b&&rowIds.has(a)&&rowIds.has(b))sibBlock.set(root(b),root(a))};
-  const parentsOf=id=>new Set(gdata.parent.filter(([,c])=>c===id).map(([p])=>p));
-  for(const [a,b] of gdata.sibling){
-   const pa=parentsOf(a);
-   if(gdata.parent.some(([p,c])=>c===b&&pa.has(p)))continue;
-   const ga=idGroup.get(a),gb=idGroup.get(b);
-   if(ga&&gb&&familySide(groups.get(ga))===familySide(groups.get(gb)))link(ga,gb);
+  const groupEdges=new Map(row.map(g=>[g.id,new Set()]));
+  const connect=(a,b)=>{
+   if(!a||!b||a===b||!rowIds.has(a)||!rowIds.has(b))return;
+   if(familySide(groups.get(a))!==familySide(groups.get(b)))return;
+   link(a,b);groupEdges.get(a).add(b);groupEdges.get(b).add(a);
+  };
+  // Both explicit siblings (unknown parents) AND siblings sharing a parent
+  // have the same left/right rules; only their connector styles differ.
+  for(const [a,b] of gdata.sibling)connect(idGroup.get(a),idGroup.get(b));
+  for(const children of siblingsByParent.values()){
+   for(let i=0;i<children.length;i++)for(let j=i+1;j<children.length;j++){
+    connect(idGroup.get(children[i]),idGroup.get(children[j]));
+   }
   }
+  const areSiblings=(a,b)=>gdata.sibling.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a))||
+   gdata.parent.some(([p,c])=>c===a&&gdata.parent.some(([pp,cc])=>pp===p&&cc===b));
   const blocks=new Map();
   for(const g of row){const id=root(g.id);g.siblingBlock=id;if(!blocks.has(id))blocks.set(id,[]);blocks.get(id).push(g)}
   const idealOf=arr=>{const anchors=arr.filter(g=>g.ideal!==null);return anchors.length?anchors.reduce((s,g)=>s+g.ideal,0)/anchors.length:null};
@@ -579,13 +597,62 @@ function makeLayout(){
   row.length=0;
   for(const block of arranged){
    const side=familySide(block[0]);
-   block.sort((a,b)=>{
-    if(a.ideal!==null&&b.ideal!==null)return a.ideal-b.ideal||a.i-b.i;
-    // Siblings extend outward: left of the left family, right of the right.
-    if(a.ideal!==null)return side===-1?1:-1;
-    if(b.ideal!==null)return side===-1?-1:1;
-    return a.i-b.i;
-   });
+   const orderedId=g=>g.members.slice().sort().join('|');
+   // Prefer a couple with children as the anchor, rather than a newly-added
+   // spouse of a sibling. Both ends stay stable when more siblings are added.
+   const anchors=block.filter(g=>g.members.length===2&&block.some(other=>other!==g&&
+    other.members.some(id=>g.members.some(mid=>areSiblings(id,mid)))));
+   anchors.sort((a,b)=>Number(b.ideal!==null)-Number(a.ideal!==null)||
+    b.members.reduce((n,id)=>n+descendants(id),0)-a.members.reduce((n,id)=>n+descendants(id),0)||
+    orderedId(a).localeCompare(orderedId(b)));
+   const anchor=anchors[0]||null;
+   if(anchor){
+    const sideByGroup=new Map([[anchor.id,0]]);
+    // Traverse each spouse's sibling network separately; never cross through
+    // the anchor couple to reach the opposite spouse's relatives.
+    for(let partnerIndex=0;partnerIndex<2;partnerIndex++){
+     const direction=partnerIndex===0?-1:1;
+     const start=anchor.members[partnerIndex],queue=[];
+     for(const other of block){
+      if(other===anchor)continue;
+      if(other.members.some(id=>areSiblings(start,id))){
+       if(!sideByGroup.has(other.id)){sideByGroup.set(other.id,direction);queue.push(other.id)}
+      }
+     }
+     while(queue.length){
+      const current=queue.shift();
+      for(const n of groupEdges.get(current)||[]){
+       if(n===anchor.id||sideByGroup.has(n))continue;
+       sideByGroup.set(n,direction);queue.push(n);
+      }
+     }
+    }
+    block.sort((a,b)=>{
+     const da=sideByGroup.get(a.id)??0,db=sideByGroup.get(b.id)??0;
+     if(da!==db)return da-db;
+     // Use immutable person IDs for unspecified sibling order. Birth-order
+     // data may be used later only when explicitly known.
+     return orderedId(a).localeCompare(orderedId(b));
+    });
+    // Each sibling's own spouse stays on the outside of the main couple.
+    for(const group of block){
+     if(group===anchor||group.members.length!==2)continue;
+     const direction=sideByGroup.get(group.id);
+     if(!direction)continue;
+     const relative=group.members.find(id=>areSiblings(id,anchor.members[direction===-1?0:1]));
+     if(relative){
+      const spouse=group.members.find(id=>id!==relative);
+      group.members=direction===-1?[spouse,relative]:[relative,spouse];
+     }
+    }
+   }else{
+    block.sort((a,b)=>{
+     if(a.ideal!==null&&b.ideal!==null)return a.ideal-b.ideal||orderedId(a).localeCompare(orderedId(b));
+     if(a.ideal!==null)return side===-1?1:-1;
+     if(b.ideal!==null)return side===-1?-1:1;
+     return orderedId(a).localeCompare(orderedId(b));
+    });
+   }
    row.push(...block);
   }
   let lastRight=-Infinity,previous=null;
