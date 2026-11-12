@@ -1,0 +1,287 @@
+{
+  "version": 1,
+  "treeName": "Keluarga Saya",
+  "isDemo": false,
+  "people": [
+    {
+      "id": "6331254c-6a7b-4e7f-9c9d-e7e322a59a94",
+      "name": "Jonathan gea",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": true
+    },
+    {
+      "id": "f1ee7baa-58fe-4c25-a778-4fba218474e0",
+      "name": "Faoaro gea",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "b288df33-4635-45fc-bf32-0752d7aef200",
+      "name": "erasman zebua",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "49dbb66a-adfd-4461-aae0-df16e30ea3fd",
+      "name": "Vicktor julius gea",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "0beddcc4-a6ce-48a4-b717-31cb6380b7ec",
+      "name": "Memo Gunawan Gea",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb",
+      "name": "Pa sakhi",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1",
+      "name": "Kakek",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "42c9ace6-dbda-4596-85e6-029cccd77976",
+      "name": "Nita",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "94870743-717d-4035-8eee-1807a8f34050",
+      "name": "Syukur",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "7af93bff-99ad-474f-bd03-8964adfd3bd9",
+      "name": "Grace",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "7989eec8-6c14-4afa-88b1-f59681d8a5d1",
+      "name": "Nofan",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "505bd551-6d72-4d2c-84ed-c525831fd89a",
+      "name": "MA SAKHI",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "31c0b154-e812-4cd8-bac3-268c51ab8c54",
+      "name": "NENEK",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    }
+  ],
+  "parent": [
+    [
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0",
+      "6331254c-6a7b-4e7f-9c9d-e7e322a59a94"
+    ],
+    [
+      "b288df33-4635-45fc-bf32-0752d7aef200",
+      "6331254c-6a7b-4e7f-9c9d-e7e322a59a94"
+    ],
+    [
+      "b288df33-4635-45fc-bf32-0752d7aef200",
+      "49dbb66a-adfd-4461-aae0-df16e30ea3fd"
+    ],
+    [
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0",
+      "49dbb66a-adfd-4461-aae0-df16e30ea3fd"
+    ],
+    [
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0",
+      "0beddcc4-a6ce-48a4-b717-31cb6380b7ec"
+    ],
+    [
+      "b288df33-4635-45fc-bf32-0752d7aef200",
+      "0beddcc4-a6ce-48a4-b717-31cb6380b7ec"
+    ],
+    [
+      "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1",
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"
+    ],
+    [
+      "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1",
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0"
+    ],
+    [
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb",
+      "42c9ace6-dbda-4596-85e6-029cccd77976"
+    ],
+    [
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb",
+      "94870743-717d-4035-8eee-1807a8f34050"
+    ],
+    [
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb",
+      "7af93bff-99ad-474f-bd03-8964adfd3bd9"
+    ],
+    [
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb",
+      "7989eec8-6c14-4afa-88b1-f59681d8a5d1"
+    ],
+    [
+      "505bd551-6d72-4d2c-84ed-c525831fd89a",
+      "94870743-717d-4035-8eee-1807a8f34050"
+    ],
+    [
+      "505bd551-6d72-4d2c-84ed-c525831fd89a",
+      "42c9ace6-dbda-4596-85e6-029cccd77976"
+    ],
+    [
+      "505bd551-6d72-4d2c-84ed-c525831fd89a",
+      "7af93bff-99ad-474f-bd03-8964adfd3bd9"
+    ],
+    [
+      "505bd551-6d72-4d2c-84ed-c525831fd89a",
+      "7989eec8-6c14-4afa-88b1-f59681d8a5d1"
+    ],
+    [
+      "31c0b154-e812-4cd8-bac3-268c51ab8c54",
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0"
+    ],
+    [
+      "31c0b154-e812-4cd8-bac3-268c51ab8c54",
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"
+    ]
+  ],
+  "partner": [
+    [
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0",
+      "b288df33-4635-45fc-bf32-0752d7aef200"
+    ],
+    [
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb",
+      "505bd551-6d72-4d2c-84ed-c525831fd89a"
+    ],
+    [
+      "dc0d13ff-cc96-4b1b-8f01-e06a59325ea1",
+      "31c0b154-e812-4cd8-bac3-268c51ab8c54"
+    ]
+  ],
+  "sibling": [
+    [
+      "6331254c-6a7b-4e7f-9c9d-e7e322a59a94",
+      "49dbb66a-adfd-4461-aae0-df16e30ea3fd"
+    ],
+    [
+      "f1ee7baa-58fe-4c25-a778-4fba218474e0",
+      "b50f8d1b-4e3f-4f74-a33b-3dfdf19d83eb"
+    ]
+  ]
+}
