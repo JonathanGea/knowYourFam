@@ -1,0 +1,1387 @@
+{
+  "version": 1,
+  "treeName": "DATA UJI • Keluarga Besar (Fiktif)",
+  "isDemo": true,
+  "people": [
+    {
+      "id": "uji-focus",
+      "name": "Saya (fokus)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": true
+    },
+    {
+      "id": "uji-papa",
+      "name": "Papa",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama",
+      "name": "Mama",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib1",
+      "name": "Saudara saya 1",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib2",
+      "name": "Saudara saya 2",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sp",
+      "name": "Pasangan saya",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-fs1",
+      "name": "Anak saya 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-fs2",
+      "name": "Anak saya 2",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-fs3",
+      "name": "Anak saya 3",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-gp-papa",
+      "name": "Kakek dari papa",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-gm-papa",
+      "name": "Nenek dari papa",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-kakek-papa-1",
+      "name": "Saudara kakek dari papa 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pas-sib-kakek-papa-1",
+      "name": "Pasangan saudara kakek dari papa 1",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-an-sib-kakek-papa-1",
+      "name": "Anak saudara kakek papa 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-kakek-papa-2",
+      "name": "Saudara kakek dari papa 2",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-nenek-papa-1",
+      "name": "Saudara nenek dari papa 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pas-sib-nenek-papa-1",
+      "name": "Pasangan saudara nenek dari papa 1",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-an-sib-nenek-papa-1",
+      "name": "Anak saudara nenek papa 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-nenek-papa-2",
+      "name": "Saudara nenek dari papa 2",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-unc-1",
+      "name": "Paman dari papa 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-uncsp-1",
+      "name": "Pasangan paman dari papa 1",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-cous-1-1",
+      "name": "Sepupu dari papa 1.1",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-cous-1-2",
+      "name": "Sepupu dari papa 1.2",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-unc-2",
+      "name": "Bibi dari papa 2",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-uncsp-2",
+      "name": "Pasangan bibi dari papa 2",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-cous-2-1",
+      "name": "Sepupu dari papa 2.1",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-cous-2-2",
+      "name": "Sepupu dari papa 2.2",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-unc-3",
+      "name": "Paman dari papa 3",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-uncsp-3",
+      "name": "Pasangan paman dari papa 3",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-cous-3-1",
+      "name": "Sepupu dari papa 3.1",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-papa-cous-3-2",
+      "name": "Sepupu dari papa 3.2",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-gp-mama",
+      "name": "Kakek dari mama",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-gm-mama",
+      "name": "Nenek dari mama",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-kakek-mama-1",
+      "name": "Saudara kakek dari mama 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pas-sib-kakek-mama-1",
+      "name": "Pasangan saudara kakek dari mama 1",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-an-sib-kakek-mama-1",
+      "name": "Anak saudara kakek mama 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-kakek-mama-2",
+      "name": "Saudara kakek dari mama 2",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-nenek-mama-1",
+      "name": "Saudara nenek dari mama 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-pas-sib-nenek-mama-1",
+      "name": "Pasangan saudara nenek dari mama 1",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-an-sib-nenek-mama-1",
+      "name": "Anak saudara nenek mama 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sib-nenek-mama-2",
+      "name": "Saudara nenek dari mama 2",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-unc-1",
+      "name": "Paman dari mama 1",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-uncsp-1",
+      "name": "Pasangan paman dari mama 1",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-cous-1-1",
+      "name": "Sepupu dari mama 1.1",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-cous-1-2",
+      "name": "Sepupu dari mama 1.2",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-unc-2",
+      "name": "Bibi dari mama 2",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-uncsp-2",
+      "name": "Pasangan bibi dari mama 2",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-cous-2-1",
+      "name": "Sepupu dari mama 2.1",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-cous-2-2",
+      "name": "Sepupu dari mama 2.2",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-unc-3",
+      "name": "Paman dari mama 3",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-uncsp-3",
+      "name": "Pasangan paman dari mama 3",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-cous-3-1",
+      "name": "Sepupu dari mama 3.1",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mama-cous-3-2",
+      "name": "Sepupu dari mama 3.2",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut1-kakek-papa",
+      "name": "Buyut laki-laki dari kakek papa",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut2-kakek-papa",
+      "name": "Buyut perempuan dari kakek papa",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut1-nenek-papa",
+      "name": "Buyut laki-laki dari nenek papa",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut2-nenek-papa",
+      "name": "Buyut perempuan dari nenek papa",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut1-kakek-mama",
+      "name": "Buyut laki-laki dari kakek mama",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut2-kakek-mama",
+      "name": "Buyut perempuan dari kakek mama",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut1-nenek-mama",
+      "name": "Buyut laki-laki dari nenek mama",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-buyut2-nenek-mama",
+      "name": "Buyut perempuan dari nenek mama",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-mil",
+      "name": "Ibu pasangan saya",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-fil",
+      "name": "Ayah pasangan saya",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-sp-sib",
+      "name": "Saudara pasangan saya",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-single",
+      "name": "Anak satu orang tua (contoh)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-orphan1",
+      "name": "Saudara tanpa orang tua A",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-orphan2",
+      "name": "Saudara tanpa orang tua B",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "DATA FIKTIF untuk pengujian layout KnowYourFam",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    }
+  ],
+  "parent": [
+    [
+      "uji-papa",
+      "uji-focus"
+    ],
+    [
+      "uji-mama",
+      "uji-focus"
+    ],
+    [
+      "uji-papa",
+      "uji-sib1"
+    ],
+    [
+      "uji-mama",
+      "uji-sib1"
+    ],
+    [
+      "uji-papa",
+      "uji-sib2"
+    ],
+    [
+      "uji-mama",
+      "uji-sib2"
+    ],
+    [
+      "uji-focus",
+      "uji-fs1"
+    ],
+    [
+      "uji-sp",
+      "uji-fs1"
+    ],
+    [
+      "uji-focus",
+      "uji-fs2"
+    ],
+    [
+      "uji-sp",
+      "uji-fs2"
+    ],
+    [
+      "uji-focus",
+      "uji-fs3"
+    ],
+    [
+      "uji-sp",
+      "uji-fs3"
+    ],
+    [
+      "uji-gp-papa",
+      "uji-papa"
+    ],
+    [
+      "uji-gm-papa",
+      "uji-papa"
+    ],
+    [
+      "uji-sib-kakek-papa-1",
+      "uji-an-sib-kakek-papa-1"
+    ],
+    [
+      "uji-pas-sib-kakek-papa-1",
+      "uji-an-sib-kakek-papa-1"
+    ],
+    [
+      "uji-sib-nenek-papa-1",
+      "uji-an-sib-nenek-papa-1"
+    ],
+    [
+      "uji-pas-sib-nenek-papa-1",
+      "uji-an-sib-nenek-papa-1"
+    ],
+    [
+      "uji-gp-papa",
+      "uji-papa-unc-1"
+    ],
+    [
+      "uji-gm-papa",
+      "uji-papa-unc-1"
+    ],
+    [
+      "uji-papa-unc-1",
+      "uji-papa-cous-1-1"
+    ],
+    [
+      "uji-papa-uncsp-1",
+      "uji-papa-cous-1-1"
+    ],
+    [
+      "uji-papa-unc-1",
+      "uji-papa-cous-1-2"
+    ],
+    [
+      "uji-papa-uncsp-1",
+      "uji-papa-cous-1-2"
+    ],
+    [
+      "uji-gp-papa",
+      "uji-papa-unc-2"
+    ],
+    [
+      "uji-gm-papa",
+      "uji-papa-unc-2"
+    ],
+    [
+      "uji-papa-unc-2",
+      "uji-papa-cous-2-1"
+    ],
+    [
+      "uji-papa-uncsp-2",
+      "uji-papa-cous-2-1"
+    ],
+    [
+      "uji-papa-unc-2",
+      "uji-papa-cous-2-2"
+    ],
+    [
+      "uji-papa-uncsp-2",
+      "uji-papa-cous-2-2"
+    ],
+    [
+      "uji-gp-papa",
+      "uji-papa-unc-3"
+    ],
+    [
+      "uji-gm-papa",
+      "uji-papa-unc-3"
+    ],
+    [
+      "uji-papa-unc-3",
+      "uji-papa-cous-3-1"
+    ],
+    [
+      "uji-papa-uncsp-3",
+      "uji-papa-cous-3-1"
+    ],
+    [
+      "uji-papa-unc-3",
+      "uji-papa-cous-3-2"
+    ],
+    [
+      "uji-papa-uncsp-3",
+      "uji-papa-cous-3-2"
+    ],
+    [
+      "uji-gp-mama",
+      "uji-mama"
+    ],
+    [
+      "uji-gm-mama",
+      "uji-mama"
+    ],
+    [
+      "uji-sib-kakek-mama-1",
+      "uji-an-sib-kakek-mama-1"
+    ],
+    [
+      "uji-pas-sib-kakek-mama-1",
+      "uji-an-sib-kakek-mama-1"
+    ],
+    [
+      "uji-sib-nenek-mama-1",
+      "uji-an-sib-nenek-mama-1"
+    ],
+    [
+      "uji-pas-sib-nenek-mama-1",
+      "uji-an-sib-nenek-mama-1"
+    ],
+    [
+      "uji-gp-mama",
+      "uji-mama-unc-1"
+    ],
+    [
+      "uji-gm-mama",
+      "uji-mama-unc-1"
+    ],
+    [
+      "uji-mama-unc-1",
+      "uji-mama-cous-1-1"
+    ],
+    [
+      "uji-mama-uncsp-1",
+      "uji-mama-cous-1-1"
+    ],
+    [
+      "uji-mama-unc-1",
+      "uji-mama-cous-1-2"
+    ],
+    [
+      "uji-mama-uncsp-1",
+      "uji-mama-cous-1-2"
+    ],
+    [
+      "uji-gp-mama",
+      "uji-mama-unc-2"
+    ],
+    [
+      "uji-gm-mama",
+      "uji-mama-unc-2"
+    ],
+    [
+      "uji-mama-unc-2",
+      "uji-mama-cous-2-1"
+    ],
+    [
+      "uji-mama-uncsp-2",
+      "uji-mama-cous-2-1"
+    ],
+    [
+      "uji-mama-unc-2",
+      "uji-mama-cous-2-2"
+    ],
+    [
+      "uji-mama-uncsp-2",
+      "uji-mama-cous-2-2"
+    ],
+    [
+      "uji-gp-mama",
+      "uji-mama-unc-3"
+    ],
+    [
+      "uji-gm-mama",
+      "uji-mama-unc-3"
+    ],
+    [
+      "uji-mama-unc-3",
+      "uji-mama-cous-3-1"
+    ],
+    [
+      "uji-mama-uncsp-3",
+      "uji-mama-cous-3-1"
+    ],
+    [
+      "uji-mama-unc-3",
+      "uji-mama-cous-3-2"
+    ],
+    [
+      "uji-mama-uncsp-3",
+      "uji-mama-cous-3-2"
+    ],
+    [
+      "uji-buyut1-kakek-papa",
+      "uji-gp-papa"
+    ],
+    [
+      "uji-buyut2-kakek-papa",
+      "uji-gp-papa"
+    ],
+    [
+      "uji-buyut1-kakek-papa",
+      "uji-sib-kakek-papa-1"
+    ],
+    [
+      "uji-buyut2-kakek-papa",
+      "uji-sib-kakek-papa-1"
+    ],
+    [
+      "uji-buyut1-nenek-papa",
+      "uji-gm-papa"
+    ],
+    [
+      "uji-buyut2-nenek-papa",
+      "uji-gm-papa"
+    ],
+    [
+      "uji-buyut1-nenek-papa",
+      "uji-sib-nenek-papa-1"
+    ],
+    [
+      "uji-buyut2-nenek-papa",
+      "uji-sib-nenek-papa-1"
+    ],
+    [
+      "uji-buyut1-kakek-mama",
+      "uji-gp-mama"
+    ],
+    [
+      "uji-buyut2-kakek-mama",
+      "uji-gp-mama"
+    ],
+    [
+      "uji-buyut1-kakek-mama",
+      "uji-sib-kakek-mama-1"
+    ],
+    [
+      "uji-buyut2-kakek-mama",
+      "uji-sib-kakek-mama-1"
+    ],
+    [
+      "uji-buyut1-nenek-mama",
+      "uji-gm-mama"
+    ],
+    [
+      "uji-buyut2-nenek-mama",
+      "uji-gm-mama"
+    ],
+    [
+      "uji-buyut1-nenek-mama",
+      "uji-sib-nenek-mama-1"
+    ],
+    [
+      "uji-buyut2-nenek-mama",
+      "uji-sib-nenek-mama-1"
+    ],
+    [
+      "uji-fil",
+      "uji-sp"
+    ],
+    [
+      "uji-mil",
+      "uji-sp"
+    ],
+    [
+      "uji-fil",
+      "uji-sp-sib"
+    ],
+    [
+      "uji-mil",
+      "uji-sp-sib"
+    ],
+    [
+      "uji-papa",
+      "uji-single"
+    ]
+  ],
+  "partner": [
+    [
+      "uji-papa",
+      "uji-mama"
+    ],
+    [
+      "uji-focus",
+      "uji-sp"
+    ],
+    [
+      "uji-gp-papa",
+      "uji-gm-papa"
+    ],
+    [
+      "uji-sib-kakek-papa-1",
+      "uji-pas-sib-kakek-papa-1"
+    ],
+    [
+      "uji-sib-nenek-papa-1",
+      "uji-pas-sib-nenek-papa-1"
+    ],
+    [
+      "uji-papa-unc-1",
+      "uji-papa-uncsp-1"
+    ],
+    [
+      "uji-papa-unc-2",
+      "uji-papa-uncsp-2"
+    ],
+    [
+      "uji-papa-unc-3",
+      "uji-papa-uncsp-3"
+    ],
+    [
+      "uji-gp-mama",
+      "uji-gm-mama"
+    ],
+    [
+      "uji-sib-kakek-mama-1",
+      "uji-pas-sib-kakek-mama-1"
+    ],
+    [
+      "uji-sib-nenek-mama-1",
+      "uji-pas-sib-nenek-mama-1"
+    ],
+    [
+      "uji-mama-unc-1",
+      "uji-mama-uncsp-1"
+    ],
+    [
+      "uji-mama-unc-2",
+      "uji-mama-uncsp-2"
+    ],
+    [
+      "uji-mama-unc-3",
+      "uji-mama-uncsp-3"
+    ],
+    [
+      "uji-buyut1-kakek-papa",
+      "uji-buyut2-kakek-papa"
+    ],
+    [
+      "uji-buyut1-nenek-papa",
+      "uji-buyut2-nenek-papa"
+    ],
+    [
+      "uji-buyut1-kakek-mama",
+      "uji-buyut2-kakek-mama"
+    ],
+    [
+      "uji-buyut1-nenek-mama",
+      "uji-buyut2-nenek-mama"
+    ],
+    [
+      "uji-fil",
+      "uji-mil"
+    ]
+  ],
+  "sibling": [
+    [
+      "uji-gp-papa",
+      "uji-sib-kakek-papa-1"
+    ],
+    [
+      "uji-gp-papa",
+      "uji-sib-kakek-papa-2"
+    ],
+    [
+      "uji-gm-papa",
+      "uji-sib-nenek-papa-1"
+    ],
+    [
+      "uji-gm-papa",
+      "uji-sib-nenek-papa-2"
+    ],
+    [
+      "uji-gp-mama",
+      "uji-sib-kakek-mama-1"
+    ],
+    [
+      "uji-gp-mama",
+      "uji-sib-kakek-mama-2"
+    ],
+    [
+      "uji-gm-mama",
+      "uji-sib-nenek-mama-1"
+    ],
+    [
+      "uji-gm-mama",
+      "uji-sib-nenek-mama-2"
+    ],
+    [
+      "uji-orphan1",
+      "uji-orphan2"
+    ]
+  ]
+}
