@@ -12,8 +12,8 @@ Build the KnowYourFam MVP through ChatGPT conversations, commit verified changes
 ## Stack
 
 - Frontend: Angular + TypeScript + Tailwind CSS.
-- Backend-as-a-service: Supabase (PostgreSQL, Supabase Auth, RLS, RPC).
-- Database: production-oriented relational design and timestamped SQL migrations.
+- **Temporary backend adapter:** Supabase (PostgreSQL, Supabase Auth, RLS, limited RPC). It is replaceable by an own backend later.
+- **Durable database core:** plain PostgreSQL domain tables with app-owned UUIDs, migration files, and isolated Supabase security/auth integrations. See `docs/ADR-001-BACKEND-PORTABILITY.md`.
 - CI: GitHub Actions on `dev/fullstack-mvp`; build and test are required before calling a change working.
 - Optional cloud preview: a hosting provider configured to build the development branch.
 - Additional business logic: SQL functions / Edge Functions only when required; no Spring Boot service initially.
@@ -37,12 +37,12 @@ Build the KnowYourFam MVP through ChatGPT conversations, commit verified changes
 └── .github/workflows/            # Angular and database quality checks
 ```
 
-Do not blindly run `database/migration/V1__family_tree_core.sql` as the Supabase deployment migration. Adapt identity `users` to Supabase `auth.users` and establish RLS + grants first.
+Do not run `database/migration/V1__family_tree_core.sql` unchanged: it is a **draft** with an auth-coupled `users.password_hash`. Keep domain `users`/`app_users` independent of Supabase `auth.users`, add an `auth_identities` mapping, and isolate Supabase-specific RLS/grants and login subject resolution into adapter migrations. See `docs/ADR-001-BACKEND-PORTABILITY.md`. No duplicate authoritative migration histories.
 
 ## Scope for first vertical slices
 
-1. Angular shell and responsive family tree layout. Preserve root `index.html`.
-2. Supabase schema adaptation, RLS, Auth, seed data and migrations.
+1. Angular shell and responsive family tree layout, including a provider-neutral repository interface. Preserve root `index.html`.
+2. Portable PostgreSQL core adaptation with app-user identities, separate Supabase Auth/RLS bindings, synthetic seed data and tested migrations.
 3. Read-only family tree using Supabase; same family relationships as current JSON prototype.
 4. Person CRUD and relationship create/remove, no accidental person deletion.
 5. Focus Person (parent generation, focal peers, partners and their origin parents/siblings, children).
@@ -61,8 +61,8 @@ Do not blindly run `database/migration/V1__family_tree_core.sql` as the Supabase
 
 ## Required safeguards
 
-- Keep schema changes versioned and repeatable. Do not edit DB schema only in a dashboard.
-- Use Supabase publishable/anon key in browser only with tested RLS policies. Never commit a secret/service_role key.
+- Keep schema changes versioned and repeatable. Do not edit DB schema only in a dashboard. Core database definitions must apply to ordinary PostgreSQL without Supabase's `auth` schema.
+- Use Supabase publishable/anon key in browser only with tested RLS policies. Never commit a secret/service_role key. Never import the Supabase SDK directly into Angular feature UI or domain/application layers.
 - Authenticate every operation; enforce same-tree foreign keys and membership/roles.
 - Parent-child edge direction is explicit; reject ancestry cycles in a transaction.
 - A shared child does not prove a marriage; partner relations are explicit.
@@ -82,6 +82,7 @@ Do not blindly run `database/migration/V1__family_tree_core.sql` as the Supabase
 - GitHub Actions is the reliable, reproducible place for the complete build/test checks.
 - A preview URL requires a separately configured hosting provider; it is not created automatically by a GitHub branch.
 - Supabase remote database changes require a connected Supabase integration or separate authenticated deployment pipeline.
+- Migrating to a self-hosted backend still requires an auth migration, authorization checks, API implementation, and potentially media-storage migration. Database portability is not a zero-work migration.
 - Supabase project/database branching is a separate feature from GitHub branching; do not assume it is included.
 - Main-branch and development-branch changes can diverge and require deliberate integration.
 
