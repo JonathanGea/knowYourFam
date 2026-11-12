@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f9f6">
+<title>KnowYourFam — Family Tree MVP · Focus & Overview</title>
+<script defer src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--pine:#245b43;--dark:#203d2d;--muted:#7e9384;--line:#e1e9df;--paper:#fff;--bg:#f7f9f6;--soft:#eaf4eb;--rose:#cb8b81;--shadow:0 12px 40px #1f49371b}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font:14px/1.5 Inter,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:#23372b}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #89bd98;outline-offset:2px}h1,h2,h3,p{margin:0}.app{height:100dvh;min-height:620px;display:flex;flex-direction:column}.header{height:68px;flex:none;display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--line);background:white;padding:0 24px;z-index:3}.brand{font-weight:850;font-size:20px;letter-spacing:-.8px;white-space:nowrap;display:flex;align-items:center;gap:10px}.brand b{color:#61916c}.logo{height:35px;width:35px;display:grid;place-items:center;background:var(--pine);color:#fff;border-radius:10px;font-size:22px}.crumb{font-size:12px;color:var(--muted)}.crumb strong{color:#345a43}.header-right{margin-left:auto;display:flex;align-items:center;gap:9px}.save-indicator{font-size:11px;color:#6a8c73}.save-indicator:before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;background:#53a377;border-radius:50%}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#36513c;font-weight:700;font-size:12px;white-space:nowrap}.btn:hover{border-color:#afc8b1;background:#f7faf7}.btn.primary{background:var(--pine);color:white;border-color:var(--pine)}.btn.primary:hover{background:#164631}.btn.soft{background:#e9f3ea;border-color:#e3efe5;color:var(--pine)}.btn.danger{color:#a33f3f;background:#fff6f6;border-color:#f0d9d9}.btn.icon{padding:9px;min-width:37px}.body{flex:1;min-height:0;display:grid;grid-template-columns:226px minmax(0,1fr)}.side{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:auto;padding:23px 12px}.side-title{padding:0 12px 11px;color:#9aa99c;font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase}.nav{border:0;background:transparent;width:100%;padding:12px;display:flex;gap:11px;align-items:center;border-radius:9px;text-align:left;color:#728774;font-weight:700}.nav.active{color:var(--pine);background:#eaf4eb}.nav:hover{background:#f3f8f3}.side-separator{border-top:1px solid var(--line);margin:23px 9px}.family-chip{display:flex;gap:11px;padding:10px;align-items:center}.family-icon{height:35px;width:35px;display:grid;place-items:center;background:#eaf4eb;border-radius:9px;color:var(--pine);flex:none}.family-chip strong{display:block;white-space:nowrap;max-width:136px;text-overflow:ellipsis;overflow:hidden}.family-chip small{display:block;color:#8aa08e;font-size:11px}.person-links{margin-top:9px}.person-link{border:0;background:transparent;padding:7px 10px;display:flex;align-items:center;gap:8px;width:100%;border-radius:8px;text-align:left;color:#546e59;font-size:12px;overflow:hidden}.person-link:hover,.person-link.active{background:#f2f7f2}.person-link span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.side-bottom{margin-top:auto;padding:16px 8px 0}.note{background:#f2f7f0;border:1px solid #e2ecde;padding:12px;border-radius:10px;color:#63806b;font-size:11px}.note strong{color:#3d684a}.note p{margin:5px 0 10px}.note button{border:0;background:transparent;padding:0;color:var(--pine);font-weight:800;font-size:11px}.side-bottom .btn{margin-top:9px;width:100%}
+.main{min-width:0;min-height:0;display:flex;flex-direction:column;padding:25px 24px 21px;gap:15px}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.eyebrow{text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:1.5px;color:#77a083;margin-bottom:6px}.heading h1{font-size:26px;letter-spacing:-1px;line-height:1.2}.heading p{font-size:12px;color:#89988b;margin-top:5px}.heading-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.stats{display:flex;gap:8px}.stat{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:7px 12px;font-size:11px;color:#839586}.stat strong{color:#35513d;font-size:12px}.canvas-shell{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column;flex:1;min-height:300px;position:relative}.canvas-top{display:flex;align-items:center;gap:9px;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #eef2ec;flex-wrap:wrap;flex:none}.canvas-top small{color:#8a9b8e}.canvas-ops{display:flex;align-items:center;gap:6px}.zoom-info{min-width:45px;text-align:center;font-size:11px;color:#54705b;font-weight:750}.viewport{position:relative;flex:1;min-height:0;overflow:hidden;background-color:#fbfdfb;background-image:radial-gradient(#e4ece3 1px,transparent 1px);background-size:22px 22px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;overscroll-behavior:contain}.viewport.dragging{cursor:grabbing}.scene{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}.lane{position:absolute;left:0;right:0;border-bottom:1px solid #e8efe7;pointer-events:none;background:rgba(255,255,255,.55)}.lane:nth-child(even){background:rgba(241,248,241,.54)}.lane-label{position:absolute;left:18px;top:23px;pointer-events:none}.lane-number{width:29px;height:29px;border-radius:8px;background:#e6f2e8;color:var(--pine);display:grid;place-items:center;font-weight:800;font-size:11px;margin-bottom:8px}.lane-name{font-size:13px;font-weight:800;max-width:130px;line-height:1.2}.lane-description{margin-top:4px;color:#96a799;font-size:10px}.connections{position:absolute;left:0;top:0;overflow:visible;pointer-events:none;z-index:1}.edge-parent{stroke:#86af91;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}.edge-partner{stroke:var(--rose);fill:none;stroke-width:2.4;stroke-linecap:round}.node{position:absolute;width:185px;height:113px;text-align:left;border:1px solid #dbe6dc;background:white;box-shadow:0 4px 14px #31553e0a;border-radius:12px;padding:12px;z-index:2;color:#26422f;display:flex;flex-direction:column;justify-content:space-between;gap:8px;touch-action:none}.node.selected{border:2px solid var(--pine);padding:11px;box-shadow:0 4px 18px #25573a24}.node:hover{border-color:#80b091;box-shadow:0 7px 23px #284c3826}.node-top{display:flex;gap:9px;align-items:center;min-width:0}.person-photo{width:43px;height:43px;flex:none;background:#e6eee4;border-radius:11px;display:grid;place-items:center;font-weight:800;color:#5c7c62;font-size:13px;background-size:cover;background-position:center}.person-photo.female{background-color:#f0e8ed;color:#907183}.person-photo.male{background-color:#e5ecf3;color:#5c7892}.node-name{font-size:12px;font-weight:800;line-height:1.27;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}.node-years{color:#94a497;font-size:10px;margin-top:4px}.node-bottom{border-top:1px solid #eef2ec;padding-top:6px;color:#738b78;font-weight:700;font-size:10px;display:flex;justify-content:space-between}.node-bottom.self{color:var(--pine)}.viewport-footer{position:absolute;left:12px;bottom:12px;z-index:2;background:#fffefc;border:1px solid #e5ebe2;padding:7px 10px;border-radius:9px;font-size:10px;color:#8b9c8f;pointer-events:none}.empty-state{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:12px;padding:22px;z-index:2}.empty-state h3{font-size:19px}.empty-state p{max-width:320px;font-size:12px;color:#809485}.empty-state button{margin:auto}.member-list{display:none;flex:1;overflow:auto;min-height:0}.member-list.active{display:block}.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}.member-tile{text-align:left;padding:14px;border:1px solid var(--line);border-radius:11px;background:#fff}.member-tile .person-photo{margin-bottom:10px}.member-tile strong{display:block}.member-tile small{color:#899a8e}
+.shade{position:fixed;inset:0;z-index:9;background:#162b2050;display:none}.shade.show{display:block}.drawer{position:fixed;right:0;top:0;bottom:0;width:min(365px,100vw);z-index:10;background:#fff;box-shadow:-14px 0 48px #15281922;transform:translateX(110%);transition:transform .2s ease;overflow:auto;padding:24px}.drawer.open{transform:translateX(0)}.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}.drawer-head h3{font-size:14px}.drawer-profile{text-align:center;border-bottom:1px solid var(--line);padding:0 0 20px}.drawer-profile .person-photo{width:77px;height:77px;border-radius:20px;margin:0 auto 12px;font-size:23px}.drawer-profile h2{font-size:19px;line-height:1.3}.drawer-profile small{color:#8e9d8f}.drawer-actions{display:flex;gap:6px;justify-content:center;margin-top:14px}.drawer-section{margin:19px 0 9px;color:#91a394;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:850}.info-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:7px 0;font-size:12px}.info-row span{color:#839586}.info-row strong{text-align:right}.relation-head{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:12px;font-weight:750}.relation-head button{border:1px solid var(--line);background:white;width:25px;height:25px;border-radius:7px}.relation-person{padding:8px 6px;border:0;background:#f6f9f5;border-radius:8px;text-align:left;width:100%;display:flex;gap:7px;align-items:center;margin:6px 0;font-size:12px;font-weight:650;color:#506d56}.relation-person .person-photo{width:25px;height:25px;font-size:9px;border-radius:6px}.drawer-buttons{display:flex;gap:7px;flex-wrap:wrap;margin-top:25px}
+.overlay{position:fixed;inset:0;z-index:20;background:#152b2057;display:none;align-items:center;justify-content:center;padding:17px}.overlay.show{display:flex}.modal{width:min(490px,100%);max-height:90dvh;overflow:auto;background:white;border-radius:17px;box-shadow:0 28px 85px #1f372d44}.modal-header{padding:21px 23px 13px;display:flex;align-items:flex-start;justify-content:space-between}.modal-header h2{font-size:19px;letter-spacing:-.4px}.modal-header p{font-size:12px;color:#92a296;margin-top:5px}.modal-content{padding:7px 23px 12px}.field{display:block;margin-bottom:14px}.field>span{display:block;font-size:11px;font-weight:800;color:#607561;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #dce5db;border-radius:9px;padding:10px 11px;background:white;color:#2b4732;font-size:12px;outline:none}.field input:focus,.field select:focus{border-color:#8cb798;box-shadow:0 0 0 3px #eaf3ec}.field textarea{min-height:73px;resize:vertical}.fields2{display:grid;grid-template-columns:1fr 1fr;gap:11px}.modal-footer{padding:14px 23px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.hint{border-radius:10px;padding:12px;background:#edf5ee;color:#5e7863;font-size:12px;line-height:1.6;margin-bottom:16px}.photo-upload{display:flex;align-items:center;gap:12px;margin-bottom:15px}.photo-upload .person-photo{width:54px;height:54px}.photo-upload small{color:#9aab9c;font-size:10px}.toast{position:fixed;z-index:40;left:50%;bottom:22px;transform:translateX(-50%);padding:11px 16px;background:#213e2c;color:white;border-radius:9px;font-size:12px;box-shadow:var(--shadow);max-width:90vw;display:none}.toast.show{display:block}.mobile-nav{display:none}#image-input,#import-file{display:none}
+@media(max-width:900px){.body{grid-template-columns:minmax(0,1fr)}.side{display:none}.heading h1{font-size:23px}.main{padding:17px 15px;gap:11px}.crumb{display:none}.header{padding:0 15px}}
+@media(max-width:650px){.app{min-height:0}.header{height:60px}.brand{font-size:17px}.header-right .save-indicator,.header-right #export-btn{display:none}.body{padding-bottom:62px}.main{padding:15px 10px 9px}.heading{flex-wrap:wrap}.heading-actions{width:100%}.heading-actions .btn{flex:1}.stats{gap:5px}.stat{padding:7px 6px;justify-content:center;flex:1;font-size:10px}.canvas-shell{min-height:320px}.canvas-top{padding:8px}.canvas-top small{display:none}.viewport-footer{font-size:9px}.mobile-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--line);background:white;height:62px;z-index:4}.mobile-nav button{background:transparent;border:0;font-weight:700;font-size:10px;color:#839786;display:grid;gap:2px;justify-items:center}.mobile-nav button.active{color:var(--pine)}.mobile-nav span{font-size:19px}.fields2{gap:8px}.drawer{width:min(390px,100vw)}.modal{max-height:93dvh}.heading h1{font-size:21px}}
+
+/* Family exploration — focus and overview */
+.mode-switch{display:flex;gap:3px;padding:3px;border:1px solid #e2eae1;border-radius:11px;background:#f3f6f2;min-width:0}
+.mode{background:transparent;border:0;border-radius:8px;padding:8px 13px;font-size:12px;font-weight:750;color:#849789;white-space:nowrap}
+.mode.active{background:#fff;color:#235b42;box-shadow:0 2px 7px #173d2416}
+.canvas-top{gap:9px}
+.focus-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 15px;border-bottom:1px solid #eaf0e9;background:#fbfdfb;flex:none;min-height:49px}
+.focus-toolbar.hidden{display:none}
+.focus-identity{display:flex;gap:9px;align-items:center;min-width:0}
+.focus-icon{height:30px;width:30px;display:grid;place-items:center;background:#e5f3e9;color:#235b43;border-radius:10px;font-size:19px}
+.focus-identity strong{display:block;font-size:12px;color:#284c35;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-label{font-size:10px;color:#8d9c8e;display:block}
+.focus-side{display:flex;align-items:center;gap:11px;color:#819384;font-size:11px;white-space:nowrap}
+.focus-link{border:0;background:transparent;padding:7px 3px;font-weight:800;color:#266445;font-size:11px}
+.node.focus-person{border:2px solid #387853;background:#f6fbf7;padding:11px;box-shadow:0 6px 20px #245b4323}
+.node.partner-person{border-color:#d5af9f}
+.branch-toggle{position:absolute;z-index:4;border-radius:20px;background:#245b43;color:#fff;border:2px solid #fff;box-shadow:0 3px 10px #1f42252b;font-size:10px;font-weight:850;padding:5px 9px;min-width:39px;min-height:26px}
+.branch-toggle:hover{background:#174430}
+.branch-toggle.opened{background:#fff;color:#29573a;border:1px solid #b0cdb9}
+.branch-action{font-size:11px;padding:7px 10px;min-width:116px}.branch-action.opened{background:#eff7f0;border-color:#c1ddc7;color:#235b43}
+.drawer-profile .focus-current{font-size:11px;color:#287451;font-weight:800;display:block;margin-top:10px}
+.relation-item{display:flex;align-items:center;margin:6px 0;gap:6px;background:#f5f9f5;border-radius:9px;padding:3px}
+.relation-item .relation-person{flex:1;min-width:0;margin:0;background:transparent}
+.relation-item .relation-person .relation-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.relation-delete{border:1px solid #eadfdd;background:#fff;border-radius:7px;color:#a85a51;font-size:11px;font-weight:750;padding:6px 8px;white-space:nowrap}
+.relation-delete:hover{background:#fff1f0;border-color:#e4b6b1}
+.relation-explained{color:#a3aca2;font-size:10px;padding-right:5px}
+.fullscreen-help{display:none}
+.canvas-shell.is-fullscreen{position:fixed;inset:0;z-index:16;border-radius:0;min-height:0!important;box-shadow:none}
+.canvas-shell.is-fullscreen .viewport{height:auto;min-height:0}
+.canvas-shell.is-fullscreen .fullscreen-help{display:block;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;white-space:nowrap;color:#58785e;background:#fff;padding:7px 11px;border:1px solid #e4eee4;border-radius:9px;z-index:3;pointer-events:none}
+body.fullscreen-open{overflow:hidden}
+@media(max-width:900px){.side{display:none}}
+@media(max-width:650px){
+  html,body{height:100%;overflow:hidden}
+  .app{height:100dvh;min-height:0}
+  .header{height:51px;gap:6px;padding:0 13px}
+  .brand{font-size:16px;gap:7px}
+  .logo{height:29px;width:29px;font-size:17px}
+  .header-right #top-add{padding:8px;font-size:11px}
+  .body{padding-bottom:58px;min-height:0}
+  .main{padding:9px 8px 7px;gap:7px;min-height:0}
+  .heading{align-items:center;flex-wrap:nowrap;gap:6px}
+  .heading h1{font-size:19px;letter-spacing:-.55px;white-space:nowrap}
+  .heading p,.eyebrow{display:none}
+  .heading-actions{width:auto;gap:5px;flex-wrap:nowrap}
+  .heading-actions #rename-btn,.heading-actions #add-btn{display:none}
+  .heading-actions #link-btn{padding:7px 9px;font-size:10px}
+  .stats{gap:5px}
+  .stat{padding:5px 4px;font-size:10px;line-height:1.1;min-height:31px}
+  .stat strong{font-size:11px}
+  .canvas-shell{min-height:0;flex:1;border-radius:11px}
+  .canvas-top{padding:6px;flex-wrap:nowrap;justify-content:space-between;gap:4px}
+  .mode-switch{padding:2px;flex:1;max-width:260px;gap:1px}
+  .mode{font-size:10px;padding:7px 5px;flex:1;white-space:nowrap}
+  .canvas-ops{gap:3px}
+  .canvas-ops #zoom-out,.canvas-ops #zoom-in,.canvas-ops #zoom-value{display:none}
+  .canvas-ops .btn{min-width:30px;padding:6px 7px;height:32px;font-size:15px}
+  .focus-toolbar{min-height:40px;padding:5px 9px}
+  .focus-icon{height:27px;width:27px;font-size:16px}
+  .focus-label{font-size:9px}
+  .focus-identity strong{font-size:11px;max-width:155px}
+  .focus-side{gap:7px;font-size:10px}
+  .focus-link{font-size:10px}
+  .viewport-footer{bottom:7px;left:7px;max-width:calc(100% - 14px);font-size:9px;padding:5px 7px;white-space:nowrap}
+  .mobile-nav{height:58px}
+  .drawer{padding:17px 15px}
+  .canvas-shell.is-fullscreen .canvas-top{padding-top:max(8px,env(safe-area-inset-top));min-height:55px}
+  .canvas-shell.is-fullscreen .fullscreen-help{bottom:14px;font-size:9px}
+}
+@media(max-width:370px){.mode{font-size:9px;padding:7px 3px}.focus-side #visible-count{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+ <header class="header"><div class="brand"><span class="logo">♧</span>Know<b>Your</b>Fam</div><div class="crumb">Workspace / <strong id="crumb-name">Keluarga</strong></div><div class="header-right"><span class="save-indicator">Tersimpan di browser</span><button class="btn" id="export-btn">↓ Ekspor</button><button class="btn primary" id="top-add">＋ Tambah anggota</button></div></header>
+ <div class="body"><aside class="side"><div class="side-title">Menu utama</div><button class="nav active" data-view="tree">♧ &nbsp;Pohon keluarga</button><button class="nav" data-view="list">☷ &nbsp;Semua anggota</button><div class="side-separator"></div><div class="side-title">Pohon aktif</div><div class="family-chip"><div class="family-icon">♧</div><div><strong id="side-tree">Keluarga</strong><small>Family Tree</small></div></div><div class="side-title" style="margin-top:15px">Anggota</div><div id="person-links" class="person-links"></div><div class="side-bottom"><div class="note"><strong>Versi MVP</strong><p>Bangun silsilah ke atas atau ke bawah sebanyak generasi yang dibutuhkan.</p><button id="new-tree">Buat pohon baru</button></div><button class="btn" id="import-btn">↑ Impor data JSON</button></div></aside>
+ <main class="main"><div class="heading"><div><div class="eyebrow">Ruang keluarga</div><h1 id="page-title">Pohon Keluarga</h1><p id="page-desc">Lihat hubungan seluruh anggota lintas generasi.</p></div><div class="heading-actions"><button class="btn" id="rename-btn">✎ Nama pohon</button><button class="btn soft" id="link-btn">⚭ Hubungkan</button><button class="btn primary" id="add-btn">＋ Tambah anggota</button></div></div><div class="stats"><div class="stat">♙ <strong id="count-people">0</strong> anggota</div><div class="stat">♧ <strong id="count-gen">0</strong> generasi</div><div class="stat">♢ <strong id="count-rel">0</strong> hubungan</div></div>
+ <section class="canvas-shell" id="canvas-shell">
+  <div class="canvas-top">
+   <div class="mode-switch" role="group" aria-label="Mode pohon">
+    <button id="mode-focus" class="mode active" aria-pressed="true">◎ Fokus Orang</button>
+    <button id="mode-overview" class="mode" aria-pressed="false">♧ Seluruh Pohon</button>
+   </div>
+   <div class="canvas-ops"><button class="btn icon" id="zoom-out" aria-label="Perkecil">−</button><span class="zoom-info" id="zoom-value">100%</span><button class="btn icon" id="zoom-in" aria-label="Perbesar">＋</button><button class="btn" id="fit-btn" title="Pas seluruh area yang ditampilkan">⛶</button><button class="btn icon" id="fullscreen-btn" title="Perbesar kanvas" aria-label="Buka kanvas layar penuh">⤢</button></div>
+  </div>
+  <div class="focus-toolbar" id="focus-toolbar"><div class="focus-identity"><span class="focus-icon">◎</span><div><span class="focus-label">Sedang fokus pada</span><strong id="focus-name">Anggota</strong></div></div><div class="focus-side"><span id="visible-count">—</span><button class="focus-link" id="back-focus" title="Kembali ke fokus sebelumnya">↶ Kembali</button><button class="focus-link" id="reset-branches">Tutup cabang</button></div></div>
+  <div class="viewport" id="viewport" aria-label="Pohon keluarga interaktif, geser satu jari dan cubit dua jari untuk zoom"><div class="scene" id="scene"></div><div class="viewport-footer">☝ Geser 1 jari &nbsp;·&nbsp; ⤢ Cubit 2 jari untuk zoom &nbsp;·&nbsp; Ketuk profil</div><div class="fullscreen-help" id="fullscreen-help">Geser satu jari · Cubit dua jari · Ketuk kartu untuk detail</div></div></section>
+ <section class="member-list" id="member-list"><div class="member-grid" id="member-grid"></div></section></main></div>
+ <nav class="mobile-nav"><button data-view="tree" class="active"><span>♧</span>Pohon</button><button data-view="list"><span>☷</span>Anggota</button><button id="mobile-add"><span>＋</span>Tambah</button><button id="mobile-menu"><span>⋯</span>Lainnya</button></nav>
+</div>
+<div class="shade" id="shade"></div><aside class="drawer" id="drawer" aria-label="Detail anggota"></aside>
+<div class="overlay" id="overlay"><div class="modal" role="dialog" aria-modal="true"><div class="modal-header"><div><h2 id="modal-title"></h2><p id="modal-desc"></p></div><button class="btn icon" id="modal-x" aria-label="Tutup">✕</button></div><div class="modal-content" id="modal-content"></div><div class="modal-footer" id="modal-footer"></div></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div><input id="import-file" type="file" accept="application/json,.json">
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),safe=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
+const clone=x=>JSON.parse(JSON.stringify(x));const STORE='knowyourfam_mvp_v1';
+const sample={version:1,isDemo:true,treeName:'Keluarga Pratama',people:[
+{id:'p1',name:'Hadi Pratama',gender:'male',birth:'1946-02-09',death:'2022-08-04',notes:'Kakek dari pihak Budi.',photo:'',self:false},
+{id:'p2',name:'Ratna Pratama',gender:'female',birth:'1949-11-20',death:'',notes:'Nenek dari pihak Budi.',photo:'',self:false},
+{id:'p10',name:'Hasan Wulandari',gender:'male',birth:'1947-04-06',death:'',notes:'Kakek dari pihak Sari.',photo:'',self:false},
+{id:'p11',name:'Lina Wulandari',gender:'female',birth:'1950-08-16',death:'',notes:'Nenek dari pihak Sari.',photo:'',self:false},
+{id:'p3',name:'Budi Pratama',gender:'male',birth:'1973-05-18',death:'',notes:'Anak Hadi dan Ratna. Menikah dengan Sari.',photo:'',self:false},
+{id:'p4',name:'Mira Pratama',gender:'female',birth:'1977-03-07',death:'',notes:'Saudara Budi.',photo:'',self:false},
+{id:'p6',name:'Raka Pratama',gender:'male',birth:'1980-11-11',death:'',notes:'Saudara Budi dan Mira.',photo:'',self:false},
+{id:'p5',name:'Sari Wulandari',gender:'female',birth:'1975-09-29',death:'',notes:'Menikah dengan Budi.',photo:'',self:false},
+{id:'p12',name:'Ayu Wulandari',gender:'female',birth:'1978-02-05',death:'',notes:'Saudara Sari.',photo:'',self:false},
+{id:'p13',name:'Farhan Wulandari',gender:'male',birth:'1982-08-23',death:'',notes:'Saudara Sari.',photo:'',self:false},
+{id:'p14',name:'Dimas Wijaya',gender:'male',birth:'1976-02-13',death:'',notes:'Suami Mira.',photo:'',self:false},
+{id:'p15',name:'Ratih Santoso',gender:'female',birth:'1981-07-10',death:'',notes:'Istri Raka.',photo:'',self:false},
+{id:'p16',name:'Damar Suherman',gender:'male',birth:'1976-03-12',death:'',notes:'Suami Ayu.',photo:'',self:false},
+{id:'p17',name:'Novi Lestari',gender:'female',birth:'1984-05-24',death:'',notes:'Istri Farhan.',photo:'',self:false},
+{id:'p7',name:'Dina Pratama',gender:'female',birth:'2001-01-12',death:'',notes:'Putri Budi dan Sari. Ini profil contoh yang menjadi fokus awal.',photo:'',self:true},
+{id:'p8',name:'Arga Pratama',gender:'male',birth:'2004-07-03',death:'',notes:'Adik Dina.',photo:'',self:false},
+{id:'p18',name:'Nala Wijaya',gender:'female',birth:'2002-01-15',death:'',notes:'Anak Mira dan Dimas.',photo:'',self:false},
+{id:'p19',name:'Gita Wijaya',gender:'female',birth:'2006-06-13',death:'',notes:'Anak Mira dan Dimas.',photo:'',self:false},
+{id:'p20',name:'Rafi Pratama',gender:'male',birth:'2008-09-12',death:'',notes:'Anak Raka dan Ratih.',photo:'',self:false},
+{id:'p21',name:'Citra Pratama',gender:'female',birth:'2011-12-08',death:'',notes:'Anak Raka dan Ratih.',photo:'',self:false},
+{id:'p22',name:'Aksa Suherman',gender:'male',birth:'2001-08-11',death:'',notes:'Anak Ayu dan Damar.',photo:'',self:false},
+{id:'p23',name:'Fina Suherman',gender:'female',birth:'2005-02-07',death:'',notes:'Anak Ayu dan Damar.',photo:'',self:false},
+{id:'p24',name:'Rani Wulandari',gender:'female',birth:'2009-10-19',death:'',notes:'Anak Farhan dan Novi.',photo:'',self:false},
+{id:'p25',name:'Galih Wulandari',gender:'male',birth:'2012-05-03',death:'',notes:'Anak Farhan dan Novi.',photo:'',self:false},
+{id:'p27',name:'Fajar Saputra',gender:'male',birth:'2000-06-16',death:'',notes:'Pasangan Dina. Keluarga asal Fajar dapat dibuka sebagai cabang tambahan.',photo:'',self:false},
+{id:'p28',name:'Agus Saputra',gender:'male',birth:'1972-04-02',death:'',notes:'Ayah Fajar.',photo:'',self:false},
+{id:'p29',name:'Tina Saputra',gender:'female',birth:'1974-10-10',death:'',notes:'Ibu Fajar.',photo:'',self:false},
+{id:'p30',name:'Putri Saputra',gender:'female',birth:'2003-07-21',death:'',notes:'Saudara Fajar.',photo:'',self:false},
+{id:'p26',name:'Kevin Saputra',gender:'male',birth:'2024-05-18',death:'',notes:'Anak Dina dan Fajar.',photo:'',self:false},
+{id:'p31',name:'Yusuf Saputra',gender:'male',birth:'1948-03-20',death:'',notes:'Kakek dari pihak Fajar.',photo:'',self:false},
+{id:'p32',name:'Rina Saputra',gender:'female',birth:'1951-09-04',death:'',notes:'Nenek dari pihak Fajar.',photo:'',self:false}
+],parent:[
+['p1','p3'],['p2','p3'],['p1','p4'],['p2','p4'],['p1','p6'],['p2','p6'],
+['p10','p5'],['p11','p5'],['p10','p12'],['p11','p12'],['p10','p13'],['p11','p13'],
+['p3','p7'],['p5','p7'],['p3','p8'],['p5','p8'],
+['p4','p18'],['p14','p18'],['p4','p19'],['p14','p19'],
+['p6','p20'],['p15','p20'],['p6','p21'],['p15','p21'],
+['p12','p22'],['p16','p22'],['p12','p23'],['p16','p23'],
+['p13','p24'],['p17','p24'],['p13','p25'],['p17','p25'],
+['p31','p28'],['p32','p28'],['p28','p27'],['p29','p27'],['p28','p30'],['p29','p30'],
+['p7','p26'],['p27','p26']
+],partner:[['p1','p2'],['p10','p11'],['p3','p5'],['p4','p14'],['p6','p15'],['p12','p16'],['p13','p17'],['p7','p27'],['p28','p29'],['p31','p32']],sibling:[]};
+const exampleProfiles={
+ p1:{nickname:'Pak Hadi',birthPlace:'Bandung',occupation:'Pensiunan guru',residence:'Bandung'},
+ p2:{nickname:'Bu Ratna',birthPlace:'Cimahi',occupation:'Wiraswasta',residence:'Bandung'},
+ p3:{nickname:'Budi',birthPlace:'Bandung',occupation:'Guru',residence:'Jakarta'},
+ p5:{nickname:'Sari',birthPlace:'Yogyakarta',occupation:'Perawat',residence:'Jakarta'},
+ p7:{nickname:'Dina',birthPlace:'Jakarta',occupation:'Desainer',residence:'Tangerang'},
+ p8:{nickname:'Arga',birthPlace:'Jakarta',occupation:'Mahasiswa',residence:'Jakarta'},
+ p27:{nickname:'Fajar',birthPlace:'Bekasi',occupation:'Programmer',residence:'Tangerang'},
+ p26:{nickname:'Kevin',birthPlace:'Tangerang',occupation:'',residence:'Tangerang'},
+ p28:{nickname:'Pak Agus',birthPlace:'Bogor',occupation:'Pengusaha',residence:'Bekasi'},
+ p29:{nickname:'Bu Tina',birthPlace:'Bekasi',occupation:'Guru',residence:'Bekasi'}
+};
+for(const person of sample.people)if(exampleProfiles[person.id])Object.assign(person,exampleProfiles[person.id]);
+function validate(d){if(!d||!Array.isArray(d.people)||!Array.isArray(d.parent)||!Array.isArray(d.partner)||!Array.isArray(d.sibling))throw Error('Format data tidak valid');const ids=new Set();for(const p of d.people){if(!p.id||!p.name||ids.has(p.id))throw Error('ID/nama anggota tidak valid');ids.add(p.id);p.photo=typeof p.photo==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(p.photo)&&p.photo.length<250000?p.photo:'';p.name=String(p.name).slice(0,100);p.notes=String(p.notes||'').slice(0,500);for(const k of ['nickname','birthPlace','residence','occupation'])p[k]=String(p[k]||'').slice(0,100)}for(const k of ['parent','partner','sibling']){d[k]=d[k].filter(x=>Array.isArray(x)&&x.length===2&&ids.has(x[0])&&ids.has(x[1])&&x[0]!==x[1])}return d}
+let data;try{data=validate(JSON.parse(localStorage.getItem(STORE)))}catch(e){data=clone(sample)}
+let selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null,view='tree',treeMode='focus',focusRoot=selected,expandedBranches=new Set(),expansionPages=new Map(),focusHistory=[],displayGraph=null;
+let zoom=1,pan={x:0,y:0},size={w:900,h:600},positions=new Map(),maxDepth=0,needsFit=true,modal=null,ctx={},photoData='';
+const W=185,H=113,GAP=26,SPACE=80,ROW=206,PADX=167,TOPY=95;
+function nameOf(id){return data.people.find(p=>p.id===id)?.name||'Anggota'}function byId(id){return data.people.find(p=>p.id===id)}
+function rel(id){return {parents:data.parent.filter(x=>x[1]===id).map(x=>x[0]),children:data.parent.filter(x=>x[0]===id).map(x=>x[1]),partners:data.partner.filter(x=>x.includes(id)).map(x=>x[0]===id?x[1]:x[0]),siblings:[...new Set([...data.sibling.filter(x=>x.includes(id)).map(x=>x[0]===id?x[1]:x[0]),...data.parent.filter(x=>x[1]===id).flatMap(([parent])=>data.parent.filter(([pa,ch])=>pa===parent&&ch!==id).map(x=>x[1]))]) ]}}
+function firstLetters(p){return p.name.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()}
+function photo(p,cls='person-photo'){return `<span class="${cls} ${safe(p.gender)}" ${p.photo?`style="background-image:url('${p.photo}')"`:''}>${p.photo?'':safe(firstLetters(p))}</span>`}
+function years(p){return (p.birth||p.death)?`${p.birth?p.birth.slice(0,4):'—'}${p.death?' – '+p.death.slice(0,4):''}`:'Tahun belum diisi'}
+function dateText(value){return value?new Date(value+'T12:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}):'Belum diisi'}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),3100)}
+function save(){data.isDemo=false;try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){toast('Penyimpanan penuh, lakukan ekspor JSON')}}
+
+const EXPAND_PAGE=12;
+function familyNeighbors(id){const r=rel(id);return [...new Set([...r.parents,...r.partners,...r.children,...r.siblings])].filter(x=>byId(x))}
+function branchMembers(key){
+ const colon=key.indexOf(':'),type=key.slice(0,colon),id=key.slice(colon+1),r=rel(id);
+ if(type==='family')return [...new Set([...r.partners,...r.children])].filter(byId);
+ if(type==='origin')return [...new Set([...r.parents,...r.siblings])].filter(byId);
+ return [];
+}
+function visibleFamilyGraph(){
+ if(treeMode==='overview'||!focusRoot||!byId(focusRoot))return {people:data.people,parent:data.parent,partner:data.partner,sibling:data.sibling};
+ const ids=new Set([focusRoot]),add=id=>{if(byId(id))ids.add(id)};
+ const core=rel(focusRoot);
+ // Default = 1 ancestor generation, 1 descendant generation + both spouses' origins.
+ [...core.parents,...core.partners,...core.children,...core.siblings].forEach(add);
+ for(const spouse of core.partners){const r=rel(spouse);[...r.parents,...r.siblings].forEach(add)}
+ // Do not automatically open grandparents, siblings' spouses or nieces/nephews.
+ // Every expansion reveals one explicit family/origin unit and no recursive expansion.
+ for(const key of expandedBranches){const limit=expansionPages.get(key)||EXPAND_PAGE;branchMembers(key).slice(0,limit).forEach(add)}
+ return {people:data.people.filter(p=>ids.has(p.id)),parent:data.parent.filter(([a,b])=>ids.has(a)&&ids.has(b)),partner:data.partner.filter(([a,b])=>ids.has(a)&&ids.has(b)),sibling:data.sibling.filter(([a,b])=>ids.has(a)&&ids.has(b))};
+}
+function branchMissing(key){if(treeMode!=='focus'||!displayGraph)return 0;const visible=new Set(displayGraph.people.map(p=>p.id));return branchMembers(key).filter(id=>!visible.has(id)).length}
+function invisibleNeighborCount(id){if(treeMode!=='focus'||!displayGraph)return 0;const visible=new Set(displayGraph.people.map(p=>p.id));return familyNeighbors(id).filter(x=>!visible.has(x)).length}
+function branchControls(id,compact=false){
+ if(treeMode!=='focus')return '';
+ const items=[['family','Pasangan & anak','Keluarga'],['origin','Orang tua & saudara','Asal']];
+ return items.map(([type,title,short])=>{const key=type+':'+id,opened=expandedBranches.has(key),hidden=branchMissing(key),total=branchMembers(key).length;
+  if(!hidden&&!opened)return '';
+  const more=opened&&hidden>0;
+  return `<button class="${compact?'branch-toggle':'btn branch-action'} ${opened?'opened':''}" data-expand="${safe(key)}" ${compact?'':'type="button"'} title="${safe(more?'Tampilkan anggota berikutnya':opened?'Tutup cabang '+title:'Buka '+title)}" aria-label="${safe(more?'Lihat anggota berikutnya':opened?'Tutup':'Buka')} ${safe(title)} dari ${safe(nameOf(id))}">${compact?(more?'+'+hidden:opened?'−':'+'+hidden):more?'Lihat '+Math.min(EXPAND_PAGE,hidden)+' lagi':opened?'− Tutup '+short:'＋ Buka '+short+' ('+hidden+')'}</button>${!compact&&more?`<button class="btn" data-collapse="${safe(key)}">− Tutup ${short}</button>`:''}`;
+ }).join('');
+}
+function setTreeMode(mode){if(!['focus','overview'].includes(mode))return;treeMode=mode;if(!focusRoot)focusRoot=selected;closeDrawer();render({fit:true});}
+function setFocus(id,{fromHistory=false}={}){if(!byId(id))return;if(focusRoot&&focusRoot!==id&&!fromHistory)focusHistory.push(focusRoot);focusRoot=id;selected=id;expandedBranches.clear();expansionPages.clear();treeMode='focus';closeDrawer();if(view!=='tree')showView('tree');else render({fit:true,focusNew:true});toast('Fokus dipindahkan ke '+nameOf(id));}
+function renderKeepingAnchor(id){
+ const before=positions.get(id),screen=before?{x:pan.x+(before.x+W/2)*zoom,y:pan.y+(before.y+H/2)*zoom}:null;
+ const previouslyFit=needsFit;needsFit=false;closeDrawer();render({fit:false});
+ const after=positions.get(id);
+ if(screen&&after){pan.x=screen.x-(after.x+W/2)*zoom;pan.y=screen.y-(after.y+H/2)*zoom;applyView()}
+ if(previouslyFit&&!screen)fitView();
+}
+function toggleBranch(key){
+ const at=key.indexOf(':'),id=key.slice(at+1),type=key.slice(0,at);
+ if(!byId(id)||!['family','origin'].includes(type))return;
+ if(!expandedBranches.has(key)){expandedBranches.add(key);expansionPages.set(key,EXPAND_PAGE)}
+ else if(branchMissing(key)>0){expansionPages.set(key,(expansionPages.get(key)||EXPAND_PAGE)+EXPAND_PAGE)}
+ else{expandedBranches.delete(key);expansionPages.delete(key)}
+ renderKeepingAnchor(id);
+}
+function makeLayout(){
+ // A spouse is a member of a couple, NOT a member of the same birth-family as their partner.
+ // Keep each spouse's parents in separate ancestor branches. Couple groups are used only
+ // to put partners on the same horizontal generation.
+ displayGraph=visibleFamilyGraph();const gdata=displayGraph;
+ const ds=Object.fromEntries(gdata.people.map(p=>[p.id,p.id]));
+ const find=x=>{if(ds[x]!==x)ds[x]=find(ds[x]);return ds[x]};
+ const join=(a,b)=>{if(ds[a]&&ds[b])ds[find(b)]=find(a)};
+ for(const [a,b] of gdata.partner)join(a,b);
+ const groups=new Map(),idGroup=new Map();
+ for(let i=0;i<gdata.people.length;i++){
+  const person=gdata.people[i],gid=find(person.id);
+  if(!groups.has(gid))groups.set(gid,{id:gid,members:[],i,level:0,children:new Set(),parents:new Set()});
+  const group=groups.get(gid);group.members.push(person.id);group.i=Math.min(group.i,i);idGroup.set(person.id,gid);
+ }
+ const indegree=new Map([...groups.keys()].map(id=>[id,0]));
+ for(const [a,b] of gdata.parent){
+  const ga=idGroup.get(a),gb=idGroup.get(b);
+  if(!ga||!gb||ga===gb||groups.get(ga).children.has(gb))continue;
+  groups.get(ga).children.add(gb);groups.get(gb).parents.add(ga);indegree.set(gb,indegree.get(gb)+1);
+ }
+ const queue=[...groups.values()].filter(g=>!indegree.get(g.id)).sort((a,b)=>a.i-b.i);
+ let visited=0;
+ while(queue.length){const g=queue.shift();visited++;
+  for(const childId of g.children){
+   const c=groups.get(childId);c.level=Math.max(c.level,g.level+1);
+   indegree.set(childId,indegree.get(childId)-1);if(!indegree.get(childId))queue.push(c);
+  }
+ }
+ if(visited!==groups.size){toast('Terdapat hubungan keluarga yang saling bertentangan')}
+ maxDepth=Math.max(0,...[...groups.values()].map(g=>g.level));
+ // Arrange each row from descendants to ancestors. For parents, use their own children's
+ // card positions, not the horizontal center of a spouse's entire family group.
+ const rows=new Map();
+ for(const g of groups.values()){if(!rows.has(g.level))rows.set(g.level,[]);rows.get(g.level).push(g)}
+ const ownWidth=g=>g.members.length*W+Math.max(0,g.members.length-1)*GAP;
+ const groupCenter=g=>g.x+ownWidth(g)/2;
+ // A person's children count makes the primary branch more stable when a sibling branches.
+ const descendants=id=>new Set(gdata.parent.filter(([p])=>p===id).map(([,c])=>c)).size;
+ const rowGap=76;
+ for(let level=maxDepth;level>=0;level--){
+  const row=rows.get(level)||[];
+  for(const g of row){
+   const anchors=[];
+   for(const id of g.members){
+    for(const [,childId] of gdata.parent.filter(([parentId])=>parentId===id)){
+     const childGroup=groups.get(idGroup.get(childId));
+     if(!childGroup||!Number.isFinite(childGroup.x))continue;
+     const memberIndex=childGroup.members.indexOf(childId);
+     const childX=childGroup.x+memberIndex*(W+GAP)+W/2;
+     const importance=1+Math.min(5,descendants(childId));
+     anchors.push({x:childX,weight:importance});
+    }
+   }
+   if(anchors.length){
+    const weighted=anchors.reduce((sum,a)=>sum+a.x*a.weight,0)/anchors.reduce((sum,a)=>sum+a.weight,0);
+    g.ideal=weighted;
+   }else g.ideal=null;
+  }
+  // Unconnected nodes stay at the side rather than being injected between two parent families.
+  row.sort((a,b)=>a.ideal!==null&&b.ideal!==null?a.ideal-b.ideal||a.i-b.i:a.ideal!==null?-1:b.ideal!==null?1:a.i-b.i);
+  let lastRight=-Infinity;
+  for(let i=0;i<row.length;i++){
+   const g=row[i];const ideal=g.ideal===null?(Number.isFinite(lastRight)?lastRight+rowGap+ownWidth(g)/2:ownWidth(g)/2):g.ideal;
+   g.x=Math.max(ideal-ownWidth(g)/2,Number.isFinite(lastRight)?lastRight+rowGap:0);
+   lastRight=g.x+ownWidth(g);
+  }
+  // Fit the packed row around the weighted targets, without allowing nodes to overlap.
+  const anchored=row.filter(g=>g.ideal!==null);
+  if(anchored.length){
+   const correction=anchored.reduce((sum,g)=>sum+(g.ideal-groupCenter(g)),0)/anchored.length;
+   for(const g of row)g.x+=correction;
+  }
+ }
+ // Normalize all generations into the same positive coordinate system.
+ const allGroups=[...groups.values()];
+ const minX=allGroups.length?Math.min(...allGroups.map(g=>g.x)):0;
+ const shift=PADX-minX;
+ positions=new Map();
+ for(const g of allGroups){
+  const x=g.x+shift;
+  g.members.forEach((id,i)=>positions.set(id,{x:x+i*(W+GAP),y:TOPY+g.level*ROW,level:g.level}));
+ }
+ const farRight=allGroups.length?Math.max(...allGroups.map(g=>g.x+shift+ownWidth(g))):PADX+W;
+ size={w:Math.max(620,farRight+110),h:TOPY+maxDepth*ROW+H+88};
+ return {groups};
+}
+function drawTree({fit=false,focusNew=false}={}){
+ const scene=$('scene');$('viewport').querySelector('.empty-state')?.remove();
+ if(!data.people.length){scene.innerHTML='';$('viewport').insertAdjacentHTML('beforeend',`<div class="empty-state"><h3>Mulai dari dirimu</h3><p>Tambahkan satu orang terlebih dahulu, kemudian tambah orang tua, pasangan, dan anak. Tidak ada batas tiga generasi.</p><button class="btn primary" data-add-empty>＋ Tambah profil pertama</button></div>`);return}
+ makeLayout();scene.style.width=size.w+'px';scene.style.height=size.h+'px';
+ let bg='';const demoTitle=['Kakek & Nenek','Orang Tua & Keluarga','Anak & Cucu'];
+ for(let level=0;level<=maxDepth;level++){const top=level?TOPY+level*ROW-55:0;const bottom=level===maxDepth?size.h:TOPY+(level+1)*ROW-55;const label=data.isDemo&&demoTitle[level]?demoTitle[level]:'Generasi '+(level+1);bg+=`<div class="lane" style="top:${top}px;height:${bottom-top}px"></div><div class="lane-label" style="top:${TOPY+level*ROW-22}px"><div class="lane-number">${String(level+1).padStart(2,'0')}</div><div class="lane-name">${safe(label)}</div><div class="lane-description">Generasi ${level+1}</div></div>`}
+ let lines='';for(const [a,b] of displayGraph.partner){const x=positions.get(a),y=positions.get(b);if(!x||!y||Math.abs(x.y-y.y)>25)continue;const left=x.x<y.x?x:y,right=x.x<y.x?y:x;lines+=`<path class="edge-partner" d="M${left.x+W} ${left.y+H/2} H${right.x}"/><circle cx="${(left.x+W+right.x)/2}" cy="${left.y+H/2}" r="4.4" fill="#fff" stroke="#c88e85" stroke-width="2"/>`}
+ // Parent edges grouped by exactly the same known parents.
+ const parentSets=new Map();for(const [parent,child] of displayGraph.parent){const arr=parentSets.get(child)||[];arr.push(parent);parentSets.set(child,arr)}const branchSets=new Map();for(const [child,arr] of parentSets){const key=arr.slice().sort().join('|');if(!branchSets.has(key))branchSets.set(key,{parentIds:arr,childIds:[]});branchSets.get(key).childIds.push(child)}
+ for(const {parentIds,childIds} of branchSets.values()){const parents=parentIds.map(id=>positions.get(id)).filter(Boolean),children=childIds.map(id=>positions.get(id)).filter(Boolean);if(!parents.length||!children.length)continue;const y=Math.min(...children.map(x=>x.y))-37,childXs=children.map(x=>x.x+W/2),parentXs=parents.map(x=>x.x+W/2);const couple=parents.length===2&&displayGraph.partner.some(([a,b])=>parentIds.includes(a)&&parentIds.includes(b));const starts=[];
+ if(couple){const x=parentXs.reduce((a,b)=>a+b,0)/parentXs.length;starts.push(x);lines+=`<path class="edge-parent" d="M${x} ${parents[0].y+H/2} V${y}"/>`}
+ else for(let i=0;i<parents.length;i++){starts.push(parentXs[i]);lines+=`<path class="edge-parent" d="M${parentXs[i]} ${parents[i].y+H} V${y}"/>`}
+ const xs=[...starts,...childXs];if(xs.length>1)lines+=`<path class="edge-parent" d="M${Math.min(...xs)} ${y} H${Math.max(...xs)}"/>`;
+ for(const c of children){const x=c.x+W/2;lines+=`<path class="edge-parent" d="M${x} ${y} V${c.y-5}"/><circle cx="${x}" cy="${c.y-5}" r="4" fill="#76a887"/>`}
+ }
+ const roleDemo={p1:'Kakek',p2:'Nenek',p3:'Ayah',p4:'Bibi',p5:'Ibu',p6:'Paman',p7:'Saya',p8:'Saudara',p9:'Sepupu',p10:'Kakek (pihak ibu)',p11:'Nenek (pihak ibu)'};
+ const cards=displayGraph.people.map(p=>{const pos=positions.get(p.id);if(!pos)return '';const role=p.self?'Profil saya':data.isDemo&&roleDemo[p.id]?roleDemo[p.id]:`Generasi ${pos.level+1}`;return `<button class="node ${selected===p.id?'selected':''} ${p.id===focusRoot&&treeMode==='focus'?'focus-person':''}" data-person="${safe(p.id)}" style="left:${pos.x}px;top:${pos.y}px" aria-label="Lihat profil ${safe(p.name)}"><span class="node-top">${photo(p)}<span style="min-width:0"><span class="node-name">${safe(p.name)}</span><span class="node-years">${safe(years(p))}</span></span></span><span class="node-bottom ${p.self?'self':''}"><span>${safe(role)}</span><span>›</span></span></button>`}).join('');
+ const expansion=treeMode==='focus'?displayGraph.people.map(p=>{const pos=positions.get(p.id);if(!pos)return '';const keys=['family:'+p.id,'origin:'+p.id];return keys.map((key,i)=>{const opened=expandedBranches.has(key),missing=branchMissing(key);if(!opened&&!missing)return '';const label=key.startsWith('family:')?'Keluarga':'Asal';return `<button class="branch-toggle ${opened?'opened':''}" data-expand="${safe(key)}" style="left:${pos.x+W-20}px;top:${pos.y+H-10+i*30}px" title="${opened?'Tutup / lanjut':'Buka'} ${label} ${safe(p.name)}" aria-label="${opened?'Kelola':'Buka'} ${label} ${safe(p.name)}">${opened&&missing===0?'−':'+'+missing}</button>`}).join('')}).join(''):'';
+ scene.innerHTML=bg+`<svg class="connections" width="${size.w}" height="${size.h}" aria-hidden="true">${lines}</svg>`+cards+expansion;
+ if(fit||needsFit){requestAnimationFrame(()=>{fitView();if(treeMode==='focus'&&focusRoot){focusOn(focusNew&&selected?selected:focusRoot,window.innerWidth<=650?.88:.78)}needsFit=false})}else if(focusNew&&selected){requestAnimationFrame(()=>{focusOn(selected,window.innerWidth<=650?.88:.78)})}else applyView();
+}
+function applyView(){$('scene').style.transform=`translate(${pan.x}px,${pan.y}px) scale(${zoom})`;$('zoom-value').textContent=Math.round(zoom*100)+'%'}
+function fitView(){if(!data.people.length)return;const v=$('viewport');const w=v.clientWidth,h=v.clientHeight;if(!w||!h)return;zoom=Math.min(1.13,Math.max(.1,Math.min((w-24)/size.w,(h-24)/size.h)));pan={x:(w-size.w*zoom)/2,y:(h-size.h*zoom)/2};applyView()}
+function focusOn(id,scale){const pos=positions.get(id);if(!pos)return;const v=$('viewport');zoom=Math.min(2.5,Math.max(.1,scale||zoom));pan={x:v.clientWidth/2-(pos.x+W/2)*zoom,y:v.clientHeight/2-(pos.y+H/2)*zoom};applyView()}
+function zoomAt(factor,cx,cy){const v=$('viewport');cx??=v.clientWidth/2;cy??=v.clientHeight/2;const next=Math.max(.1,Math.min(2.5,zoom*factor)),ratio=next/zoom;pan={x:cx-(cx-pan.x)*ratio,y:cy-(cy-pan.y)*ratio};zoom=next;applyView()}
+function renderMeta(){const count=data.people.length;const n=count?maxDepth+1:0;$('crumb-name').textContent=data.treeName;$('side-tree').textContent=data.treeName;$('count-people').textContent=count;$('count-gen').textContent=n;$('count-rel').textContent=data.parent.length+data.partner.length+data.sibling.length;$('page-title').textContent=view==='tree'?'Pohon Keluarga':'Anggota Keluarga';$('mode-focus').classList.toggle('active',treeMode==='focus');$('mode-overview').classList.toggle('active',treeMode==='overview');$('mode-focus').setAttribute('aria-pressed',String(treeMode==='focus'));$('mode-overview').setAttribute('aria-pressed',String(treeMode==='overview'));$('focus-toolbar').classList.toggle('hidden',treeMode!=='focus');$('focus-name').textContent=nameOf(focusRoot);$('back-focus').disabled=focusHistory.length===0;$('visible-count').textContent=displayGraph?`${displayGraph.people.length} / ${data.people.length} terlihat`:'';$('page-desc').textContent=view==='tree'?`${data.treeName} · ${n} generasi yang saling terhubung`:'Pilih anggota untuk mengelola profil';$('person-links').innerHTML=data.people.map(p=>`<button class="person-link ${p.id===selected?'active':''}" data-person="${safe(p.id)}">${photo(p)}<span>${safe(p.name)}</span></button>`).join('');$('person-links').querySelectorAll('.person-photo').forEach(el=>{el.style.width='25px';el.style.height='25px';el.style.fontSize='9px';el.style.borderRadius='7px'});$('member-grid').innerHTML=data.people.map(p=>`<button class="member-tile" data-person="${safe(p.id)}">${photo(p)}<strong>${safe(p.name)}</strong><small>${safe(years(p))}</small></button>`).join('')||'<p>Belum ada anggota keluarga.</p>'}
+function renderDrawer(){
+ const p=byId(selected);if(!p){$('drawer').innerHTML='';return}
+ const r=rel(selected);
+ const section=(label,ids,type)=>`<div class="relation-head"><span>${label} (${ids.length})</span><button data-addrel="${type}" aria-label="Tambah ${label}" title="Tambah ${label}">＋</button></div>${ids.map(id=>{
+   const direct=type==='parent'?data.parent.some(([a,b])=>a===id&&b===selected):type==='child'?data.parent.some(([a,b])=>a===selected&&b===id):type==='partner'?data.partner.some(([a,b])=>(a===id&&b===selected)||(a===selected&&b===id)):data.sibling.some(([a,b])=>(a===id&&b===selected)||(a===selected&&b===id));
+   return `<div class="relation-item"><button class="relation-person" data-person="${safe(id)}">${photo(byId(id))}<span class="relation-text">${safe(nameOf(id))}</span></button>${direct?`<button class="relation-delete" data-unlink="${safe(id)}" data-reltype="${safe(type)}" title="Hapus hanya hubungan ini">Hapus</button>`:'<span class="relation-explained" title="Hubungan saudara diturunkan dari orang tua bersama">Otomatis</span>'}</div>`
+ }).join('')||'<p style="font-size:11px;color:#a1b0a2;padding:6px">Belum ada</p>'}`;
+ const hidden=invisibleNeighborCount(selected);
+ $('drawer').innerHTML=`<div class="drawer-head"><h3>Profil anggota</h3><button class="btn icon" id="close-drawer" aria-label="Tutup profil">✕</button></div><div class="drawer-profile">${photo(p)}<h2>${safe(p.name)}</h2><small>${safe(years(p))}</small>${treeMode==='focus'&&focusRoot===p.id?'<span class="focus-current">◎ Fokus sekarang</span>':''}<div class="drawer-actions"><button class="btn" data-edit>✎ Edit</button><button class="btn primary" data-addrel="child">＋ Relasi baru</button></div><div class="drawer-actions"><button class="btn soft" id="make-focus">◎ Jadikan fokus</button>${treeMode==='focus'?branchControls(p.id):''}</div></div><div class="drawer-section">Informasi pribadi</div><div class="info-row"><span>Jenis kelamin</span><strong>${safe(({male:'Laki-laki',female:'Perempuan',unknown:'Belum diisi',other:'Lainnya'})[p.gender]||'Belum diisi')}</strong></div>${p.nickname?`<div class="info-row"><span>Nama panggilan</span><strong>${safe(p.nickname)}</strong></div>`:''}<div class="info-row"><span>Tanggal lahir</span><strong>${safe(dateText(p.birth))}</strong></div>${p.birthPlace?`<div class="info-row"><span>Tempat lahir</span><strong>${safe(p.birthPlace)}</strong></div>`:''}<div class="info-row"><span>Tanggal wafat</span><strong>${safe(dateText(p.death))}</strong></div>${p.occupation?`<div class="info-row"><span>Pekerjaan</span><strong>${safe(p.occupation)}</strong></div>`:''}${p.residence?`<div class="info-row"><span>Domisili</span><strong>${safe(p.residence)}</strong></div>`:''}${p.notes?`<div class="drawer-section">Catatan</div><p style="font-size:12px;white-space:pre-line;overflow-wrap:anywhere">${safe(p.notes)}</p>`:''}<div class="drawer-section">Hubungan keluarga</div><div class="hint" style="font-size:10px;padding:9px;margin:8px 0">Tombol <strong>Hapus</strong> hanya melepaskan hubungan, tidak menghapus orang. Saudara otomatis mengikuti data orang tua yang sama.</div>${section('Orang tua',r.parents,'parent')}${section('Pasangan',r.partners,'partner')}${section('Anak',r.children,'child')}${section('Saudara',r.siblings,'sibling')}<div class="drawer-buttons"><button class="btn" id="drawer-link">⚭ Hubungkan orang</button><button class="btn danger" id="remove-person">Hapus anggota</button></div>`;
+}
+function openDrawer(){$('drawer').classList.add('open');$('shade').classList.add('show')};function closeDrawer(){$('drawer').classList.remove('open');$('shade').classList.remove('show')}
+function choose(id){if(!byId(id))return;selected=id;if(treeMode==='focus'&&!visibleFamilyGraph().people.some(p=>p.id===id)){setFocus(id);return}renderDrawer();renderMeta();if(view==='tree'){drawTree();if(positions.has(id))focusOn(id,Math.max(zoom,.75))}openDrawer()}
+function render({fit=false,focusNew=false}={}){makeLayout();renderMeta();renderDrawer();if(view==='tree')drawTree({fit,focusNew})}
+function showView(v){view=v;$('canvas-shell').style.display=v==='tree'?'flex':'none';$('member-list').classList.toggle('active',v==='list');document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeDrawer();render({fit:v==='tree'})}
+function openModal(type,info={}){modal=type;ctx=info;photoData=info.id?byId(info.id)?.photo||'':'';$('overlay').classList.add('show');renderModal();setTimeout(()=>$('modal-content').querySelector('input,select,button')?.focus(),40)}
+function closeModal(){$('overlay').classList.remove('show');modal=null;ctx={}}
+function modalLayout(title,desc,content,footer){$('modal-title').textContent=title;$('modal-desc').textContent=desc;$('modal-content').innerHTML=content;$('modal-footer').innerHTML=footer}
+function renderModal(){if(modal==='person'){const p=ctx.id?byId(ctx.id):null,t=ctx.target?byId(ctx.target):null,type=ctx.relation||'child';modalLayout(p?'Edit anggota':'Tambah anggota',p?'Ubah informasi orang ini':t?`Buat relasi dengan ${t.name}`:'Mulai membangun pohon keluargamu',`<form id="person-form"><div class="photo-upload"><div id="photo-preview">${photo(p||{name:'Baru',gender:'unknown',photo:photoData})}</div><div><button type="button" class="btn" id="photo-btn">⊞ Pilih foto</button> <button type="button" class="btn" id="clear-photo">Hapus</button><small style="display:block;margin-top:5px">Opsional, maksimal 8 MB</small><input id="image-input" type="file" accept="image/png,image/jpeg,image/webp"></div></div>${t&&!p?`<label class="field"><span>Hubungan dengan ${safe(t.name)}</span><select name="relation"><option value="parent" ${type==='parent'?'selected':''}>Orang tua</option><option value="partner" ${type==='partner'?'selected':''}>Pasangan</option><option value="child" ${type==='child'?'selected':''}>Anak</option><option value="sibling" ${type==='sibling'?'selected':''}>Saudara</option><option value="none">Tidak dihubungkan</option></select></label>`:''}<label class="field"><span>Nama lengkap *</span><input name="name" maxlength="100" required placeholder="Masukkan nama" value="${safe(p?.name||'')}"></label><div class="fields2"><label class="field"><span>Jenis kelamin</span><select name="gender"><option value="unknown">Belum diisi</option><option value="male" ${p?.gender==='male'?'selected':''}>Laki-laki</option><option value="female" ${p?.gender==='female'?'selected':''}>Perempuan</option><option value="other" ${p?.gender==='other'?'selected':''}>Lainnya</option></select></label><label class="field"><span>Tanggal lahir</span><input name="birth" type="date" value="${safe(p?.birth||'')}"></label></div><label class="field"><span>Tanggal wafat</span><input name="death" type="date" value="${safe(p?.death||'')}"></label><label class="field"><span>Nama panggilan (opsional)</span><input name="nickname" maxlength="100" placeholder="Contoh: Pak Budi" value="${safe(p?.nickname||'')}"></label><div class="fields2"><label class="field"><span>Tempat lahir</span><input name="birthPlace" maxlength="100" placeholder="Kota kelahiran" value="${safe(p?.birthPlace||'')}"></label><label class="field"><span>Domisili</span><input name="residence" maxlength="100" placeholder="Kota tinggal" value="${safe(p?.residence||'')}"></label></div><label class="field"><span>Pekerjaan</span><input name="occupation" maxlength="100" placeholder="Opsional" value="${safe(p?.occupation||'')}"></label><label class="field"><span>Catatan</span><textarea name="notes" maxlength="500" placeholder="Cerita singkat atau informasi penting">${safe(p?.notes||'')}</textarea></label>${!p?`<label style="display:flex;gap:8px;align-items:center;margin-bottom:15px;font-size:12px"><input type="checkbox" name="self" ${!data.people.length?'checked':''}> Tandai sebagai profil saya</label>`:''}</form>`,`<button class="btn" data-cancel>Batal</button><button class="btn primary" type="submit" form="person-form">${p?'Simpan':'Tambah anggota'}</button>`);return}
+ if(modal==='link'){const options=data.people.map(p=>`<option value="${safe(p.id)}">${safe(p.name)}</option>`).join('');modalLayout('Hubungkan anggota','Hubungkan dua profil yang sudah ada',`<form id="link-form"><label class="field"><span>Orang pertama</span><select name="a">${options}</select></label><label class="field"><span>Hubungan</span><select name="type"><option value="parent">Orang tua → anak</option><option value="partner">Pasangan ↔ pasangan</option><option value="sibling">Saudara ↔ saudara</option></select></label><label class="field"><span>Orang kedua</span><select name="b">${options}</select></label><div class="hint">Untuk hubungan orang tua, orang pertama adalah orang tua dari orang kedua.</div></form>`,`<button class="btn" data-cancel>Batal</button><button class="btn primary" form="link-form" type="submit">Hubungkan</button>`);$('link-form').elements.a.value=ctx.target||selected||data.people[0]?.id||'';$('link-form').elements.b.value=data.people.find(p=>p.id!==$('link-form').elements.a.value)?.id||'';return}
+ if(modal==='rename'){modalLayout('Nama pohon keluarga','Atur nama pohon yang sedang dibuka',`<form id="rename-form"><label class="field"><span>Nama pohon</span><input name="treeName" maxlength="65" required value="${safe(data.treeName)}"></label></form>`,`<button class="btn" data-cancel>Batal</button><button class="btn primary" form="rename-form" type="submit">Simpan nama</button>`);return}
+ if(modal==='new'){modalLayout('Buat pohon baru?','Mengganti data pohon yang sedang dibuka','<div class="hint">Ekspor data sekarang sebagai cadangan sebelum membuat pohon baru. Prototipe ini menyimpan satu pohon aktif per browser.</div>',`<button class="btn" data-cancel>Batal</button><button class="btn danger" id="confirm-new">Buat pohon baru</button>`);return}
+ if(modal==='unlink'){
+  const other=byId(ctx.other);const labels={parent:'orang tua–anak',child:'orang tua–anak',partner:'pasangan',sibling:'saudara'};
+  modalLayout('Hapus hubungan?',`Lepas hubungan ${labels[ctx.relation]||'keluarga'} antara ${nameOf(ctx.owner)} dan ${other?.name||'anggota ini'}?`,
+  '<div class="hint">Kedua profil tetap tersimpan. Hanya hubungan yang dipilih yang akan dihapus. Hubungan saudara yang berasal dari orang tua sama masih dapat terlihat.</div>',
+  '<button class="btn" data-cancel>Batal</button><button class="btn danger" id="confirm-unlink">Hapus hubungan</button>');return;
+ }
+ if(modal==='demo'){modalLayout('Muat contoh keluarga besar?', 'Contoh dengan 31 anggota dari banyak cabang keluarga', '<div class="hint">Pohon saat ini akan diganti oleh data contoh. Ekspor JSON sebagai cadangan jika ingin mempertahankan pohon yang telah dibuat.</div>', '<button class="btn" data-cancel>Batal</button><button class="btn primary" id="confirm-demo">Muat contoh</button>');return}
+ if(modal==='remove'){modalLayout('Hapus anggota?',`Profil ${nameOf(ctx.id)} dan hubungan-hubungannya akan dihapus`,'<div class="hint">Tindakan ini tidak bisa dibatalkan.</div>',`<button class="btn" data-cancel>Batal</button><button class="btn danger" id="confirm-remove">Hapus</button>`);return}
+ if(modal==='menu'){modalLayout('Opsi KnowYourFam','Kelola dan cadangkan pohon keluarga','<p class="hint">Data disimpan secara lokal pada browser ini. Untuk mencoba keluarga yang lebih besar, muat contoh 31 orang. Ekspor data sebelum menggantinya.</p><div style="display:grid;gap:8px"><button class="btn" id="menu-export">↓ Ekspor JSON</button><button class="btn" id="menu-import">↑ Impor JSON</button><button class="btn" id="menu-rename">✎ Ubah nama pohon</button><button class="btn" id="menu-demo">♧ Muat contoh keluarga besar (31 orang)</button><button class="btn danger" id="menu-new">＋ Buat pohon baru</button></div>','<button class="btn" data-cancel>Tutup</button>')}
+}
+function newId(){return crypto.randomUUID?crypto.randomUUID():'p-'+Date.now()+'-'+Math.random().toString(36).slice(2)}
+function isCyclic(){const parent=Object.fromEntries(data.people.map(p=>[p.id,[]]));for(const [a,b] of data.parent)parent[a]?.push(b);const visiting=new Set(),done=new Set();function walk(id){if(visiting.has(id))return true;if(done.has(id))return false;visiting.add(id);for(const child of parent[id]||[])if(walk(child))return true;visiting.delete(id);done.add(id);return false}return Object.keys(parent).some(walk)}
+function addRelation(a,b,type){if(!byId(a)||!byId(b)||a===b)return 'Pilih dua orang berbeda.';if(!['parent','partner','sibling'].includes(type))return 'Tipe relasi tidak valid.';if(data[type].some(([x,y])=>type==='parent'?x===a&&y===b:(x===a&&y===b||x===b&&y===a)))return 'Hubungan sudah ada.';data[type].push([a,b]);if(isCyclic()){data[type].pop();return 'Hubungan membentuk siklus, sehingga tidak dapat disimpan.'}return null}
+function savePerson(form){const fields=new FormData(form),p=ctx.id?byId(ctx.id):null,name=String(fields.get('name')||'').trim(),birth=String(fields.get('birth')||''),death=String(fields.get('death')||'');if(!name){toast('Nama wajib diisi');return}if(birth&&death&&death<birth){toast('Tanggal wafat tidak valid');return}const item={id:p?.id||newId(),name,gender:String(fields.get('gender')),birth,death,notes:String(fields.get('notes')||'').trim(),nickname:String(fields.get('nickname')||'').trim(),birthPlace:String(fields.get('birthPlace')||'').trim(),residence:String(fields.get('residence')||'').trim(),occupation:String(fields.get('occupation')||'').trim(),photo:photoData,self:p?.self||false};if(!p&&fields.has('self')){data.people.forEach(p=>p.self=false);item.self=true}if(p)Object.assign(p,item);else{data.people.push(item);if(ctx.target&&fields.get('relation')!=='none'){const r=String(fields.get('relation')),type=(r==='parent'||r==='child')?'parent':r,a=r==='parent'?item.id:ctx.target,b=r==='parent'?ctx.target:item.id;const error=addRelation(a,b,type);if(error){data.people.pop();toast(error);return}}}selected=item.id;if(!focusRoot)focusRoot=item.id;if(ctx.target)expandedBranches.add('family:'+ctx.target);save();closeModal();closeDrawer();showView('tree');render({fit:true,focusNew:true});toast(p?'Profil diperbarui':'Anggota ditambahkan ke pohon');}
+function exportJSON(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='knowyourfam-family-tree.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Cadangan berhasil dibuat')}
+function importJSON(file){if(!file||file.size>3000000)return toast('File tidak valid atau terlalu besar');const reader=new FileReader();reader.onload=()=>{try{const next=validate(JSON.parse(String(reader.result)));if(!confirm(`Impor ${next.people.length} anggota dan mengganti pohon sekarang?`))return;data=next;selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');render({fit:true});toast('Berhasil mengimpor data')}catch(e){toast('File JSON tidak cocok: '+e.message)}};reader.readAsText(file)}
+function usePhoto(file){if(!file||!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>8000000)return toast('Gunakan PNG/JPG/WEBP di bawah 8MB');const im=new Image(),url=URL.createObjectURL(file);im.onload=()=>{const canvas=document.createElement('canvas'),scale=Math.min(1,180/Math.max(im.width,im.height));canvas.width=Math.max(1,Math.round(im.width*scale));canvas.height=Math.max(1,Math.round(im.height*scale));canvas.getContext('2d').drawImage(im,0,0,canvas.width,canvas.height);photoData=canvas.toDataURL('image/jpeg',.72);$('photo-preview').innerHTML=photo({name:'Foto',gender:'unknown',photo:photoData});URL.revokeObjectURL(url)};im.onerror=()=>URL.revokeObjectURL(url);im.src=url}
+// Touch, pen, and mouse interactions use one geometry model. Pinch keeps the world-point
+// below the moving midpoint fixed, allowing simultaneous pan + zoom without jumps.
+const viewport=$('viewport'),points=new Map();let gesture=null,blockClickUntil=0;
+const midpoint=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2}),distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+viewport.addEventListener('pointerdown',e=>{
+ if(e.target.closest('[data-expand]'))return;
+ if(e.pointerType==='mouse'&&(e.button!==0||e.target.closest('[data-person]')))return;
+ const tappedNode=e.target.closest('[data-person]')?.dataset.person||null;
+ const r=viewport.getBoundingClientRect();points.set(e.pointerId,{x:e.clientX-r.left,y:e.clientY-r.top});
+ try{viewport.setPointerCapture(e.pointerId)}catch(err){}
+ if(points.size===1){const p=[...points.values()][0];gesture={type:'pan',start:{...p},pan:{...pan},moved:false,tapId:tappedNode}}
+ else if(points.size===2){const [a,b]=[...points.values()],mid=midpoint(a,b);gesture={type:'pinch',world:{x:(mid.x-pan.x)/zoom,y:(mid.y-pan.y)/zoom},startZoom:zoom,startDistance:Math.max(8,distance(a,b))};blockClickUntil=performance.now()+500}
+ viewport.classList.add('dragging');
+});
+viewport.addEventListener('pointermove',e=>{
+ if(!points.has(e.pointerId))return;const r=viewport.getBoundingClientRect();points.set(e.pointerId,{x:e.clientX-r.left,y:e.clientY-r.top});
+ if(points.size>=2){const [a,b]=[...points.values()];if(!gesture||gesture.type!=='pinch'){const mid=midpoint(a,b);gesture={type:'pinch',world:{x:(mid.x-pan.x)/zoom,y:(mid.y-pan.y)/zoom},startZoom:zoom,startDistance:Math.max(8,distance(a,b))}}const mid=midpoint(a,b);zoom=Math.min(2.5,Math.max(.1,gesture.startZoom*distance(a,b)/gesture.startDistance));pan={x:mid.x-gesture.world.x*zoom,y:mid.y-gesture.world.y*zoom};blockClickUntil=performance.now()+500;applyView();return}
+ if(points.size===1&&gesture?.type==='pan'){const pt=[...points.values()][0],dx=pt.x-gesture.start.x,dy=pt.y-gesture.start.y;if(Math.hypot(dx,dy)>6){gesture.moved=true;blockClickUntil=performance.now()+220}pan={x:gesture.pan.x+dx,y:gesture.pan.y+dy};applyView()}
+});
+function removePointer(e){if(!points.has(e.pointerId))return;
+ const tapId=(e.type==='pointerup'&&points.size===1&&gesture?.type==='pan'&&!gesture.moved&&gesture.tapId)?gesture.tapId:null;
+ if(tapId){blockClickUntil=performance.now()+450;setTimeout(()=>choose(tapId),0)}
+ points.delete(e.pointerId);if(points.size===1){const p=[...points.values()][0];gesture={type:'pan',start:{...p},pan:{...pan},moved:false}}else if(!points.size){gesture=null;viewport.classList.remove('dragging')}}
+viewport.addEventListener('pointerup',removePointer);viewport.addEventListener('pointercancel',removePointer);viewport.addEventListener('lostpointercapture',removePointer);
+viewport.addEventListener('click',e=>{if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation()}},true);
+viewport.addEventListener('wheel',e=>{if(!data.people.length)return;e.preventDefault();const r=viewport.getBoundingClientRect();zoomAt(e.deltaY<0?1.12:1/1.12,e.clientX-r.left,e.clientY-r.top)},{passive:false});
+function click(id,fn){$(id).addEventListener('click',fn)}
+click('mode-focus',()=>setTreeMode('focus'));click('mode-overview',()=>setTreeMode('overview'));
+click('reset-branches',()=>{expandedBranches.clear();expansionPages.clear();render({fit:true});toast('Cabang tambahan ditutup')});
+click('back-focus',()=>{const last=focusHistory.pop();if(last)setFocus(last,{fromHistory:true});else toast('Belum ada riwayat fokus')});
+function toggleFullscreen(){
+ const shell=$('canvas-shell');const open=!shell.classList.contains('is-fullscreen');shell.classList.toggle('is-fullscreen',open);document.body.classList.toggle('fullscreen-open',open);
+ $('fullscreen-btn').textContent=open?'✕':'⤢';$('fullscreen-btn').setAttribute('aria-label',open?'Tutup layar penuh':'Buka kanvas layar penuh');
+ requestAnimationFrame(()=>fitView());
+}
+click('fullscreen-btn',toggleFullscreen);
+click('zoom-in',()=>zoomAt(1.23));click('zoom-out',()=>zoomAt(1/1.23));click('fit-btn',fitView);
+for(const id of ['add-btn','top-add','mobile-add'])click(id,()=>openModal('person',selected?{target:selected,relation:'child'}:{}));
+click('link-btn',()=>data.people.length<2?toast('Tambahkan dua anggota terlebih dahulu'):openModal('link',{target:selected}));click('rename-btn',()=>openModal('rename'));click('new-tree',()=>openModal('new'));click('export-btn',exportJSON);click('import-btn',()=>$('import-file').click());click('mobile-menu',()=>openModal('menu'));
+click('shade',closeDrawer);click('modal-x',closeModal);$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal()});$('import-file').addEventListener('change',e=>{importJSON(e.target.files[0]);e.target.value=''})
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('canvas-shell').classList.contains('is-fullscreen'))toggleFullscreen();closeDrawer();closeModal()}});
+document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el)return;if(el.dataset.collapse){expandedBranches.delete(el.dataset.collapse);expansionPages.delete(el.dataset.collapse);renderKeepingAnchor(el.dataset.collapse.split(':').slice(1).join(':'));return}if(el.dataset.expand){toggleBranch(el.dataset.expand);return}if(el.dataset.unlink){openModal('unlink',{owner:selected,other:el.dataset.unlink,relation:el.dataset.reltype});return}if(el.dataset.view){showView(el.dataset.view);return}if(el.dataset.person){choose(el.dataset.person);return}if(el.dataset.addrel){openModal('person',{target:selected,relation:el.dataset.addrel});return}if(el.hasAttribute('data-add-empty')){openModal('person');return}if(el.hasAttribute('data-edit')){openModal('person',{id:selected});return}if(el.hasAttribute('data-cancel')){closeModal();return}
+ if(el.id==='make-focus'){setFocus(selected);return}if(el.id==='close-drawer'){closeDrawer();return}if(el.id==='drawer-link'){openModal('link',{target:selected});return}if(el.id==='remove-person'){openModal('remove',{id:selected});return}if(el.id==='photo-btn'){$('image-input').click();return}if(el.id==='clear-photo'){photoData='';$('photo-preview').innerHTML=photo({name:'Foto',gender:'unknown',photo:''});return}
+ if(el.id==='confirm-unlink'){const {owner,other,relation}=ctx;let kind=relation==='parent'||relation==='child'?'parent':relation;let before=data[kind].length;data[kind]=data[kind].filter(([a,b])=>kind==='parent'?(relation==='parent'?!(a===other&&b===owner):!(a===owner&&b===other)):!((a===owner&&b===other)||(a===other&&b===owner)));if(data[kind].length===before)return toast('Hubungan langsung tidak ditemukan');save();closeModal();closeDrawer();render({fit:true});toast('Hubungan dihapus, kedua profil tetap ada');return}
+ if(el.id==='confirm-new'){data={version:1,treeName:'Keluarga Saya',isDemo:false,people:[],parent:[],partner:[],sibling:[]};selected=null;focusRoot=null;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');toast('Pohon baru siap');return}
+ if(el.id==='confirm-remove'){data.people=data.people.filter(p=>p.id!==ctx.id);for(const k of ['parent','partner','sibling'])data[k]=data[k].filter(pair=>!pair.includes(ctx.id));selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;if(!byId(focusRoot))focusRoot=selected;expandedBranches.clear();expansionPages.clear();save();closeModal();closeDrawer();render({fit:true});toast('Anggota dihapus');return}
+ if(el.id==='menu-export'){closeModal();exportJSON();return}if(el.id==='menu-import'){closeModal();$('import-file').click();return}if(el.id==='menu-rename'){openModal('rename');return}if(el.id==='menu-new'){openModal('new');return}if(el.id==='menu-demo'){openModal('demo');return}if(el.id==='confirm-demo'){data=clone(sample);selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();expansionPages.clear();treeMode='focus';save();data.isDemo=true;try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}closeModal();showView('tree');toast('31 anggota contoh telah dimuat');return}
+});
+$('modal-content').addEventListener('change',e=>{if(e.target.id==='image-input')usePhoto(e.target.files[0])});
+$('overlay').addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='person-form'){savePerson(e.target);return}if(e.target.id==='rename-form'){data.treeName=String(new FormData(e.target).get('treeName')).trim()||'Keluarga Saya';save();closeModal();render();toast('Nama diperbarui');return}if(e.target.id==='link-form'){const f=new FormData(e.target),a=String(f.get('a')),b=String(f.get('b')),type=String(f.get('type')),err=addRelation(a,b,type);if(err)return toast(err);expandedBranches.add('family:'+a);save();closeModal();selected=a;closeDrawer();render({fit:true});toast('Hubungan keluarga ditambahkan')}});
+let observedViewport=null;
+new ResizeObserver(()=>{const current={w:viewport.clientWidth,h:viewport.clientHeight};
+ if(!observedViewport){observedViewport=current;return}
+ const changed=Math.abs(current.w-observedViewport.w)>8||Math.abs(current.h-observedViewport.h)>8;
+ observedViewport=current;
+ if(changed&&view==='tree'&&data.people.length){if(treeMode==='focus'&&focusRoot)focusOn(focusRoot,window.innerWidth<=650?.88:.78);else fitView()}
+}).observe(viewport);
+render({fit:true});
+})();
+</script>
+</body>
+</html>
