@@ -443,7 +443,46 @@ function makeLayout(){
  const groupCenter=g=>g.x+ownWidth(g)/2;
  // A person's children count makes the primary branch more stable when a sibling branches.
  const descendants=id=>new Set(gdata.parent.filter(([p])=>p===id).map(([,c])=>c)).size;
- const rowGap=76;
+ // Anchor both birth families on opposite sides of the couple that links them.
+ // Parent-side selection is based on the person's parents and the stable
+ // partner-record order, not gender or the order of child-parent links.
+ // If the focused person has no known pair of parents, their own partner unit
+ // supplies an equivalent left/right reference.
+ const focusedParents=treeMode==='focus'&&focusRoot?rel(focusRoot).parents.filter(id=>idGroup.has(id)):[];
+ let corePair=focusedParents.length>=2?focusedParents.slice(0,2):[];
+ // Parent edges can be added in any order for different siblings. The couple
+ // record provides one stable left-to-right orientation across every focus.
+ if(corePair.length===2){
+  const couple=data.partner.find(([a,b])=>corePair.includes(a)&&corePair.includes(b));
+  if(couple)corePair=couple.slice();
+ }
+ if(corePair.length<2&&treeMode==='focus'&&focusRoot){
+  const ownPartner=rel(focusRoot).partners.find(id=>idGroup.has(id));
+  if(ownPartner)corePair=(data.partner.find(([a,b])=>(a===focusRoot&&b===ownPartner)||(b===focusRoot&&a===ownPartner))||[focusRoot,ownPartner]).slice();
+ }
+ const centerGroup=corePair.length===2&&idGroup.get(corePair[0])===idGroup.get(corePair[1])?idGroup.get(corePair[0]):null;
+ const clanOf=(start,exclude)=>{
+  const included=new Set(),seen=new Set(),pending=[start];
+  while(pending.length){
+   const id=pending.pop();if(seen.has(id)||id===exclude||!idGroup.has(id))continue;
+   seen.add(id);included.add(id);
+   const r=rel(id);
+   // Descendants do not become members of an ancestor clan merely because
+   // their parents belong to it. Siblings and their spouses do.
+   for(const next of [...r.parents,...r.siblings,...r.partners])if(!seen.has(next)&&next!==exclude)pending.push(next);
+  }
+  return included;
+ };
+ const leftClan=centerGroup?clanOf(corePair[0],corePair[1]):new Set();
+ const rightClan=centerGroup?clanOf(corePair[1],corePair[0]):new Set();
+ const familySide=g=>{
+  if(!centerGroup)return 0;
+  if(g.id===centerGroup)return 0;
+  let left=0,right=0;
+  for(const id of g.members){if(leftClan.has(id))left++;if(rightClan.has(id))right++}
+  return left>right?-1:right>left?1:0;
+ };
+ const rowGap=96;
  for(let level=maxDepth;level>=0;level--){
   const row=rows.get(level)||[];
   for(const g of row){
@@ -464,7 +503,13 @@ function makeLayout(){
    }else g.ideal=null;
   }
   // Unconnected nodes stay at the side rather than being injected between two parent families.
-  row.sort((a,b)=>a.ideal!==null&&b.ideal!==null?a.ideal-b.ideal||a.i-b.i:a.ideal!==null?-1:b.ideal!==null?1:a.i-b.i);
+  row.sort((a,b)=>{
+   const sideA=familySide(a),sideB=familySide(b);
+   if(sideA!==sideB)return sideA-sideB;
+   // Within each family lane, preserve genealogical child-centering.
+   return a.ideal!==null&&b.ideal!==null?a.ideal-b.ideal||a.i-b.i:
+    a.ideal!==null?-1:b.ideal!==null?1:a.i-b.i;
+  });
   let lastRight=-Infinity;
   for(let i=0;i<row.length;i++){
    const g=row[i];const ideal=g.ideal===null?(Number.isFinite(lastRight)?lastRight+rowGap+ownWidth(g)/2:ownWidth(g)/2):g.ideal;
