@@ -814,6 +814,930 @@
       "occupation": "",
       "photo": "",
       "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-1-ayah",
+      "name": "Leluhur ke-1 di atas buyut kakek papa, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-1-ibu",
+      "name": "Leluhur ke-1 di atas buyut kakek papa, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-1-saudara",
+      "name": "Saudara leluhur tingkat 1 dari kakek papa (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-1-saudara-pasangan",
+      "name": "Pasangan saudara leluhur tingkat 1 dari kakek papa (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-2-ayah",
+      "name": "Leluhur ke-2 di atas buyut kakek papa, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-2-ibu",
+      "name": "Leluhur ke-2 di atas buyut kakek papa, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-3-ayah",
+      "name": "Leluhur ke-3 di atas buyut kakek papa, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-3-ibu",
+      "name": "Leluhur ke-3 di atas buyut kakek papa, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-3-saudara",
+      "name": "Saudara leluhur tingkat 3 dari kakek papa (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-3-saudara-pasangan",
+      "name": "Pasangan saudara leluhur tingkat 3 dari kakek papa (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-4-ayah",
+      "name": "Leluhur ke-4 di atas buyut kakek papa, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-4-ibu",
+      "name": "Leluhur ke-4 di atas buyut kakek papa, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-5-ayah",
+      "name": "Leluhur ke-5 di atas buyut kakek papa, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-5-ibu",
+      "name": "Leluhur ke-5 di atas buyut kakek papa, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-papa-5-saudara",
+      "name": "Saudara leluhur tingkat 5 dari kakek papa (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-1-ayah",
+      "name": "Leluhur ke-1 di atas buyut kakek mama, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-1-ibu",
+      "name": "Leluhur ke-1 di atas buyut kakek mama, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-1-saudara",
+      "name": "Saudara leluhur tingkat 1 dari kakek mama (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-1-saudara-pasangan",
+      "name": "Pasangan saudara leluhur tingkat 1 dari kakek mama (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-2-ayah",
+      "name": "Leluhur ke-2 di atas buyut kakek mama, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-2-ibu",
+      "name": "Leluhur ke-2 di atas buyut kakek mama, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-3-ayah",
+      "name": "Leluhur ke-3 di atas buyut kakek mama, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-3-ibu",
+      "name": "Leluhur ke-3 di atas buyut kakek mama, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-3-saudara",
+      "name": "Saudara leluhur tingkat 3 dari kakek mama (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-3-saudara-pasangan",
+      "name": "Pasangan saudara leluhur tingkat 3 dari kakek mama (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-4-ayah",
+      "name": "Leluhur ke-4 di atas buyut kakek mama, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-4-ibu",
+      "name": "Leluhur ke-4 di atas buyut kakek mama, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-5-ayah",
+      "name": "Leluhur ke-5 di atas buyut kakek mama, ayah (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-5-ibu",
+      "name": "Leluhur ke-5 di atas buyut kakek mama, ibu (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-leluhur-mama-5-saudara",
+      "name": "Saudara leluhur tingkat 5 dari kakek mama (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-pasangan-jonathan",
+      "name": "Pasangan Jonathan gea (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-ayah-pasangan-jonathan",
+      "name": "Ayah pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-ibu-pasangan-jonathan",
+      "name": "Ibu pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-saudara-1-pasangan-jonathan",
+      "name": "Saudara 1 pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-pasangan-saudara-1-pasangan-jonathan",
+      "name": "Pasangan saudara 1 dari pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-keponakan-1-1-pasangan-jonathan",
+      "name": "Keponakan 1 dari saudara 1 pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-keponakan-1-2-pasangan-jonathan",
+      "name": "Keponakan 2 dari saudara 1 pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-saudara-2-pasangan-jonathan",
+      "name": "Saudara 2 pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-pasangan-saudara-2-pasangan-jonathan",
+      "name": "Pasangan saudara 2 dari pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-keponakan-2-1-pasangan-jonathan",
+      "name": "Keponakan 1 dari saudara 2 pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-keponakan-2-2-pasangan-jonathan",
+      "name": "Keponakan 2 dari saudara 2 pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-saudara-3-pasangan-jonathan",
+      "name": "Saudara 3 pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-anak-jonathan-1",
+      "name": "Anak 1 Jonathan dan pasangan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-anak-jonathan-2",
+      "name": "Anak 2 Jonathan dan pasangan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-kakek-papa-pasangan-jonathan",
+      "name": "Kakek dari papa pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-nenek-papa-pasangan-jonathan",
+      "name": "Nenek dari papa pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-ayah-kakek-papa-pasangan",
+      "name": "Buyut laki-laki jalur papa pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-ibu-kakek-papa-pasangan",
+      "name": "Buyut perempuan jalur papa pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-saudara-kakek-papa-pasangan",
+      "name": "Saudara kakek dari papa pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-pasangan-saudara-kakek-papa",
+      "name": "Pasangan saudara kakek dari papa pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-sepupu-jauh-kakek-papa",
+      "name": "Sepupu jauh pihak papa pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-saudara-nenek-papa-pasangan",
+      "name": "Saudara nenek dari papa pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-paman-papa-pasangan",
+      "name": "Paman dari papa pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-pasangan-paman-papa-pasangan",
+      "name": "Pasangan paman dari papa pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-sepupu-papa-pasangan",
+      "name": "Sepupu dari papa pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-kakek-mama-pasangan-jonathan",
+      "name": "Kakek dari mama pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-nenek-mama-pasangan-jonathan",
+      "name": "Nenek dari mama pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-ayah-kakek-mama-pasangan",
+      "name": "Buyut laki-laki jalur mama pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-ibu-kakek-mama-pasangan",
+      "name": "Buyut perempuan jalur mama pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-saudara-kakek-mama-pasangan",
+      "name": "Saudara kakek dari mama pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-pasangan-saudara-kakek-mama",
+      "name": "Pasangan saudara kakek dari mama pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-sepupu-jauh-kakek-mama",
+      "name": "Sepupu jauh pihak mama pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-saudara-nenek-mama-pasangan",
+      "name": "Saudara nenek dari mama pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-paman-mama-pasangan",
+      "name": "Paman dari mama pasangan Jonathan (Uji)",
+      "gender": "male",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-pasangan-paman-mama-pasangan",
+      "name": "Pasangan paman dari mama pasangan Jonathan (Uji)",
+      "gender": "female",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
+    },
+    {
+      "id": "uji-10g-sepupu-mama-pasangan",
+      "name": "Sepupu dari mama pasangan Jonathan (Uji)",
+      "gender": "unknown",
+      "birth": "",
+      "death": "",
+      "notes": "Data pengujian fiktif, bukan informasi keluarga yang terverifikasi.",
+      "nickname": "",
+      "birthPlace": "",
+      "residence": "",
+      "occupation": "",
+      "photo": "",
+      "self": false
     }
   ],
   "parent": [
@@ -1116,6 +2040,246 @@
     [
       "uji-pasangan-nofan-contoh",
       "uji-anak-nofan-contoh"
+    ],
+    [
+      "uji-10g-leluhur-papa-1-ayah",
+      "uji-buyut-laki-laki-dari-kakek-papa"
+    ],
+    [
+      "uji-10g-leluhur-papa-1-ibu",
+      "uji-buyut-laki-laki-dari-kakek-papa"
+    ],
+    [
+      "uji-10g-leluhur-papa-2-ayah",
+      "uji-10g-leluhur-papa-1-ayah"
+    ],
+    [
+      "uji-10g-leluhur-papa-2-ibu",
+      "uji-10g-leluhur-papa-1-ayah"
+    ],
+    [
+      "uji-10g-leluhur-papa-3-ayah",
+      "uji-10g-leluhur-papa-2-ayah"
+    ],
+    [
+      "uji-10g-leluhur-papa-3-ibu",
+      "uji-10g-leluhur-papa-2-ayah"
+    ],
+    [
+      "uji-10g-leluhur-papa-4-ayah",
+      "uji-10g-leluhur-papa-3-ayah"
+    ],
+    [
+      "uji-10g-leluhur-papa-4-ibu",
+      "uji-10g-leluhur-papa-3-ayah"
+    ],
+    [
+      "uji-10g-leluhur-papa-5-ayah",
+      "uji-10g-leluhur-papa-4-ayah"
+    ],
+    [
+      "uji-10g-leluhur-papa-5-ibu",
+      "uji-10g-leluhur-papa-4-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-1-ayah",
+      "uji-buyut-laki-laki-dari-kakek-mama"
+    ],
+    [
+      "uji-10g-leluhur-mama-1-ibu",
+      "uji-buyut-laki-laki-dari-kakek-mama"
+    ],
+    [
+      "uji-10g-leluhur-mama-2-ayah",
+      "uji-10g-leluhur-mama-1-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-2-ibu",
+      "uji-10g-leluhur-mama-1-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-3-ayah",
+      "uji-10g-leluhur-mama-2-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-3-ibu",
+      "uji-10g-leluhur-mama-2-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-4-ayah",
+      "uji-10g-leluhur-mama-3-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-4-ibu",
+      "uji-10g-leluhur-mama-3-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-5-ayah",
+      "uji-10g-leluhur-mama-4-ayah"
+    ],
+    [
+      "uji-10g-leluhur-mama-5-ibu",
+      "uji-10g-leluhur-mama-4-ayah"
+    ],
+    [
+      "uji-10g-ayah-pasangan-jonathan",
+      "uji-10g-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ibu-pasangan-jonathan",
+      "uji-10g-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-pasangan-jonathan",
+      "uji-10g-saudara-1-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ibu-pasangan-jonathan",
+      "uji-10g-saudara-1-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-1-pasangan-jonathan",
+      "uji-10g-keponakan-1-1-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-pasangan-saudara-1-pasangan-jonathan",
+      "uji-10g-keponakan-1-1-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-1-pasangan-jonathan",
+      "uji-10g-keponakan-1-2-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-pasangan-saudara-1-pasangan-jonathan",
+      "uji-10g-keponakan-1-2-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-pasangan-jonathan",
+      "uji-10g-saudara-2-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ibu-pasangan-jonathan",
+      "uji-10g-saudara-2-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-2-pasangan-jonathan",
+      "uji-10g-keponakan-2-1-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-pasangan-saudara-2-pasangan-jonathan",
+      "uji-10g-keponakan-2-1-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-2-pasangan-jonathan",
+      "uji-10g-keponakan-2-2-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-pasangan-saudara-2-pasangan-jonathan",
+      "uji-10g-keponakan-2-2-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-pasangan-jonathan",
+      "uji-10g-saudara-3-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ibu-pasangan-jonathan",
+      "uji-10g-saudara-3-pasangan-jonathan"
+    ],
+    [
+      "6331254c-6a7b-4e7f-9c9d-e7e322a59a94",
+      "uji-10g-anak-jonathan-1"
+    ],
+    [
+      "uji-10g-pasangan-jonathan",
+      "uji-10g-anak-jonathan-1"
+    ],
+    [
+      "6331254c-6a7b-4e7f-9c9d-e7e322a59a94",
+      "uji-10g-anak-jonathan-2"
+    ],
+    [
+      "uji-10g-pasangan-jonathan",
+      "uji-10g-anak-jonathan-2"
+    ],
+    [
+      "uji-10g-kakek-papa-pasangan-jonathan",
+      "uji-10g-ayah-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-nenek-papa-pasangan-jonathan",
+      "uji-10g-ayah-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-kakek-papa-pasangan",
+      "uji-10g-kakek-papa-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ibu-kakek-papa-pasangan",
+      "uji-10g-kakek-papa-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-kakek-papa-pasangan",
+      "uji-10g-sepupu-jauh-kakek-papa"
+    ],
+    [
+      "uji-10g-pasangan-saudara-kakek-papa",
+      "uji-10g-sepupu-jauh-kakek-papa"
+    ],
+    [
+      "uji-10g-kakek-papa-pasangan-jonathan",
+      "uji-10g-paman-papa-pasangan"
+    ],
+    [
+      "uji-10g-nenek-papa-pasangan-jonathan",
+      "uji-10g-paman-papa-pasangan"
+    ],
+    [
+      "uji-10g-paman-papa-pasangan",
+      "uji-10g-sepupu-papa-pasangan"
+    ],
+    [
+      "uji-10g-pasangan-paman-papa-pasangan",
+      "uji-10g-sepupu-papa-pasangan"
+    ],
+    [
+      "uji-10g-kakek-mama-pasangan-jonathan",
+      "uji-10g-ibu-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-nenek-mama-pasangan-jonathan",
+      "uji-10g-ibu-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-kakek-mama-pasangan",
+      "uji-10g-kakek-mama-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ibu-kakek-mama-pasangan",
+      "uji-10g-kakek-mama-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-kakek-mama-pasangan",
+      "uji-10g-sepupu-jauh-kakek-mama"
+    ],
+    [
+      "uji-10g-pasangan-saudara-kakek-mama",
+      "uji-10g-sepupu-jauh-kakek-mama"
+    ],
+    [
+      "uji-10g-kakek-mama-pasangan-jonathan",
+      "uji-10g-paman-mama-pasangan"
+    ],
+    [
+      "uji-10g-nenek-mama-pasangan-jonathan",
+      "uji-10g-paman-mama-pasangan"
+    ],
+    [
+      "uji-10g-paman-mama-pasangan",
+      "uji-10g-sepupu-mama-pasangan"
+    ],
+    [
+      "uji-10g-pasangan-paman-mama-pasangan",
+      "uji-10g-sepupu-mama-pasangan"
     ]
   ],
   "partner": [
@@ -1194,6 +2358,110 @@
     [
       "7989eec8-6c14-4afa-88b1-f59681d8a5d1",
       "uji-pasangan-nofan-contoh"
+    ],
+    [
+      "uji-10g-leluhur-papa-1-ayah",
+      "uji-10g-leluhur-papa-1-ibu"
+    ],
+    [
+      "uji-10g-leluhur-papa-1-saudara",
+      "uji-10g-leluhur-papa-1-saudara-pasangan"
+    ],
+    [
+      "uji-10g-leluhur-papa-2-ayah",
+      "uji-10g-leluhur-papa-2-ibu"
+    ],
+    [
+      "uji-10g-leluhur-papa-3-ayah",
+      "uji-10g-leluhur-papa-3-ibu"
+    ],
+    [
+      "uji-10g-leluhur-papa-3-saudara",
+      "uji-10g-leluhur-papa-3-saudara-pasangan"
+    ],
+    [
+      "uji-10g-leluhur-papa-4-ayah",
+      "uji-10g-leluhur-papa-4-ibu"
+    ],
+    [
+      "uji-10g-leluhur-papa-5-ayah",
+      "uji-10g-leluhur-papa-5-ibu"
+    ],
+    [
+      "uji-10g-leluhur-mama-1-ayah",
+      "uji-10g-leluhur-mama-1-ibu"
+    ],
+    [
+      "uji-10g-leluhur-mama-1-saudara",
+      "uji-10g-leluhur-mama-1-saudara-pasangan"
+    ],
+    [
+      "uji-10g-leluhur-mama-2-ayah",
+      "uji-10g-leluhur-mama-2-ibu"
+    ],
+    [
+      "uji-10g-leluhur-mama-3-ayah",
+      "uji-10g-leluhur-mama-3-ibu"
+    ],
+    [
+      "uji-10g-leluhur-mama-3-saudara",
+      "uji-10g-leluhur-mama-3-saudara-pasangan"
+    ],
+    [
+      "uji-10g-leluhur-mama-4-ayah",
+      "uji-10g-leluhur-mama-4-ibu"
+    ],
+    [
+      "uji-10g-leluhur-mama-5-ayah",
+      "uji-10g-leluhur-mama-5-ibu"
+    ],
+    [
+      "6331254c-6a7b-4e7f-9c9d-e7e322a59a94",
+      "uji-10g-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-pasangan-jonathan",
+      "uji-10g-ibu-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-1-pasangan-jonathan",
+      "uji-10g-pasangan-saudara-1-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-saudara-2-pasangan-jonathan",
+      "uji-10g-pasangan-saudara-2-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-kakek-papa-pasangan-jonathan",
+      "uji-10g-nenek-papa-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-kakek-papa-pasangan",
+      "uji-10g-ibu-kakek-papa-pasangan"
+    ],
+    [
+      "uji-10g-saudara-kakek-papa-pasangan",
+      "uji-10g-pasangan-saudara-kakek-papa"
+    ],
+    [
+      "uji-10g-paman-papa-pasangan",
+      "uji-10g-pasangan-paman-papa-pasangan"
+    ],
+    [
+      "uji-10g-kakek-mama-pasangan-jonathan",
+      "uji-10g-nenek-mama-pasangan-jonathan"
+    ],
+    [
+      "uji-10g-ayah-kakek-mama-pasangan",
+      "uji-10g-ibu-kakek-mama-pasangan"
+    ],
+    [
+      "uji-10g-saudara-kakek-mama-pasangan",
+      "uji-10g-pasangan-saudara-kakek-mama"
+    ],
+    [
+      "uji-10g-paman-mama-pasangan",
+      "uji-10g-pasangan-paman-mama-pasangan"
     ]
   ],
   "sibling": [
@@ -1228,6 +2496,46 @@
     [
       "b288df33-4635-45fc-bf32-0752d7aef200",
       "uji-bibi-tambahan-dari-mama"
+    ],
+    [
+      "uji-10g-leluhur-papa-1-ayah",
+      "uji-10g-leluhur-papa-1-saudara"
+    ],
+    [
+      "uji-10g-leluhur-papa-3-ayah",
+      "uji-10g-leluhur-papa-3-saudara"
+    ],
+    [
+      "uji-10g-leluhur-papa-5-ayah",
+      "uji-10g-leluhur-papa-5-saudara"
+    ],
+    [
+      "uji-10g-leluhur-mama-1-ayah",
+      "uji-10g-leluhur-mama-1-saudara"
+    ],
+    [
+      "uji-10g-leluhur-mama-3-ayah",
+      "uji-10g-leluhur-mama-3-saudara"
+    ],
+    [
+      "uji-10g-leluhur-mama-5-ayah",
+      "uji-10g-leluhur-mama-5-saudara"
+    ],
+    [
+      "uji-10g-kakek-papa-pasangan-jonathan",
+      "uji-10g-saudara-kakek-papa-pasangan"
+    ],
+    [
+      "uji-10g-nenek-papa-pasangan-jonathan",
+      "uji-10g-saudara-nenek-papa-pasangan"
+    ],
+    [
+      "uji-10g-kakek-mama-pasangan-jonathan",
+      "uji-10g-saudara-kakek-mama-pasangan"
+    ],
+    [
+      "uji-10g-nenek-mama-pasangan-jonathan",
+      "uji-10g-saudara-nenek-mama-pasangan"
     ]
   ]
 }
