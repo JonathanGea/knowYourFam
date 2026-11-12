@@ -1,6 +1,8 @@
 # KnowYourFam — MVP Database Design
 
-**Status:** Draft v1, superseded for authentication/portability by `docs/ADR-001-BACKEND-PORTABILITY.md` · **Database:** standard PostgreSQL 14+ · **Current frontend:** single-file `index.html` with `localStorage`.\n\n**DO NOT DEPLOY INITIAL V1 SQL UNCHANGED:** `database/migration/V1__family_tree_core.sql` is a reference draft, not the final Supabase migration. Before deployment, separate the application-owned `users` identity from auth credentials, introduce `auth_identities` mapping, and keep Supabase `auth.users` references/RLS out of the portable core schema. The approved architecture is in ADR-001.
+**Status:** Draft v1, superseded for authentication/portability by `docs/ADR-001-BACKEND-PORTABILITY.md` · **Database:** standard PostgreSQL 14+ · **Current frontend:** single-file `index.html` with `localStorage`.
+
+**DO NOT DEPLOY INITIAL V1 SQL UNCHANGED:** `database/migration/V1__family_tree_core.sql` is a reference draft, not the final Supabase migration. Before deployment, separate the application-owned `users` identity from auth credentials, introduce `auth_identities` mapping, and keep Supabase `auth.users` references/RLS out of the portable core schema. The approved architecture is in ADR-001.
 
 ## Goal
 
