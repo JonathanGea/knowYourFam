@@ -102,6 +102,52 @@ body.fullscreen-open{overflow:hidden}
 .couple-heart{color:#bb877c;font-size:17px}.couple-actions{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 5px}.couple-actions .btn{padding:8px;font-size:11px;flex:1}
 .couple-item small,.field>small{display:block;font-size:10px;color:#718a76;line-height:1.4;margin-top:5px}
 [hidden]{display:none!important}
+
+/* Contextual actions: tapping a node never opens the full profile automatically. */
+.quick-panel{position:fixed;z-index:17;width:324px;max-width:calc(100vw - 24px);border:1px solid #d7e5d8;border-radius:17px;box-shadow:0 18px 65px #173b2850;background:#fff;padding:13px;color:#25422e}
+.quick-panel[hidden]{display:none!important}
+.quick-head{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid #e8efe7}
+.quick-identity{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}
+.quick-identity strong{font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quick-identity small{font-size:10px;color:#869a87}
+.quick-close{border:0;background:#f3f6f2;width:31px;height:31px;border-radius:9px;color:#69836b;flex:none}
+.quick-caption{font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:800;color:#8da08f;margin:12px 0 7px}
+.quick-directions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.quick-direction-group{min-width:0}
+.quick-direction{height:72px;width:100%;border:1px solid #dce9de;border-radius:10px;background:#f2f8f3;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px;color:#2e6040;padding:6px 3px}
+.quick-direction b{font-size:21px;line-height:1.1}
+.quick-direction span{font-size:11px;font-weight:800}
+.quick-direction small{font-size:9px;line-height:1.2;color:#76927b;text-align:center}
+.quick-direction.active{border-color:#9dbfa4;background:#e3f2e7}
+.quick-direction:disabled{opacity:.5;background:#f6f8f6}
+.quick-subbranches{margin-top:3px;display:grid;gap:2px}
+.quick-subbranch{border:1px solid #e3e9e3;background:#fff;color:#527558;border-radius:7px;padding:5px;font-size:9px;white-space:normal;overflow-wrap:anywhere}
+.quick-overview-note{grid-column:1/-1;font-size:11px;padding:8px;border-radius:8px;background:#f6f9f5;color:#738777}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}
+.quick-actions .btn{min-width:0;padding:9px 5px;font-size:11px}
+.quick-relation{width:100%;margin-top:8px;background:transparent;border:1px dashed #b7d0ba;padding:8px;border-radius:9px;color:#326445;font-weight:800;font-size:11px}
+.shade{z-index:18}
+.drawer{z-index:19}
+.overlay{z-index:22}
+.sheet-grab-zone{display:none}
+@media(max-width:650px){
+ .quick-panel{left:8px!important;right:8px!important;top:auto!important;bottom:calc(66px + env(safe-area-inset-bottom,0px));width:auto;max-width:none;padding:11px 12px;border-radius:16px;box-shadow:0 12px 50px #1f422e45}
+ .quick-head{padding-bottom:8px}
+ .quick-caption{margin:8px 0 6px}
+ .quick-direction{height:61px}
+ .quick-direction b{font-size:19px}
+ .quick-actions{margin-top:8px}
+ .quick-relation{margin-top:6px;padding:7px}
+ .drawer{top:auto;bottom:0;left:0;right:0;width:100%;height:70dvh;max-height:94dvh;border-radius:21px 21px 0 0;padding:6px 18px max(25px,env(safe-area-inset-bottom,0px));transform:translateY(110%);transition:transform .23s ease,height .23s ease;overscroll-behavior:contain}
+ .drawer.open{transform:translateY(0)}
+ .drawer.expanded{height:94dvh}
+ .sheet-grab-zone{display:flex;justify-content:center;padding:0 0 8px;touch-action:none}
+ .sheet-grab{display:grid;place-items:center;width:92px;height:28px;border:0;background:transparent;touch-action:none}
+ .sheet-grab span{height:5px;width:40px;border-radius:20px;background:#c9d5c9}
+ .drawer-head{margin-bottom:13px}
+ .drawer-profile .person-photo{width:64px;height:64px}
+ .drawer-profile{padding-bottom:15px}
+}
 </style>
 </head>
 <body>
@@ -118,10 +164,11 @@ body.fullscreen-open{overflow:hidden}
    <div class="canvas-ops"><button class="btn icon" id="zoom-out" aria-label="Perkecil">−</button><span class="zoom-info" id="zoom-value">100%</span><button class="btn icon" id="zoom-in" aria-label="Perbesar">＋</button><button class="btn" id="fit-btn" title="Pas seluruh area yang ditampilkan">⛶</button><button class="btn icon" id="fullscreen-btn" title="Perbesar kanvas" aria-label="Buka kanvas layar penuh">⤢</button></div>
   </div>
   <div class="focus-toolbar" id="focus-toolbar"><div class="focus-identity"><span class="focus-icon">◎</span><div><span class="focus-label">Keluarga dua generasi ke atas</span><strong id="focus-name">Anggota</strong></div></div><div class="focus-side"><span id="visible-count">—</span><button class="focus-link" id="back-focus" title="Kembali ke fokus sebelumnya">↶ Kembali</button><button class="focus-link" id="reset-branches">Tutup cabang</button></div></div>
-  <div class="viewport" id="viewport" aria-label="Pohon keluarga interaktif, geser satu jari dan cubit dua jari untuk zoom"><div class="scene" id="scene"></div><div class="viewport-footer">Fokus: 2 generasi leluhur + paman/bibi + pasangan · ↑ Orang tua · ↔ Saudara · ↓ Anak · Cubit 2 jari</div><div class="fullscreen-help" id="fullscreen-help">↑ Orang tua · ↔ Saudara · ↓ Anak · Cubit dua jari</div></div></section>
+  <div class="viewport" id="viewport" aria-label="Pohon keluarga interaktif. Ketuk anggota untuk aksi cepat, geser satu jari, cubit dua jari untuk zoom"><div class="scene" id="scene"></div><div class="viewport-footer">Fokus: 2 generasi leluhur + paman/bibi + pasangan · ↑ Orang tua · ↔ Saudara · ↓ Anak · Cubit 2 jari</div><div class="fullscreen-help" id="fullscreen-help">Ketuk anggota untuk aksi cepat · Cubit dua jari</div></div></section>
  <section class="member-list" id="member-list"><div class="member-grid" id="member-grid"></div></section></main></div>
  <nav class="mobile-nav"><button data-view="tree" class="active"><span>♧</span>Pohon</button><button data-view="list"><span>☷</span>Anggota</button><button id="mobile-add"><span>＋</span>Tambah</button><button id="mobile-menu"><span>⋯</span>Lainnya</button></nav>
 </div>
+<div id="quick-panel" class="quick-panel" role="group" aria-label="Aksi cepat anggota" hidden></div>
 <div class="shade" id="shade"></div><aside class="drawer" id="drawer" aria-label="Detail anggota"></aside>
 <div class="overlay" id="overlay"><div class="modal" role="dialog" aria-modal="true"><div class="modal-header"><div><h2 id="modal-title"></h2><p id="modal-desc"></p></div><button class="btn icon" id="modal-x" aria-label="Tutup">✕</button></div><div class="modal-content" id="modal-content"></div><div class="modal-footer" id="modal-footer"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div><input id="import-file" type="file" accept="application/json,.json">
@@ -189,6 +236,7 @@ const githubSeed={"version":1,"treeName":"Keluarga Saya","isDemo":false,"people"
 function validate(d){if(!d||!Array.isArray(d.people)||!Array.isArray(d.parent)||!Array.isArray(d.partner)||!Array.isArray(d.sibling))throw Error('Format data tidak valid');const ids=new Set();for(const p of d.people){if(!p.id||!p.name||ids.has(p.id))throw Error('ID/nama anggota tidak valid');ids.add(p.id);p.photo=typeof p.photo==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(p.photo)&&p.photo.length<250000?p.photo:'';p.name=String(p.name).slice(0,100);p.notes=String(p.notes||'').slice(0,500);for(const k of ['nickname','birthPlace','residence','occupation'])p[k]=String(p[k]||'').slice(0,100)}for(const k of ['parent','partner','sibling']){d[k]=d[k].filter(x=>Array.isArray(x)&&x.length===2&&ids.has(x[0])&&ids.has(x[1])&&x[0]!==x[1])}return d}
 let data;try{const saved=localStorage.getItem(STORE),previous=saved?validate(JSON.parse(saved)):null;data=previous&&!previous.isDemo?previous:validate(clone(githubSeed))}catch(e){data=validate(clone(githubSeed))}
 let selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null,view='tree',treeMode='focus',focusRoot=selected,expandedBranches=new Set(),expansionPages=new Map(),focusHistory=[],displayGraph=null;
+let quickPerson=null;
 let zoom=1,pan={x:0,y:0},size={w:900,h:600},positions=new Map(),maxDepth=0,needsFit=true,modal=null,ctx={},photoData='';
 const W=185,H=113,GAP=26,SPACE=80,ROW=206,PADX=167,TOPY=95;
 function nameOf(id){return data.people.find(p=>p.id===id)?.name||'Anggota'}function byId(id){return data.people.find(p=>p.id===id)}
@@ -262,8 +310,8 @@ function branchControls(id,compact=false){
   return `<button type="button" class="${compact?'branch-toggle':'btn branch-action'} ${opened?'opened':''}" data-expand="${safe(key)}" title="${safe(more?'Tampilkan anggota berikutnya':opened?'Tutup cabang '+meta.title:'Buka '+meta.title)}" aria-label="${safe(more?'Tampilkan berikutnya':opened?'Tutup':'Buka')} ${safe(meta.title)}">${compact?meta.symbol+(more?hidden:opened?'−':hidden):more?meta.symbol+' '+Math.min(EXPAND_PAGE,hidden)+' berikutnya':opened?meta.symbol+' Tutup '+meta.short:meta.symbol+' '+meta.short+' ('+hidden+')'}</button>${!compact&&more?`<button type="button" class="btn branch-action" data-collapse="${safe(key)}">− Tutup ${meta.short}</button>`:''}`;
  }).join('');
 }
-function setTreeMode(mode){if(!['focus','overview'].includes(mode))return;treeMode=mode;if(!focusRoot)focusRoot=selected;closeDrawer();render({fit:true});}
-function setFocus(id,{fromHistory=false}={}){if(!byId(id))return;if(focusRoot&&focusRoot!==id&&!fromHistory)focusHistory.push(focusRoot);focusRoot=id;selected=id;expandedBranches.clear();expansionPages.clear();treeMode='focus';closeDrawer();if(view!=='tree')showView('tree');else render({fit:true,focusNew:true});toast('Fokus dipindahkan ke '+nameOf(id));}
+function setTreeMode(mode){if(!['focus','overview'].includes(mode))return;closeQuickActions();treeMode=mode;if(!focusRoot)focusRoot=selected;closeDrawer();render({fit:true});}
+function setFocus(id,{fromHistory=false}={}){if(!byId(id))return;closeQuickActions();if(focusRoot&&focusRoot!==id&&!fromHistory)focusHistory.push(focusRoot);focusRoot=id;selected=id;expandedBranches.clear();expansionPages.clear();treeMode='focus';closeDrawer();if(view!=='tree')showView('tree');else render({fit:true,focusNew:true});toast('Fokus dipindahkan ke '+nameOf(id));}
 function renderKeepingAnchor(id){
  const before=positions.get(id),screen=before?{x:pan.x+(before.x+W/2)*zoom,y:pan.y+(before.y+H/2)*zoom}:null;
  const previouslyFit=needsFit;needsFit=false;closeDrawer();render({fit:false});
@@ -382,7 +430,7 @@ function drawTree({fit=false,focusNew=false}={}){
  for(const c of children){const x=c.x+W/2;lines+=`<path class="edge-parent" d="M${x} ${y} V${c.y-5}"/><circle cx="${x}" cy="${c.y-5}" r="4" fill="#76a887"/>`}
  }
  const roleDemo={p1:'Kakek',p2:'Nenek',p3:'Ayah',p4:'Bibi',p5:'Ibu',p6:'Paman',p7:'Saya',p8:'Saudara',p9:'Sepupu',p10:'Kakek (pihak ibu)',p11:'Nenek (pihak ibu)'};
- const cards=displayGraph.people.map(p=>{const pos=positions.get(p.id);if(!pos)return '';const role=p.self?'Profil saya':data.isDemo&&roleDemo[p.id]?roleDemo[p.id]:`Generasi ${pos.level+1}`;return `<button class="node ${selected===p.id?'selected':''} ${p.id===focusRoot&&treeMode==='focus'?'focus-person':''}" data-person="${safe(p.id)}" style="left:${pos.x}px;top:${pos.y}px" aria-label="Lihat profil ${safe(p.name)}"><span class="node-top">${photo(p)}<span style="min-width:0"><span class="node-name">${safe(p.name)}</span><span class="node-years">${safe(years(p))}</span></span></span><span class="node-bottom ${p.self?'self':''}"><span>${safe(role)}</span><span>›</span></span></button>`}).join('');
+ const cards=displayGraph.people.map(p=>{const pos=positions.get(p.id);if(!pos)return '';const role=p.self?'Profil saya':data.isDemo&&roleDemo[p.id]?roleDemo[p.id]:`Generasi ${pos.level+1}`;return `<button class="node ${selected===p.id?'selected':''} ${p.id===focusRoot&&treeMode==='focus'?'focus-person':''}" data-person="${safe(p.id)}" style="left:${pos.x}px;top:${pos.y}px" aria-label="Aksi cepat ${safe(p.name)}"><span class="node-top">${photo(p)}<span style="min-width:0"><span class="node-name">${safe(p.name)}</span><span class="node-years">${safe(years(p))}</span></span></span><span class="node-bottom ${p.self?'self':''}"><span>${safe(role)}</span><span>•••</span></span></button>`}).join('');
  // Place controls in meaningful directions relative to person cards, not arbitrary corners.
  let expansion='';
  if(treeMode==='focus'){
@@ -415,7 +463,7 @@ function drawTree({fit=false,focusNew=false}={}){
  scene.innerHTML=bg+`<svg class="connections" width="${size.w}" height="${size.h}" aria-hidden="true">${lines}</svg>`+cards+expansion;
  if(fit||needsFit){requestAnimationFrame(()=>{fitView();if(treeMode==='focus'&&focusRoot){focusOn(focusNew&&selected?selected:focusRoot,window.innerWidth<=650?.88:.78)}needsFit=false})}else if(focusNew&&selected){requestAnimationFrame(()=>{focusOn(selected,window.innerWidth<=650?.88:.78)})}else applyView();
 }
-function applyView(){$('scene').style.transform=`translate(${pan.x}px,${pan.y}px) scale(${zoom})`;$('zoom-value').textContent=Math.round(zoom*100)+'%'}
+function applyView(){$('scene').style.transform=`translate(${pan.x}px,${pan.y}px) scale(${zoom})`;$('zoom-value').textContent=Math.round(zoom*100)+'%';if(quickPerson)requestAnimationFrame(positionQuickActions)}
 function fitView(){if(!data.people.length)return;const v=$('viewport');const w=v.clientWidth,h=v.clientHeight;if(!w||!h)return;zoom=Math.min(1.13,Math.max(.1,Math.min((w-24)/size.w,(h-24)/size.h)));pan={x:(w-size.w*zoom)/2,y:(h-size.h*zoom)/2};applyView()}
 function focusOn(id,scale){const pos=positions.get(id);if(!pos)return;const v=$('viewport');zoom=Math.min(2.5,Math.max(.1,scale||zoom));pan={x:v.clientWidth/2-(pos.x+W/2)*zoom,y:v.clientHeight/2-(pos.y+H/2)*zoom};applyView()}
 function zoomAt(factor,cx,cy){const v=$('viewport');cx??=v.clientWidth/2;cy??=v.clientHeight/2;const next=Math.max(.1,Math.min(2.5,zoom*factor)),ratio=next/zoom;pan={x:cx-(cx-pan.x)*ratio,y:cy-(cy-pan.y)*ratio};zoom=next;applyView()}
@@ -432,13 +480,57 @@ function renderDrawer(){
    return `<div class="couple-item"><div class="couple-title"><span class="couple-heart">♥</span><span>Anak ${safe(p.name)} &amp; ${safe(nameOf(partner))}</span></div><div class="couple-actions"><button class="btn soft" data-addpairchild="${encoded}">＋ Anak baru</button><button class="btn" data-linkpair="${encoded}">Hubungkan anak</button></div><small>Kedua orang tercatat sebagai orang tua anak. Tidak mengubah status pasangan.</small></div>`;
  }).join('');
  const hidden=invisibleNeighborCount(selected);
- $('drawer').innerHTML=`<div class="drawer-head"><h3>Profil anggota</h3><button class="btn icon" id="close-drawer" aria-label="Tutup profil">✕</button></div><div class="drawer-profile">${photo(p)}<h2>${safe(p.name)}</h2><small>${safe(years(p))}</small>${treeMode==='focus'&&focusRoot===p.id?'<span class="focus-current">◎ Fokus sekarang</span>':''}<div class="drawer-actions"><button class="btn" data-edit>✎ Edit</button><button class="btn primary" data-addrel="child">＋ Relasi baru</button></div><div class="drawer-actions"><button class="btn soft" id="make-focus">◎ Jadikan fokus</button></div>${treeMode==='focus'?`<div class="drawer-section">Jelajahi cabang</div><div class="directional-actions">${branchControls(p.id)||'<p class="direction-empty">Semua hubungan langsung sudah terlihat.</p>'}</div>`:''}</div><div class="drawer-section">Informasi pribadi</div><div class="info-row"><span>Jenis kelamin</span><strong>${safe(({male:'Laki-laki',female:'Perempuan',unknown:'Belum diisi',other:'Lainnya'})[p.gender]||'Belum diisi')}</strong></div>${p.nickname?`<div class="info-row"><span>Nama panggilan</span><strong>${safe(p.nickname)}</strong></div>`:''}<div class="info-row"><span>Tanggal lahir</span><strong>${safe(dateText(p.birth))}</strong></div>${p.birthPlace?`<div class="info-row"><span>Tempat lahir</span><strong>${safe(p.birthPlace)}</strong></div>`:''}<div class="info-row"><span>Tanggal wafat</span><strong>${safe(dateText(p.death))}</strong></div>${p.occupation?`<div class="info-row"><span>Pekerjaan</span><strong>${safe(p.occupation)}</strong></div>`:''}${p.residence?`<div class="info-row"><span>Domisili</span><strong>${safe(p.residence)}</strong></div>`:''}${p.notes?`<div class="drawer-section">Catatan</div><p style="font-size:12px;white-space:pre-line;overflow-wrap:anywhere">${safe(p.notes)}</p>`:''}<div class="drawer-section">Hubungan keluarga</div><div class="hint" style="font-size:10px;padding:9px;margin:8px 0">Tombol <strong>Hapus</strong> hanya melepaskan hubungan, tidak menghapus orang. Saudara otomatis mengikuti data orang tua yang sama.</div>${section('Orang tua',r.parents,'parent')}${section('Pasangan',r.partners,'partner')}${r.partners.length?`<div class="drawer-section">Tambah hubungan berdasarkan pasangan</div>${pairActions}`:''}${section('Anak',r.children,'child')}${section('Saudara',r.siblings,'sibling')}<div class="drawer-buttons"><button class="btn" id="drawer-link">⚭ Hubungkan orang</button><button class="btn danger" id="remove-person">Hapus anggota</button></div>`;
+ $('drawer').innerHTML=`<div class="sheet-grab-zone"><button type="button" class="sheet-grab" id="sheet-grab" aria-label="Perbesar atau perkecil panel profil"><span></span></button></div><div class="drawer-head"><h3>Profil anggota</h3><button class="btn icon" id="close-drawer" aria-label="Tutup profil">✕</button></div><div class="drawer-profile">${photo(p)}<h2>${safe(p.name)}</h2><small>${safe(years(p))}</small>${treeMode==='focus'&&focusRoot===p.id?'<span class="focus-current">◎ Fokus sekarang</span>':''}<div class="drawer-actions"><button class="btn" data-edit>✎ Edit</button><button class="btn primary" data-addrel="child">＋ Relasi baru</button></div><div class="drawer-actions"><button class="btn soft" id="make-focus">◎ Jadikan fokus</button></div>${treeMode==='focus'?`<div class="drawer-section">Jelajahi cabang</div><div class="directional-actions">${branchControls(p.id)||'<p class="direction-empty">Semua hubungan langsung sudah terlihat.</p>'}</div>`:''}</div><div class="drawer-section">Informasi pribadi</div><div class="info-row"><span>Jenis kelamin</span><strong>${safe(({male:'Laki-laki',female:'Perempuan',unknown:'Belum diisi',other:'Lainnya'})[p.gender]||'Belum diisi')}</strong></div>${p.nickname?`<div class="info-row"><span>Nama panggilan</span><strong>${safe(p.nickname)}</strong></div>`:''}<div class="info-row"><span>Tanggal lahir</span><strong>${safe(dateText(p.birth))}</strong></div>${p.birthPlace?`<div class="info-row"><span>Tempat lahir</span><strong>${safe(p.birthPlace)}</strong></div>`:''}<div class="info-row"><span>Tanggal wafat</span><strong>${safe(dateText(p.death))}</strong></div>${p.occupation?`<div class="info-row"><span>Pekerjaan</span><strong>${safe(p.occupation)}</strong></div>`:''}${p.residence?`<div class="info-row"><span>Domisili</span><strong>${safe(p.residence)}</strong></div>`:''}${p.notes?`<div class="drawer-section">Catatan</div><p style="font-size:12px;white-space:pre-line;overflow-wrap:anywhere">${safe(p.notes)}</p>`:''}<div class="drawer-section">Hubungan keluarga</div><div class="hint" style="font-size:10px;padding:9px;margin:8px 0">Tombol <strong>Hapus</strong> hanya melepaskan hubungan, tidak menghapus orang. Saudara otomatis mengikuti data orang tua yang sama.</div>${section('Orang tua',r.parents,'parent')}${section('Pasangan',r.partners,'partner')}${r.partners.length?`<div class="drawer-section">Tambah hubungan berdasarkan pasangan</div>${pairActions}`:''}${section('Anak',r.children,'child')}${section('Saudara',r.siblings,'sibling')}<div class="drawer-buttons"><button class="btn" id="drawer-link">⚭ Hubungkan orang</button><button class="btn danger" id="remove-person">Hapus anggota</button></div>`;
 }
-function openDrawer(){$('drawer').classList.add('open');$('shade').classList.add('show')};function closeDrawer(){$('drawer').classList.remove('open');$('shade').classList.remove('show')}
-function choose(id){if(!byId(id))return;selected=id;if(treeMode==='focus'&&!visibleFamilyGraph().people.some(p=>p.id===id)){setFocus(id);renderDrawer();openDrawer();return}renderDrawer();renderMeta();if(view==='tree'){drawTree();if(positions.has(id))focusOn(id,Math.max(zoom,.75))}openDrawer()}
-function render({fit=false,focusNew=false}={}){makeLayout();renderMeta();renderDrawer();if(view==='tree')drawTree({fit,focusNew})}
-function showView(v){view=v;$('canvas-shell').style.display=v==='tree'?'flex':'none';$('member-list').classList.toggle('active',v==='list');document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeDrawer();render({fit:v==='tree'})}
-function openModal(type,info={}){modal=type;ctx=info;photoData=info.id?byId(info.id)?.photo||'':'';$('overlay').classList.add('show');renderModal();setTimeout(()=>$('modal-content').querySelector('input,select,button')?.focus(),40)}
+function openDrawer(){closeQuickActions();$('drawer').classList.add('open');$('drawer').classList.remove('expanded');$('shade').classList.add('show')}
+function closeDrawer(){$('drawer').classList.remove('open','expanded');$('shade').classList.remove('show')}
+// A node tap selects a person and shows a lightweight action menu rather than the full profile.
+// The menu lives OUTSIDE the scaled canvas so its controls remain readable at any zoom.
+function quickBranchActions(id){
+ const keys=directionalKeys(id),groups=[['up','↑','Orang tua'],['side','↔','Saudara'],['down','↓','Anak']];
+ return groups.map(([type,symbol,label])=>{
+  const groupKeys=keys.filter(key=>type==='down'?['down','pair'].includes(parseBranch(key).type):parseBranch(key).type===type);
+  const available=groupKeys.filter(key=>branchMissing(key)>0||expandedBranches.has(key));
+  if(!available.length)return `<button class="quick-direction" type="button" disabled title="Semua ${safe(label.toLowerCase())} yang tercatat sudah terlihat"><b>${symbol}</b><span>${label}</span><small>Terlihat / belum ada</small></button>`;
+  const primary=available[0],open=expandedBranches.has(primary),missing=branchMissing(primary);
+  const other=available.slice(1).map(key=>`<button class="quick-subbranch" data-expand="${safe(key)}">${safe(branchMetadata(key).short)} ${safe(parseBranch(key).ids.map(nameOf).join(' & '))} ${expandedBranches.has(key)?'−':'+'}</button>`).join('');
+  return `<div class="quick-direction-group"><button class="quick-direction ${open?'active':''}" type="button" data-expand="${safe(primary)}" aria-label="${safe((open?'Tutup atau lanjutkan':'Buka')+' '+branchMetadata(primary).title)}"><b>${symbol}</b><span>${label}</span><small>${open?(missing?'+'+missing+' lainnya':'Tutup cabang'):'+'+missing+' anggota'}</small></button>${other?`<div class="quick-subbranches">${other}</div>`:''}</div>`;
+ }).join('');
+}
+function positionQuickActions(){
+ const el=$('quick-panel');if(!quickPerson||el.hidden||window.innerWidth<=650)return;
+ const node=[...scene.querySelectorAll('.node')].find(node=>node.dataset.person===quickPerson);
+ if(!node)return;
+ const r=node.getBoundingClientRect(),width=el.offsetWidth||324,roomRight=innerWidth-r.right;
+ let left=roomRight>width+20?r.right+12:r.left-width-12;
+ if(left<12)left=Math.max(12,Math.min(innerWidth-width-12,r.left+r.width/2-width/2));
+ let top=Math.max(72,Math.min(innerHeight-el.offsetHeight-12,r.top));
+ el.style.left=left+'px';el.style.top=top+'px';
+}
+function closeQuickActions(){quickPerson=null;const el=$('quick-panel');el.hidden=true;el.innerHTML='';el.style.left='';el.style.top=''}
+function showQuickActions(id){
+ const p=byId(id);if(!p||view!=='tree')return;
+ quickPerson=id;const menu=$('quick-panel');
+ menu.innerHTML=`<div class="quick-head">${photo(p)}<div class="quick-identity"><strong>${safe(p.name)}</strong><small>${safe(years(p))}</small></div><button type="button" class="quick-close" id="quick-close" aria-label="Tutup aksi cepat">✕</button></div><div class="quick-caption">Jelajahi hubungan</div><div class="quick-directions">${treeMode==='focus'?quickBranchActions(id):'<div class="quick-overview-note">Aktifkan Fokus Orang untuk membuka cabang per arah.</div>'}</div><div class="quick-actions"><button type="button" class="btn soft" id="quick-focus" ${treeMode==='focus'&&focusRoot===id?'disabled':''}>◎ ${treeMode==='focus'&&focusRoot===id?'Sedang fokus':'Jadikan fokus'}</button><button type="button" class="btn" id="quick-profile">☷ Lihat profil</button></div><button type="button" class="quick-relation" id="quick-addrelation">＋ Tambah hubungan keluarga</button>`;
+ menu.hidden=false;menu.style.left='';menu.style.top='';
+ requestAnimationFrame(positionQuickActions);
+}
+function choose(id,{profile=false}={}){
+ if(!byId(id))return;
+ if(quickPerson===id&&!profile){closeQuickActions();return}
+ closeQuickActions();selected=id;
+ if(treeMode==='focus'&&!visibleFamilyGraph().people.some(p=>p.id===id)){
+  setFocus(id); // A person found through search/list becomes visible before showing actions.
+ }else{
+  renderMeta();if(view==='tree'){drawTree();if(positions.has(id))focusOn(id,Math.max(zoom,.75))}
+ }
+ renderDrawer();
+ if(profile){openDrawer();return}
+ if(view==='tree')requestAnimationFrame(()=>showQuickActions(id));
+}
+function render({fit=false,focusNew=false}={}){makeLayout();renderMeta();renderDrawer();if(view==='tree')drawTree({fit,focusNew});if(quickPerson)requestAnimationFrame(()=>showQuickActions(quickPerson))}
+function showView(v){closeQuickActions();view=v;$('canvas-shell').style.display=v==='tree'?'flex':'none';$('member-list').classList.toggle('active',v==='list');document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeDrawer();render({fit:v==='tree'})}
+function openModal(type,info={}){closeQuickActions();modal=type;ctx=info;photoData=info.id?byId(info.id)?.photo||'':'';$('overlay').classList.add('show');renderModal();setTimeout(()=>$('modal-content').querySelector('input,select,button')?.focus(),40)}
 function closeModal(){$('overlay').classList.remove('show');modal=null;ctx={}}
 function modalLayout(title,desc,content,footer){$('modal-title').textContent=title;$('modal-desc').textContent=desc;$('modal-content').innerHTML=content;$('modal-footer').innerHTML=footer}
 
@@ -528,14 +620,14 @@ function removePointer(e){if(!points.has(e.pointerId))return;
  if(tapId){blockClickUntil=performance.now()+450;setTimeout(()=>choose(tapId),0)}
  points.delete(e.pointerId);if(points.size===1){const p=[...points.values()][0];gesture={type:'pan',start:{...p},pan:{...pan},moved:false}}else if(!points.size){gesture=null;viewport.classList.remove('dragging')}}
 viewport.addEventListener('pointerup',removePointer);viewport.addEventListener('pointercancel',removePointer);viewport.addEventListener('lostpointercapture',removePointer);
-viewport.addEventListener('click',e=>{if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation()}},true);
+viewport.addEventListener('click',e=>{if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation();return}if(!e.target.closest('[data-person],[data-expand]'))closeQuickActions()},true);
 viewport.addEventListener('wheel',e=>{if(!data.people.length)return;e.preventDefault();const r=viewport.getBoundingClientRect();zoomAt(e.deltaY<0?1.12:1/1.12,e.clientX-r.left,e.clientY-r.top)},{passive:false});
 function click(id,fn){$(id).addEventListener('click',fn)}
 click('mode-focus',()=>setTreeMode('focus'));click('mode-overview',()=>setTreeMode('overview'));
 click('reset-branches',()=>{expandedBranches.clear();expansionPages.clear();render({fit:true});toast('Cabang tambahan ditutup')});
 click('back-focus',()=>{const last=focusHistory.pop();if(last)setFocus(last,{fromHistory:true});else toast('Belum ada riwayat fokus')});
 function toggleFullscreen(){
- const shell=$('canvas-shell');const open=!shell.classList.contains('is-fullscreen');shell.classList.toggle('is-fullscreen',open);document.body.classList.toggle('fullscreen-open',open);
+ closeQuickActions();const shell=$('canvas-shell');const open=!shell.classList.contains('is-fullscreen');shell.classList.toggle('is-fullscreen',open);document.body.classList.toggle('fullscreen-open',open);
  $('fullscreen-btn').textContent=open?'✕':'⤢';$('fullscreen-btn').setAttribute('aria-label',open?'Tutup layar penuh':'Buka kanvas layar penuh');
  requestAnimationFrame(()=>fitView());
 }
@@ -543,11 +635,22 @@ click('fullscreen-btn',toggleFullscreen);
 click('zoom-in',()=>zoomAt(1.23));click('zoom-out',()=>zoomAt(1/1.23));click('fit-btn',fitView);
 for(const id of ['add-btn','top-add','mobile-add'])click(id,()=>openModal('person',selected?{target:selected,relation:'child'}:{}));
 click('link-btn',()=>data.people.length<2?toast('Tambahkan dua anggota terlebih dahulu'):openModal('link',{target:selected}));click('rename-btn',()=>openModal('rename'));click('new-tree',()=>openModal('new'));click('export-btn',exportJSON);click('import-btn',()=>$('import-file').click());click('mobile-menu',()=>openModal('menu'));
+
+// The mobile profile sheet can expand upwards or be swiped down to close.
+let sheetTouchStart=null,suppressGrabClickUntil=0;
+$('drawer').addEventListener('pointerdown',e=>{if(window.innerWidth>650||!e.target.closest('.sheet-grab-zone'))return;sheetTouchStart={y:e.clientY,id:e.pointerId};});
+$('drawer').addEventListener('pointerup',e=>{if(!sheetTouchStart||e.pointerId!==sheetTouchStart.id)return;const delta=e.clientY-sheetTouchStart.y;sheetTouchStart=null;if(Math.abs(delta)>30)suppressGrabClickUntil=performance.now()+420;if(delta<-36)$('drawer').classList.add('expanded');else if(delta>65){if($('drawer').classList.contains('expanded'))$('drawer').classList.remove('expanded');else closeDrawer()}});
+$('drawer').addEventListener('pointercancel',()=>sheetTouchStart=null);
 click('shade',closeDrawer);click('modal-x',closeModal);$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal()});$('import-file').addEventListener('change',e=>{importJSON(e.target.files[0]);e.target.value=''})
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('canvas-shell').classList.contains('is-fullscreen'))toggleFullscreen();closeDrawer();closeModal()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeQuickActions();if($('canvas-shell').classList.contains('is-fullscreen'))toggleFullscreen();closeDrawer();closeModal()}});
 document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el)return;if(el.dataset.collapse){expandedBranches.delete(el.dataset.collapse);expansionPages.delete(el.dataset.collapse);renderKeepingAnchor(el.dataset.collapse.split(':').slice(1).join(':'));return}if(el.dataset.expand){toggleBranch(el.dataset.expand);return}if(el.dataset.linkpair){const {type,ids}=parseBranch(el.dataset.linkpair);if(type==='pair'&&ids.length===2)openModal('link',{target:ids[0],type:'pair-child',pairIds:ids});return}
  if(el.dataset.addpairchild){const {type,ids}=parseBranch(el.dataset.addpairchild);if(type==='pair'&&ids.length===2)openModal('person',{target:ids[0],relation:'child',parentPair:ids});return}
- if(el.dataset.unlink){openModal('unlink',{owner:selected,other:el.dataset.unlink,relation:el.dataset.reltype});return}if(el.dataset.view){showView(el.dataset.view);return}if(el.dataset.person){choose(el.dataset.person);return}if(el.dataset.addrel){openModal('person',{target:selected,relation:el.dataset.addrel});return}if(el.hasAttribute('data-add-empty')){openModal('person');return}if(el.hasAttribute('data-edit')){openModal('person',{id:selected});return}if(el.hasAttribute('data-cancel')){closeModal();return}
+ if(el.dataset.unlink){openModal('unlink',{owner:selected,other:el.dataset.unlink,relation:el.dataset.reltype});return}if(el.dataset.view){showView(el.dataset.view);return}if(el.dataset.person){choose(el.dataset.person,{profile:!el.closest('.node')});return}if(el.dataset.addrel){openModal('person',{target:selected,relation:el.dataset.addrel});return}if(el.hasAttribute('data-add-empty')){openModal('person');return}if(el.hasAttribute('data-edit')){openModal('person',{id:selected});return}if(el.hasAttribute('data-cancel')){closeModal();return}
+ if(el.id==='quick-close'){closeQuickActions();return}
+ if(el.id==='quick-profile'){renderDrawer();openDrawer();return}
+ if(el.id==='quick-focus'){const id=quickPerson||selected;closeQuickActions();setFocus(id);return}
+ if(el.id==='quick-addrelation'){const id=quickPerson||selected;openModal('link',{target:id});return}
+ if(el.id==='sheet-grab'){if(performance.now()<suppressGrabClickUntil)return;$('drawer').classList.toggle('expanded');return}
  if(el.id==='make-focus'){setFocus(selected);return}if(el.id==='close-drawer'){closeDrawer();return}if(el.id==='drawer-link'){openModal('link',{target:selected});return}if(el.id==='remove-person'){openModal('remove',{id:selected});return}if(el.id==='photo-btn'){$('image-input').click();return}if(el.id==='clear-photo'){photoData='';$('photo-preview').innerHTML=photo({name:'Foto',gender:'unknown',photo:''});return}
  if(el.id==='confirm-unlink'){const {owner,other,relation}=ctx;let kind=relation==='parent'||relation==='child'?'parent':relation;let before=data[kind].length;data[kind]=data[kind].filter(([a,b])=>kind==='parent'?(relation==='parent'?!(a===other&&b===owner):!(a===owner&&b===other)):!((a===owner&&b===other)||(a===other&&b===owner)));if(data[kind].length===before)return toast('Hubungan langsung tidak ditemukan');save();closeModal();closeDrawer();render({fit:true});toast('Hubungan dihapus, kedua profil tetap ada');return}
  if(el.id==='confirm-new'){data={version:1,treeName:'Keluarga Saya',isDemo:false,people:[],parent:[],partner:[],sibling:[]};selected=null;focusRoot=null;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');toast('Pohon baru siap');return}
