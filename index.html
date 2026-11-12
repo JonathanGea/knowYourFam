@@ -148,13 +148,85 @@ body.fullscreen-open{overflow:hidden}
  .drawer-profile .person-photo{width:64px;height:64px}
  .drawer-profile{padding-bottom:15px}
 }
+
+/* Desktop: floating person preview; dedicated profile page for long-form details. */
+.quick-profile-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:11px 0 2px}
+.quick-profile-metric{background:#f5f9f4;border:1px solid #e2ebe0;border-radius:9px;text-align:center;padding:8px 2px}
+.quick-profile-metric b{display:block;font-size:15px;color:#23583e}
+.quick-profile-metric span{font-size:10px;color:#748b7a}
+.quick-profile-extra{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:#66806d;font-size:10px;margin:8px 0 2px;line-height:1.4}
+.quick-profile-extra span{background:#f2f6f0;padding:3px 7px;border-radius:100px;max-width:100%;overflow-wrap:anywhere}
+.direction-icon{display:inline-block;width:20px;height:20px;flex:none;vertical-align:middle;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.quick-direction b{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.quick-direction .direction-icon{width:22px;height:22px}
+.branch-toggle .direction-icon{width:17px;height:17px}
+.branch-action .direction-icon{width:16px;height:16px}
+.branch-toggle span.branch-count{font-size:10px;line-height:1;font-weight:800}
+.person-page{display:none;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:4px 2px 24px}
+.person-page.active{display:block}
+.main.profile-active .heading,.main.profile-active .stats{display:none}
+.profile-container{max-width:980px;margin:auto;display:flex;flex-direction:column;gap:19px;padding:2px 8px 30px}
+.profile-breadcrumb{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.profile-breadcrumb .btn{min-height:37px}
+.profile-hero{display:flex;gap:22px;align-items:center;border:1px solid #dce9de;background:linear-gradient(115deg,#edf6ee,#fff 70%);border-radius:18px;padding:28px}
+.profile-hero>.person-photo{height:110px;width:110px;border-radius:25px;font-size:32px;box-shadow:0 8px 24px #245b4319}
+.profile-identity{min-width:0;flex:1}
+.profile-label{font-size:10px;letter-spacing:1.2px;font-weight:900;color:#78a083;text-transform:uppercase}
+.profile-identity h2{font-size:clamp(23px,3vw,31px);line-height:1.2;letter-spacing:-1px;margin:6px 0}
+.profile-identity p{font-size:12px;color:#7f9385;overflow-wrap:anywhere}
+.profile-hero-actions{display:flex;gap:8px;flex-wrap:wrap;align-self:center}
+.profile-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.profile-stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;text-align:center}
+.profile-stat strong{font-size:20px;color:var(--pine);display:block;line-height:1.3}
+.profile-stat span{font-size:11px;color:#809383}
+.profile-tabs{display:flex;gap:8px;border-bottom:1px solid #dce8dd;padding-bottom:8px}
+.profile-tab{background:transparent;border:0;border-radius:9px;color:#6e8775;font-weight:800;padding:9px 15px;font-size:12px}
+.profile-tab.active{color:var(--pine);background:#e9f4eb}
+.profile-content{background:#fff;border:1px solid #e1e9df;border-radius:14px;padding:22px;min-height:250px}
+.profile-content h3{font-size:15px;margin-bottom:15px;color:#2e553e}
+.profile-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 23px}
+.profile-field{padding:11px 0;border-bottom:1px solid #e9eee8;min-width:0}
+.profile-field small{display:block;color:#8b9b8e;font-size:11px;margin-bottom:4px}
+.profile-field strong{font-size:13px;color:#304b39;overflow-wrap:anywhere;font-weight:700}
+.profile-note{background:#f5f9f4;padding:16px;border-radius:12px;white-space:pre-wrap;font-size:13px;color:#526b58;margin-top:16px}
+.profile-relation-group{margin:0 0 20px}
+.profile-group-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+.profile-group-title strong{font-size:13px}
+.profile-relation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(208px,1fr));gap:9px}
+.profile-relative{display:flex;align-items:center;gap:9px;background:#f9fbf8;border:1px solid #e3ebe2;border-radius:12px;padding:9px;min-width:0}
+.profile-relative .person-photo{height:39px;width:39px;border-radius:11px;font-size:12px}
+.profile-relative .profile-relative-name{flex:1;min-width:0;border:0;background:none;text-align:left;overflow-wrap:anywhere;font-size:12px;font-weight:750;color:#31563f}
+.profile-relative .relation-delete{padding:5px;font-size:10px}
+.profile-empty{font-size:12px;color:#a1afa3}
+.profile-section-tools{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.profile-placeholder{text-align:center;padding:35px 18px;color:#728978}
+.profile-placeholder strong{display:block;font-size:15px;color:#3b5d45;margin:10px 0}
+@media(max-width:650px){
+ .quick-profile-summary,.quick-profile-extra{display:none}
+ .person-page{padding:4px 0 16px}
+ .profile-container{gap:11px;padding:0 2px 90px}
+ .profile-hero{padding:16px;gap:12px;align-items:flex-start;flex-wrap:wrap;border-radius:13px}
+ .profile-hero>.person-photo{height:65px;width:65px;border-radius:15px;font-size:19px}
+ .profile-identity h2{font-size:20px;letter-spacing:-.5px}
+ .profile-hero-actions{width:100%;justify-content:flex-start}
+ .profile-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ .profile-stat{padding:9px 3px}
+ .profile-stat strong{font-size:16px}
+ .profile-stat span{font-size:9px}
+ .profile-content{padding:14px;border-radius:12px}
+ .profile-fields{grid-template-columns:1fr;gap:0}
+ .profile-breadcrumb .btn{padding:7px 10px;font-size:11px}
+ .profile-tabs{gap:3px}
+ .profile-tab{flex:1;padding:9px 4px}
+ .profile-relation-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div class="app">
  <header class="header"><div class="brand"><span class="logo">♧</span>Know<b>Your</b>Fam</div><div class="crumb">Workspace / <strong id="crumb-name">Keluarga</strong></div><div class="header-right"><span class="save-indicator">Tersimpan di browser</span><button class="btn" id="export-btn">↓ Ekspor</button><button class="btn primary" id="top-add">＋ Tambah anggota</button></div></header>
  <div class="body"><aside class="side"><div class="side-title">Menu utama</div><button class="nav active" data-view="tree">♧ &nbsp;Pohon keluarga</button><button class="nav" data-view="list">☷ &nbsp;Semua anggota</button><div class="side-separator"></div><div class="side-title">Pohon aktif</div><div class="family-chip"><div class="family-icon">♧</div><div><strong id="side-tree">Keluarga</strong><small>Family Tree</small></div></div><div class="side-title" style="margin-top:15px">Anggota</div><div id="person-links" class="person-links"></div><div class="side-bottom"><div class="note"><strong>Versi MVP</strong><p>Bangun silsilah ke atas atau ke bawah sebanyak generasi yang dibutuhkan.</p><button id="new-tree">Buat pohon baru</button></div><button class="btn" id="import-btn">↑ Impor data JSON</button></div></aside>
- <main class="main"><div class="heading"><div><div class="eyebrow">Ruang keluarga</div><h1 id="page-title">Pohon Keluarga</h1><p id="page-desc">Lihat hubungan seluruh anggota lintas generasi.</p></div><div class="heading-actions"><button class="btn" id="rename-btn">✎ Nama pohon</button><button class="btn soft" id="link-btn">⚭ Hubungkan</button><button class="btn primary" id="add-btn">＋ Tambah anggota</button></div></div><div class="stats"><div class="stat">♙ <strong id="count-people">0</strong> anggota</div><div class="stat">♧ <strong id="count-gen">0</strong> generasi</div><div class="stat">♢ <strong id="count-rel">0</strong> hubungan</div></div>
+ <main class="main" id="main-pane"><div class="heading"><div><div class="eyebrow">Ruang keluarga</div><h1 id="page-title">Pohon Keluarga</h1><p id="page-desc">Lihat hubungan seluruh anggota lintas generasi.</p></div><div class="heading-actions"><button class="btn" id="rename-btn">✎ Nama pohon</button><button class="btn soft" id="link-btn">⚭ Hubungkan</button><button class="btn primary" id="add-btn">＋ Tambah anggota</button></div></div><div class="stats"><div class="stat">♙ <strong id="count-people">0</strong> anggota</div><div class="stat">♧ <strong id="count-gen">0</strong> generasi</div><div class="stat">♢ <strong id="count-rel">0</strong> hubungan</div></div>
  <section class="canvas-shell" id="canvas-shell">
   <div class="canvas-top">
    <div class="mode-switch" role="group" aria-label="Mode pohon">
@@ -165,7 +237,7 @@ body.fullscreen-open{overflow:hidden}
   </div>
   <div class="focus-toolbar" id="focus-toolbar"><div class="focus-identity"><span class="focus-icon">◎</span><div><span class="focus-label">Keluarga dua generasi ke atas</span><strong id="focus-name">Anggota</strong></div></div><div class="focus-side"><span id="visible-count">—</span><button class="focus-link" id="back-focus" title="Kembali ke fokus sebelumnya">↶ Kembali</button><button class="focus-link" id="reset-branches">Tutup cabang</button></div></div>
   <div class="viewport" id="viewport" aria-label="Pohon keluarga interaktif. Ketuk anggota untuk aksi cepat, geser satu jari, cubit dua jari untuk zoom"><div class="scene" id="scene"></div><div class="viewport-footer">Fokus: 2 generasi leluhur + paman/bibi + pasangan · ↑ Orang tua · ↔ Saudara · ↓ Anak · Cubit 2 jari</div><div class="fullscreen-help" id="fullscreen-help">Ketuk anggota untuk aksi cepat · Cubit dua jari</div></div></section>
- <section class="member-list" id="member-list"><div class="member-grid" id="member-grid"></div></section></main></div>
+ <section class="member-list" id="member-list"><div class="member-grid" id="member-grid"></div></section><section class="person-page" id="profile-page" aria-label="Profil lengkap anggota"></section></main></div>
  <nav class="mobile-nav"><button data-view="tree" class="active"><span>♧</span>Pohon</button><button data-view="list"><span>☷</span>Anggota</button><button id="mobile-add"><span>＋</span>Tambah</button><button id="mobile-menu"><span>⋯</span>Lainnya</button></nav>
 </div>
 <div id="quick-panel" class="quick-panel" role="group" aria-label="Aksi cepat anggota" hidden></div>
@@ -236,7 +308,7 @@ const githubSeed={"version":1,"treeName":"Keluarga Saya","isDemo":false,"people"
 function validate(d){if(!d||!Array.isArray(d.people)||!Array.isArray(d.parent)||!Array.isArray(d.partner)||!Array.isArray(d.sibling))throw Error('Format data tidak valid');const ids=new Set();for(const p of d.people){if(!p.id||!p.name||ids.has(p.id))throw Error('ID/nama anggota tidak valid');ids.add(p.id);p.photo=typeof p.photo==='string'&&/^data:image\/(png|jpeg|webp);base64,/.test(p.photo)&&p.photo.length<250000?p.photo:'';p.name=String(p.name).slice(0,100);p.notes=String(p.notes||'').slice(0,500);for(const k of ['nickname','birthPlace','residence','occupation'])p[k]=String(p[k]||'').slice(0,100)}for(const k of ['parent','partner','sibling']){d[k]=d[k].filter(x=>Array.isArray(x)&&x.length===2&&ids.has(x[0])&&ids.has(x[1])&&x[0]!==x[1])}return d}
 let data;try{const saved=localStorage.getItem(STORE),previous=saved?validate(JSON.parse(saved)):null;data=previous&&!previous.isDemo?previous:validate(clone(githubSeed))}catch(e){data=validate(clone(githubSeed))}
 let selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null,view='tree',treeMode='focus',focusRoot=selected,expandedBranches=new Set(),expansionPages=new Map(),focusHistory=[],displayGraph=null;
-let quickPerson=null;
+let quickPerson=null,profileTab="bio",profileReturnView="tree";
 let zoom=1,pan={x:0,y:0},size={w:900,h:600},positions=new Map(),maxDepth=0,needsFit=true,modal=null,ctx={},photoData='';
 const W=185,H=113,GAP=26,SPACE=80,ROW=206,PADX=167,TOPY=95;
 function nameOf(id){return data.people.find(p=>p.id===id)?.name||'Anggota'}function byId(id){return data.people.find(p=>p.id===id)}
@@ -301,13 +373,18 @@ function visibleFamilyGraph(){
 }
 function branchMissing(key){if(treeMode!=='focus'||!displayGraph)return 0;const visible=new Set(displayGraph.people.map(p=>p.id));return branchMembers(key).filter(id=>!visible.has(id)).length}
 function invisibleNeighborCount(id){if(treeMode!=='focus'||!displayGraph)return 0;const visible=new Set(displayGraph.people.map(p=>p.id));const r=rel(id);return [...new Set([...r.parents,...r.siblings,...r.partners,...r.children])].filter(x=>!visible.has(x)).length}
+function dirIcon(type){
+ const d=type==='up'?'<path d="M12 19V5m-6 6 6-6 6 6"/>':type==='side'?'<path d="M4 12h16m-5-5 5 5-5 5m-6-10-5 5 5 5"/>':'<path d="M12 5v14m-6-6 6 6 6-6"/>';
+ return `<svg class="direction-icon" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+}
 function branchMetadata(key){const {type,ids}=parseBranch(key);if(type==='up')return {title:'Orang tua',short:'Orang tua',symbol:'↑'};if(type==='side')return {title:'Saudara',short:'Saudara',symbol:'↔'};if(type==='down')return {title:'Anak dari '+nameOf(ids[0]),short:'Anak',symbol:'↓'};return {title:'Anak '+nameOf(ids[0])+' & '+nameOf(ids[1]),short:'Anak bersama',symbol:'↓'}}
 function branchControls(id,compact=false){
  if(treeMode!=='focus')return '';
- return directionalKeys(id).map(key=>{const meta=branchMetadata(key),opened=expandedBranches.has(key),hidden=branchMissing(key);
+ return directionalKeys(id).map(key=>{
+  const meta=branchMetadata(key),opened=expandedBranches.has(key),hidden=branchMissing(key);
   if(!hidden&&!opened)return '';
-  const more=opened&&hidden>0;
-  return `<button type="button" class="${compact?'branch-toggle':'btn branch-action'} ${opened?'opened':''}" data-expand="${safe(key)}" title="${safe(more?'Tampilkan anggota berikutnya':opened?'Tutup cabang '+meta.title:'Buka '+meta.title)}" aria-label="${safe(more?'Tampilkan berikutnya':opened?'Tutup':'Buka')} ${safe(meta.title)}">${compact?meta.symbol+(more?hidden:opened?'−':hidden):more?meta.symbol+' '+Math.min(EXPAND_PAGE,hidden)+' berikutnya':opened?meta.symbol+' Tutup '+meta.short:meta.symbol+' '+meta.short+' ('+hidden+')'}</button>${!compact&&more?`<button type="button" class="btn branch-action" data-collapse="${safe(key)}">− Tutup ${meta.short}</button>`:''}`;
+  const more=opened&&hidden>0,type=parseBranch(key).type,arrow=dirIcon(type),text=compact?(more?hidden:opened?'−':hidden):more?`${Math.min(EXPAND_PAGE,hidden)} berikutnya`:opened?`Tutup ${meta.short}`:`${meta.short} (${hidden})`;
+  return `<button type="button" class="${compact?'branch-toggle':'btn branch-action'} ${opened?'opened':''}" data-expand="${safe(key)}" title="${safe(more?'Tampilkan anggota berikutnya':opened?'Tutup cabang '+meta.title:'Buka '+meta.title)}" aria-label="${safe(more?'Tampilkan berikutnya':opened?'Tutup':'Buka')} ${safe(meta.title)}">${arrow}<span class="${compact?'branch-count':'branch-label'}">${text}</span></button>${!compact&&more?`<button type="button" class="btn branch-action" data-collapse="${safe(key)}">− Tutup ${meta.short}</button>`:''}`;
  }).join('');
 }
 function setTreeMode(mode){if(!['focus','overview'].includes(mode))return;closeQuickActions();treeMode=mode;if(!focusRoot)focusRoot=selected;closeDrawer();render({fit:true});}
@@ -456,7 +533,7 @@ function drawTree({fit=false,focusNew=false}={}){
      const pairIndex=pairChildrenKeys(p.id).indexOf(key);if(pairIndex>0)top+=pairIndex*32;
     }
     const meta=branchMetadata(key),more=opened&&hidden>0;
-    expansion+=`<button class="branch-toggle direction-${type} ${opened?'opened':''}" data-expand="${safe(key)}" style="left:${left}px;top:${top}px" title="${safe(meta.title)} — ${opened?(more?'lihat berikutnya':'tutup cabang'):'buka cabang'}" aria-label="${safe((opened?(more?'Lanjut':'Tutup'):'Buka')+' '+meta.title)}">${meta.symbol}<span>${more?hidden:opened?'−':hidden}</span></button>`;
+    expansion+=`<button class="branch-toggle direction-${type} ${opened?'opened':''}" data-expand="${safe(key)}" style="left:${left}px;top:${top}px" title="${safe(meta.title)} — ${opened?(more?'lihat berikutnya':'tutup cabang'):'buka cabang'}" aria-label="${safe((opened?(more?'Lanjut':'Tutup'):'Buka')+' '+meta.title)}">${dirIcon(type)}<span class="branch-count">${more?hidden:opened?'−':hidden}</span></button>`;
    }
   }
  }
@@ -480,7 +557,7 @@ function renderDrawer(){
    return `<div class="couple-item"><div class="couple-title"><span class="couple-heart">♥</span><span>Anak ${safe(p.name)} &amp; ${safe(nameOf(partner))}</span></div><div class="couple-actions"><button class="btn soft" data-addpairchild="${encoded}">＋ Anak baru</button><button class="btn" data-linkpair="${encoded}">Hubungkan anak</button></div><small>Kedua orang tercatat sebagai orang tua anak. Tidak mengubah status pasangan.</small></div>`;
  }).join('');
  const hidden=invisibleNeighborCount(selected);
- $('drawer').innerHTML=`<div class="sheet-grab-zone"><button type="button" class="sheet-grab" id="sheet-grab" aria-label="Perbesar atau perkecil panel profil"><span></span></button></div><div class="drawer-head"><h3>Profil anggota</h3><button class="btn icon" id="close-drawer" aria-label="Tutup profil">✕</button></div><div class="drawer-profile">${photo(p)}<h2>${safe(p.name)}</h2><small>${safe(years(p))}</small>${treeMode==='focus'&&focusRoot===p.id?'<span class="focus-current">◎ Fokus sekarang</span>':''}<div class="drawer-actions"><button class="btn" data-edit>✎ Edit</button><button class="btn primary" data-addrel="child">＋ Relasi baru</button></div><div class="drawer-actions"><button class="btn soft" id="make-focus">◎ Jadikan fokus</button></div>${treeMode==='focus'?`<div class="drawer-section">Jelajahi cabang</div><div class="directional-actions">${branchControls(p.id)||'<p class="direction-empty">Semua hubungan langsung sudah terlihat.</p>'}</div>`:''}</div><div class="drawer-section">Informasi pribadi</div><div class="info-row"><span>Jenis kelamin</span><strong>${safe(({male:'Laki-laki',female:'Perempuan',unknown:'Belum diisi',other:'Lainnya'})[p.gender]||'Belum diisi')}</strong></div>${p.nickname?`<div class="info-row"><span>Nama panggilan</span><strong>${safe(p.nickname)}</strong></div>`:''}<div class="info-row"><span>Tanggal lahir</span><strong>${safe(dateText(p.birth))}</strong></div>${p.birthPlace?`<div class="info-row"><span>Tempat lahir</span><strong>${safe(p.birthPlace)}</strong></div>`:''}<div class="info-row"><span>Tanggal wafat</span><strong>${safe(dateText(p.death))}</strong></div>${p.occupation?`<div class="info-row"><span>Pekerjaan</span><strong>${safe(p.occupation)}</strong></div>`:''}${p.residence?`<div class="info-row"><span>Domisili</span><strong>${safe(p.residence)}</strong></div>`:''}${p.notes?`<div class="drawer-section">Catatan</div><p style="font-size:12px;white-space:pre-line;overflow-wrap:anywhere">${safe(p.notes)}</p>`:''}<div class="drawer-section">Hubungan keluarga</div><div class="hint" style="font-size:10px;padding:9px;margin:8px 0">Tombol <strong>Hapus</strong> hanya melepaskan hubungan, tidak menghapus orang. Saudara otomatis mengikuti data orang tua yang sama.</div>${section('Orang tua',r.parents,'parent')}${section('Pasangan',r.partners,'partner')}${r.partners.length?`<div class="drawer-section">Tambah hubungan berdasarkan pasangan</div>${pairActions}`:''}${section('Anak',r.children,'child')}${section('Saudara',r.siblings,'sibling')}<div class="drawer-buttons"><button class="btn" id="drawer-link">⚭ Hubungkan orang</button><button class="btn danger" id="remove-person">Hapus anggota</button></div>`;
+ $('drawer').innerHTML=`<div class="sheet-grab-zone"><button type="button" class="sheet-grab" id="sheet-grab" aria-label="Perbesar atau perkecil panel profil"><span></span></button></div><div class="drawer-head"><h3>Profil anggota</h3><button class="btn icon" id="close-drawer" aria-label="Tutup profil">✕</button></div><div class="drawer-profile">${photo(p)}<h2>${safe(p.name)}</h2><small>${safe(years(p))}</small>${treeMode==='focus'&&focusRoot===p.id?'<span class="focus-current">◎ Fokus sekarang</span>':''}<div class="drawer-actions"><button class="btn" data-edit>✎ Edit</button><button class="btn primary" data-addrel="child">＋ Relasi baru</button></div><div class="drawer-actions"><button class="btn soft" id="make-focus">◎ Jadikan fokus</button><button class="btn" id="drawer-full-profile">Profil lengkap ↗</button></div>${treeMode==='focus'?`<div class="drawer-section">Jelajahi cabang</div><div class="directional-actions">${branchControls(p.id)||'<p class="direction-empty">Semua hubungan langsung sudah terlihat.</p>'}</div>`:''}</div><div class="drawer-section">Informasi pribadi</div><div class="info-row"><span>Jenis kelamin</span><strong>${safe(({male:'Laki-laki',female:'Perempuan',unknown:'Belum diisi',other:'Lainnya'})[p.gender]||'Belum diisi')}</strong></div>${p.nickname?`<div class="info-row"><span>Nama panggilan</span><strong>${safe(p.nickname)}</strong></div>`:''}<div class="info-row"><span>Tanggal lahir</span><strong>${safe(dateText(p.birth))}</strong></div>${p.birthPlace?`<div class="info-row"><span>Tempat lahir</span><strong>${safe(p.birthPlace)}</strong></div>`:''}<div class="info-row"><span>Tanggal wafat</span><strong>${safe(dateText(p.death))}</strong></div>${p.occupation?`<div class="info-row"><span>Pekerjaan</span><strong>${safe(p.occupation)}</strong></div>`:''}${p.residence?`<div class="info-row"><span>Domisili</span><strong>${safe(p.residence)}</strong></div>`:''}${p.notes?`<div class="drawer-section">Catatan</div><p style="font-size:12px;white-space:pre-line;overflow-wrap:anywhere">${safe(p.notes)}</p>`:''}<div class="drawer-section">Hubungan keluarga</div><div class="hint" style="font-size:10px;padding:9px;margin:8px 0">Tombol <strong>Hapus</strong> hanya melepaskan hubungan, tidak menghapus orang. Saudara otomatis mengikuti data orang tua yang sama.</div>${section('Orang tua',r.parents,'parent')}${section('Pasangan',r.partners,'partner')}${r.partners.length?`<div class="drawer-section">Tambah hubungan berdasarkan pasangan</div>${pairActions}`:''}${section('Anak',r.children,'child')}${section('Saudara',r.siblings,'sibling')}<div class="drawer-buttons"><button class="btn" id="drawer-link">⚭ Hubungkan orang</button><button class="btn danger" id="remove-person">Hapus anggota</button></div>`;
 }
 function openDrawer(){closeQuickActions();$('drawer').classList.add('open');$('drawer').classList.remove('expanded');$('shade').classList.add('show')}
 function closeDrawer(){$('drawer').classList.remove('open','expanded');$('shade').classList.remove('show')}
@@ -491,10 +568,10 @@ function quickBranchActions(id){
  return groups.map(([type,symbol,label])=>{
   const groupKeys=keys.filter(key=>type==='down'?['down','pair'].includes(parseBranch(key).type):parseBranch(key).type===type);
   const available=groupKeys.filter(key=>branchMissing(key)>0||expandedBranches.has(key));
-  if(!available.length)return `<button class="quick-direction" type="button" disabled title="Semua ${safe(label.toLowerCase())} yang tercatat sudah terlihat"><b>${symbol}</b><span>${label}</span><small>Terlihat / belum ada</small></button>`;
+  if(!available.length)return `<button class="quick-direction" type="button" disabled title="Semua ${safe(label.toLowerCase())} yang tercatat sudah terlihat"><b>${dirIcon(type)}</b><span>${label}</span><small>Terlihat / belum ada</small></button>`;
   const primary=available[0],open=expandedBranches.has(primary),missing=branchMissing(primary);
   const other=available.slice(1).map(key=>`<button class="quick-subbranch" data-expand="${safe(key)}">${safe(branchMetadata(key).short)} ${safe(parseBranch(key).ids.map(nameOf).join(' & '))} ${expandedBranches.has(key)?'−':'+'}</button>`).join('');
-  return `<div class="quick-direction-group"><button class="quick-direction ${open?'active':''}" type="button" data-expand="${safe(primary)}" aria-label="${safe((open?'Tutup atau lanjutkan':'Buka')+' '+branchMetadata(primary).title)}"><b>${symbol}</b><span>${label}</span><small>${open?(missing?'+'+missing+' lainnya':'Tutup cabang'):'+'+missing+' anggota'}</small></button>${other?`<div class="quick-subbranches">${other}</div>`:''}</div>`;
+  return `<div class="quick-direction-group"><button class="quick-direction ${open?'active':''}" type="button" data-expand="${safe(primary)}" aria-label="${safe((open?'Tutup atau lanjutkan':'Buka')+' '+branchMetadata(primary).title)}"><b>${dirIcon(type)}</b><span>${label}</span><small>${open?(missing?'+'+missing+' lainnya':'Tutup cabang'):'+'+missing+' anggota'}</small></button>${other?`<div class="quick-subbranches">${other}</div>`:''}</div>`;
  }).join('');
 }
 function positionQuickActions(){
@@ -511,12 +588,14 @@ function closeQuickActions(){quickPerson=null;const el=$('quick-panel');el.hidde
 function showQuickActions(id){
  const p=byId(id);if(!p||view!=='tree')return;
  quickPerson=id;const menu=$('quick-panel');
- menu.innerHTML=`<div class="quick-head">${photo(p)}<div class="quick-identity"><strong>${safe(p.name)}</strong><small>${safe(years(p))}</small></div><button type="button" class="quick-close" id="quick-close" aria-label="Tutup aksi cepat">✕</button></div><div class="quick-caption">Jelajahi hubungan</div><div class="quick-directions">${treeMode==='focus'?quickBranchActions(id):'<div class="quick-overview-note">Aktifkan Fokus Orang untuk membuka cabang per arah.</div>'}</div><div class="quick-actions"><button type="button" class="btn soft" id="quick-focus" ${treeMode==='focus'&&focusRoot===id?'disabled':''}>◎ ${treeMode==='focus'&&focusRoot===id?'Sedang fokus':'Jadikan fokus'}</button><button type="button" class="btn" id="quick-profile">☷ Lihat profil</button></div><button type="button" class="quick-relation" id="quick-addrelation">＋ Tambah hubungan keluarga</button>`;
+ const r=rel(id);const overview=`<div class="quick-profile-summary"><div class="quick-profile-metric"><b>${r.parents.length}</b><span>Orang tua</span></div><div class="quick-profile-metric"><b>${r.partners.length}</b><span>Pasangan</span></div><div class="quick-profile-metric"><b>${r.children.length}</b><span>Anak</span></div></div><div class="quick-profile-extra">${p.nickname?`<span>${safe(p.nickname)}</span>`:''}${p.residence?`<span>${safe(p.residence)}</span>`:''}${p.occupation?`<span>${safe(p.occupation)}</span>`:''}</div>`;
+ menu.innerHTML=`<div class="quick-head">${photo(p)}<div class="quick-identity"><strong>${safe(p.name)}</strong><small>${safe(years(p))}</small></div><button type="button" class="quick-close" id="quick-close" aria-label="Tutup aksi cepat">✕</button></div>${overview}<div class="quick-caption">Jelajahi hubungan</div><div class="quick-directions">${treeMode==='focus'?quickBranchActions(id):'<div class="quick-overview-note">Aktifkan Fokus Orang untuk membuka cabang per arah.</div>'}</div><div class="quick-actions"><button type="button" class="btn soft" id="quick-focus" ${treeMode==='focus'&&focusRoot===id?'disabled':''}>◎ ${treeMode==='focus'&&focusRoot===id?'Sedang fokus':'Jadikan fokus'}</button><button type="button" class="btn" id="quick-profile">☷ ${window.innerWidth<=650?'Lihat profil':'Profil lengkap'}</button></div><button type="button" class="quick-relation" id="quick-addrelation">＋ Tambah hubungan keluarga</button>`;
  menu.hidden=false;menu.style.left='';menu.style.top='';
  requestAnimationFrame(positionQuickActions);
 }
 function choose(id,{profile=false}={}){
  if(!byId(id))return;
+ if(view==='profile'||profile&&window.innerWidth>650){openProfilePage(id);return}
  if(quickPerson===id&&!profile){closeQuickActions();return}
  closeQuickActions();selected=id;
  if(treeMode==='focus'&&!visibleFamilyGraph().people.some(p=>p.id===id)){
@@ -528,8 +607,30 @@ function choose(id,{profile=false}={}){
  if(profile){openDrawer();return}
  if(view==='tree')requestAnimationFrame(()=>showQuickActions(id));
 }
-function render({fit=false,focusNew=false}={}){makeLayout();renderMeta();renderDrawer();if(view==='tree')drawTree({fit,focusNew});if(quickPerson)requestAnimationFrame(()=>showQuickActions(quickPerson))}
-function showView(v){closeQuickActions();view=v;$('canvas-shell').style.display=v==='tree'?'flex':'none';$('member-list').classList.toggle('active',v==='list');document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeDrawer();render({fit:v==='tree'})}
+
+function profileRelBlock(title,ids,type){
+ const relation=ids.map(id=>{
+  const direct=type==='parent'?data.parent.some(([a,b])=>a===id&&b===selected):type==='child'?data.parent.some(([a,b])=>a===selected&&b===id):type==='partner'?data.partner.some(([a,b])=>a===id&&b===selected||a===selected&&b===id):data.sibling.some(([a,b])=>a===id&&b===selected||a===selected&&b===id);
+  return `<div class="profile-relative">${photo(byId(id))}<button class="profile-relative-name" data-person="${safe(id)}" title="Buka profil ${safe(nameOf(id))}">${safe(nameOf(id))}</button>${direct?`<button class="relation-delete" data-unlink="${safe(id)}" data-reltype="${type}" aria-label="Hapus hubungan dengan ${safe(nameOf(id))}">Hapus</button>`:'<span class="relation-explained">Otomatis</span>'}</div>`;
+ }).join('')||'<p class="profile-empty">Belum ada data hubungan</p>';
+ return `<section class="profile-relation-group"><div class="profile-group-title"><strong>${title} (${ids.length})</strong><button class="btn" data-addrel="${type}">＋ Tambah</button></div><div class="profile-relation-grid">${relation}</div></section>`;
+}
+function renderProfilePage(){
+ const root=$('profile-page'),p=byId(selected);if(!p){root.innerHTML='<p>Anggota tidak ditemukan.</p>';return}
+ const r=rel(p.id),field=(name,value)=>`<div class="profile-field"><small>${name}</small><strong>${safe(value||'Belum diisi')}</strong></div>`;
+ const bio=`<div><h3>Informasi pribadi</h3><div class="profile-fields">${field('Nama lengkap',p.name)}${field('Nama panggilan',p.nickname)}${field('Jenis kelamin',({male:'Laki-laki',female:'Perempuan',unknown:'Belum diisi',other:'Lainnya'})[p.gender]||'Belum diisi')}${field('Tanggal lahir',dateText(p.birth))}${field('Tempat lahir',p.birthPlace)}${field('Domisili',p.residence)}${field('Pekerjaan',p.occupation)}${field('Tanggal wafat',dateText(p.death))}</div>${p.notes?`<div class="profile-note">${safe(p.notes)}</div>`:''}<div class="profile-section-tools"><button class="btn primary" data-edit>✎ Edit biodata</button></div></div>`;
+ const pairActions=r.partners.map(partner=>`<div class="couple-item"><div class="couple-title">♥ Anak dari ${safe(p.name)} &amp; ${safe(nameOf(partner))}</div><div class="couple-actions"><button class="btn soft" data-addpairchild="${safe(pairKey(p.id,partner))}">＋ Anak baru</button><button class="btn" data-linkpair="${safe(pairKey(p.id,partner))}">Hubungkan anak</button></div></div>`).join('');
+ const family=`<h3>Hubungan keluarga</h3><p class="hint" style="margin-bottom:15px">Hapus hubungan hanya melepaskan garis relasinya; profil kedua anggota tetap ada.</p>${profileRelBlock('Orang tua',r.parents,'parent')}${profileRelBlock('Pasangan',r.partners,'partner')}${r.partners.length?`<section class="profile-relation-group"><div class="profile-group-title"><strong>Tambah anak berdasarkan pasangan</strong></div>${pairActions}</section>`:''}${profileRelBlock('Anak',r.children,'child')}${profileRelBlock('Saudara',r.siblings,'sibling')}<div class="profile-section-tools"><button class="btn primary" id="drawer-link">⚭ Hubungkan dua orang</button><button class="btn danger" id="remove-person">Hapus anggota</button></div>`;
+ const memories=`<div class="profile-placeholder"><span style="font-size:32px" aria-hidden="true">▧</span><strong>Foto, cerita, dan kenangan</strong><p>Modul kenangan belum tersedia di MVP. Informasi keluarga yang sudah dimasukkan tetap tersimpan dan tidak berubah.</p></div>`;
+ root.innerHTML=`<div class="profile-container"><div class="profile-breadcrumb"><button class="btn" id="profile-back">← Kembali ke ${profileReturnView==='list'?'daftar anggota':'pohon keluarga'}</button><span class="profile-label">PERSON PROFILE</span></div><header class="profile-hero">${photo(p)}<div class="profile-identity"><span class="profile-label">Profil anggota keluarga</span><h2>${safe(p.name)}</h2><p>${safe(years(p))}${p.residence?' · '+safe(p.residence):''}</p></div><div class="profile-hero-actions"><button class="btn soft" id="profile-tree">◎ Lihat di pohon</button><button class="btn" data-edit>✎ Edit</button></div></header><div class="profile-stats">${[['Orang tua',r.parents.length],['Saudara',r.siblings.length],['Pasangan',r.partners.length],['Anak',r.children.length]].map(([label,n])=>`<div class="profile-stat"><strong>${n}</strong><span>${label}</span></div>`).join('')}</div><nav class="profile-tabs" role="tablist" aria-label="Bagian profil">${[['bio','Biodata'],['family','Keluarga'],['memories','Kenangan']].map(([tab,name])=>`<button type="button" role="tab" aria-selected="${profileTab===tab}" class="profile-tab ${profileTab===tab?'active':''}" data-profile-tab="${tab}">${name}</button>`).join('')}</nav><div class="profile-content">${profileTab==='family'?family:profileTab==='memories'?memories:bio}</div></div>`;
+}
+function openProfilePage(id){
+ if(!byId(id))return;
+ if(view!=='profile')profileReturnView=view==='list'?'list':'tree';
+ selected=id;profileTab='bio';showView('profile');
+}
+function render({fit=false,focusNew=false}={}){makeLayout();renderMeta();renderDrawer();if(view==='tree')drawTree({fit,focusNew});if(view==='profile')renderProfilePage();if(quickPerson)requestAnimationFrame(()=>showQuickActions(quickPerson))}
+function showView(v){closeQuickActions();view=v;$('main-pane').classList.toggle('profile-active',v==='profile');$('profile-page').classList.toggle('active',v==='profile');$('canvas-shell').style.display=v==='tree'?'flex':'none';$('member-list').classList.toggle('active',v==='list');document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeDrawer();render({fit:v==='tree'})}
 function openModal(type,info={}){closeQuickActions();modal=type;ctx=info;photoData=info.id?byId(info.id)?.photo||'':'';$('overlay').classList.add('show');renderModal();setTimeout(()=>$('modal-content').querySelector('input,select,button')?.focus(),40)}
 function closeModal(){$('overlay').classList.remove('show');modal=null;ctx={}}
 function modalLayout(title,desc,content,footer){$('modal-title').textContent=title;$('modal-desc').textContent=desc;$('modal-content').innerHTML=content;$('modal-footer').innerHTML=footer}
@@ -583,7 +684,7 @@ function linkChildToCouple(a,b,child){
  for(const parent of missing){const error=addRelation(parent,child,'parent');if(error){for(const p of added)data.parent=data.parent.filter(([x,y])=>!(x===p&&y===child));return error}added.push(parent)}
  return null;
 }
-function savePerson(form){const fields=new FormData(form),p=ctx.id?byId(ctx.id):null,name=String(fields.get('name')||'').trim(),birth=String(fields.get('birth')||''),death=String(fields.get('death')||'');if(!name){toast('Nama wajib diisi');return}if(birth&&death&&death<birth){toast('Tanggal wafat tidak valid');return}const item={id:p?.id||newId(),name,gender:String(fields.get('gender')),birth,death,notes:String(fields.get('notes')||'').trim(),nickname:String(fields.get('nickname')||'').trim(),birthPlace:String(fields.get('birthPlace')||'').trim(),residence:String(fields.get('residence')||'').trim(),occupation:String(fields.get('occupation')||'').trim(),photo:photoData,self:p?.self||false};if(!p&&fields.has('self')){data.people.forEach(p=>p.self=false);item.self=true}if(p)Object.assign(p,item);else{data.people.push(item);if(ctx.target&&fields.get('relation')!=='none'){const r=String(fields.get('relation')),type=(r==='parent'||r==='child')?'parent':r,a=r==='parent'?item.id:ctx.target,b=r==='parent'?ctx.target:item.id;const coparent=r==='child'?String(fields.get('coparent')||''):'';const error=coparent?linkChildToCouple(a,coparent,b):addRelation(a,b,type);if(error){data.people.pop();toast(error);return}}}selected=item.id;if(!focusRoot)focusRoot=item.id;if(ctx.target){const direction=String(fields.get('relation')||'child');if(direction==='parent')expandedBranches.add('up:'+encodeURIComponent(ctx.target));else if(direction==='sibling')expandedBranches.add('side:'+encodeURIComponent(ctx.target));else if(direction==='child'){const other=String(fields.get('coparent')||'');expandedBranches.add(other?pairKey(ctx.target,other):'down:'+encodeURIComponent(ctx.target));}}save();closeModal();closeDrawer();showView('tree');render({fit:true,focusNew:true});toast(p?'Profil diperbarui':'Anggota ditambahkan ke pohon');}
+function savePerson(form){const fields=new FormData(form),p=ctx.id?byId(ctx.id):null,name=String(fields.get('name')||'').trim(),birth=String(fields.get('birth')||''),death=String(fields.get('death')||'');if(!name){toast('Nama wajib diisi');return}if(birth&&death&&death<birth){toast('Tanggal wafat tidak valid');return}const item={id:p?.id||newId(),name,gender:String(fields.get('gender')),birth,death,notes:String(fields.get('notes')||'').trim(),nickname:String(fields.get('nickname')||'').trim(),birthPlace:String(fields.get('birthPlace')||'').trim(),residence:String(fields.get('residence')||'').trim(),occupation:String(fields.get('occupation')||'').trim(),photo:photoData,self:p?.self||false};if(!p&&fields.has('self')){data.people.forEach(p=>p.self=false);item.self=true}if(p)Object.assign(p,item);else{data.people.push(item);if(ctx.target&&fields.get('relation')!=='none'){const r=String(fields.get('relation')),type=(r==='parent'||r==='child')?'parent':r,a=r==='parent'?item.id:ctx.target,b=r==='parent'?ctx.target:item.id;const coparent=r==='child'?String(fields.get('coparent')||''):'';const error=coparent?linkChildToCouple(a,coparent,b):addRelation(a,b,type);if(error){data.people.pop();toast(error);return}}}selected=item.id;if(!focusRoot)focusRoot=item.id;if(ctx.target){const direction=String(fields.get('relation')||'child');if(direction==='parent')expandedBranches.add('up:'+encodeURIComponent(ctx.target));else if(direction==='sibling')expandedBranches.add('side:'+encodeURIComponent(ctx.target));else if(direction==='child'){const other=String(fields.get('coparent')||'');expandedBranches.add(other?pairKey(ctx.target,other):'down:'+encodeURIComponent(ctx.target));}}save();closeModal();closeDrawer();if(p&&view==='profile'){render();toast('Profil diperbarui');return}showView('tree');render({fit:true,focusNew:true});toast(p?'Profil diperbarui':'Anggota ditambahkan ke pohon');}
 function exportJSON(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='knowyourfam-family-tree.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Cadangan berhasil dibuat')}
 function importJSON(file){if(!file||file.size>3000000)return toast('File tidak valid atau terlalu besar');const reader=new FileReader();reader.onload=()=>{try{const next=validate(JSON.parse(String(reader.result)));if(!confirm(`Impor ${next.people.length} anggota dan mengganti pohon sekarang?`))return;data=next;selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');render({fit:true});toast('Berhasil mengimpor data')}catch(e){toast('File JSON tidak cocok: '+e.message)}};reader.readAsText(file)}
 async function loadGithubData(){
@@ -647,10 +748,14 @@ document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el
  if(el.dataset.addpairchild){const {type,ids}=parseBranch(el.dataset.addpairchild);if(type==='pair'&&ids.length===2)openModal('person',{target:ids[0],relation:'child',parentPair:ids});return}
  if(el.dataset.unlink){openModal('unlink',{owner:selected,other:el.dataset.unlink,relation:el.dataset.reltype});return}if(el.dataset.view){showView(el.dataset.view);return}if(el.dataset.person){choose(el.dataset.person,{profile:!el.closest('.node')});return}if(el.dataset.addrel){openModal('person',{target:selected,relation:el.dataset.addrel});return}if(el.hasAttribute('data-add-empty')){openModal('person');return}if(el.hasAttribute('data-edit')){openModal('person',{id:selected});return}if(el.hasAttribute('data-cancel')){closeModal();return}
  if(el.id==='quick-close'){closeQuickActions();return}
- if(el.id==='quick-profile'){renderDrawer();openDrawer();return}
+ if(el.id==='quick-profile'){const id=quickPerson||selected;if(window.innerWidth<=650){renderDrawer();openDrawer()}else openProfilePage(id);return}
  if(el.id==='quick-focus'){const id=quickPerson||selected;closeQuickActions();setFocus(id);return}
  if(el.id==='quick-addrelation'){const id=quickPerson||selected;openModal('link',{target:id});return}
  if(el.id==='sheet-grab'){if(performance.now()<suppressGrabClickUntil)return;$('drawer').classList.toggle('expanded');return}
+ if(el.id==='profile-back'){showView(profileReturnView);return}
+ if(el.dataset.profileTab){profileTab=el.dataset.profileTab;renderProfilePage();return}
+ if(el.id==='profile-tree'){setFocus(selected);return}
+ if(el.id==='drawer-full-profile'){openProfilePage(selected);return}
  if(el.id==='make-focus'){setFocus(selected);return}if(el.id==='close-drawer'){closeDrawer();return}if(el.id==='drawer-link'){openModal('link',{target:selected});return}if(el.id==='remove-person'){openModal('remove',{id:selected});return}if(el.id==='photo-btn'){$('image-input').click();return}if(el.id==='clear-photo'){photoData='';$('photo-preview').innerHTML=photo({name:'Foto',gender:'unknown',photo:''});return}
  if(el.id==='confirm-unlink'){const {owner,other,relation}=ctx;let kind=relation==='parent'||relation==='child'?'parent':relation;let before=data[kind].length;data[kind]=data[kind].filter(([a,b])=>kind==='parent'?(relation==='parent'?!(a===other&&b===owner):!(a===owner&&b===other)):!((a===owner&&b===other)||(a===other&&b===owner)));if(data[kind].length===before)return toast('Hubungan langsung tidak ditemukan');save();closeModal();closeDrawer();render({fit:true});toast('Hubungan dihapus, kedua profil tetap ada');return}
  if(el.id==='confirm-new'){data={version:1,treeName:'Keluarga Saya',isDemo:false,people:[],parent:[],partner:[],sibling:[]};selected=null;focusRoot=null;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');toast('Pohon baru siap');return}
