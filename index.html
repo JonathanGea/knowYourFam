@@ -460,7 +460,10 @@ function branchControls(id,compact=false){
 function setTreeMode(mode){if(!['focus','overview'].includes(mode))return;closeQuickActions();treeMode=mode;if(!focusRoot)focusRoot=selected;closeDrawer();render({fit:true});}
 function setFocus(id,{fromHistory=false}={}){if(!byId(id))return;closeQuickActions();if(focusRoot&&focusRoot!==id&&!fromHistory)focusHistory.push(focusRoot);focusRoot=id;selected=id;expandedBranches.clear();expansionPages.clear();treeMode='focus';closeDrawer();if(view!=='tree')showView('tree');else render({fit:true,focusNew:true});toast('Fokus dipindahkan ke '+nameOf(id));}
 function renderKeepingAnchor(id){
- const before=positions.get(id),screen=before?{x:pan.x+(before.x+W/2)*zoom,y:pan.y+(before.y+H/2)*zoom}:null;
+ const before=positions.get(id),previous=before?{x:pan.x+(before.x+W/2)*zoom,y:pan.y+(before.y+H/2)*zoom}:null;
+ const viewport=$('viewport');
+ const within=previous&&previous.x>=38&&previous.x<=viewport.clientWidth-38&&previous.y>=38&&previous.y<=viewport.clientHeight-38;
+ const screen=previous?(within?previous:{x:viewport.clientWidth/2,y:viewport.clientHeight/2}):null;
  const previouslyFit=needsFit;needsFit=false;closeDrawer();render({fit:false});
  const after=positions.get(id);
  if(screen&&after){pan.x=screen.x-(after.x+W/2)*zoom;pan.y=screen.y-(after.y+H/2)*zoom;applyView()}
@@ -925,6 +928,104 @@ function makeLayout(){
    row.splice(0,row.length,...ordered);
   }
  }
+
+ // FAMILY_BALANCE_V3: organize complete birth-family blocks around their
+ // couple, then align each family unit with the midpoint of its descendants.
+ // A sibling of the left spouse goes left; a sibling of the right spouse goes right.
+ // Couple and siblings move as atomic groups, never individual cards.
+ const siblingRelated=(id,other)=>id!==other&&(
+  gdata.sibling.some(([a,b])=>(a===id&&b===other)||(b===id&&a===other))||
+  gdata.parent.some(([pa,child])=>child===id&&gdata.parent.some(([pb,ch])=>pa===pb&&ch===other))
+ );
+ const unitCx=g=>g.x+ownWidth(g)/2;
+ const weightedChildrenCx=g=>{
+  const childIds=new Set();
+  for(const person of g.members)for(const [parent,child] of gdata.parent)if(parent===person)childIds.add(child);
+  const xs=[...childIds].map(id=>{
+   const cg=groups.get(idGroup.get(id));return cg&&cg.level>g.level?cg.x+cg.members.indexOf(id)*(W+GAP)+W/2:null;
+  }).filter(x=>x!==null);
+  return xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:null;
+ };
+ const parentCx=g=>{
+  const xs=[];
+  for(const person of g.members)for(const [parent,child] of gdata.parent){
+   if(child!==person)continue;
+   const pg=groups.get(idGroup.get(parent));
+   if(pg&&pg.level<g.level)xs.push(pg.x+pg.members.indexOf(parent)*(W+GAP)+W/2);
+  }
+  return xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:null;
+ };
+ function balanceFamilyRow(level,allowReorder,parentMix=0){
+  const row=rows.get(level)||[];if(!row.length)return;
+  const used=new Set(),blocks=[];
+  const coupleCandidates=row.filter(g=>g.members.length===2&&weightedChildrenCx(g)!==null).sort((a,b)=>{
+   const score=g=>g.members.reduce((sum,id)=>sum+gdata.parent.filter(([pa])=>pa===id).length,0)*2+
+    row.filter(h=>h!==g&&h.members.some(mid=>g.members.some(id=>siblingRelated(id,mid)))).length;
+   return score(b)-score(a)||a.i-b.i;
+  });
+  if(allowReorder)for(const anchor of coupleCandidates){
+   if(used.has(anchor.id))continue;
+   const left=[],right=[];
+   for(const g of row){
+    if(used.has(g.id)||g===anchor)continue;
+    const a=g.members.some(mid=>siblingRelated(mid,anchor.members[0]));
+    const b=g.members.some(mid=>siblingRelated(mid,anchor.members[1]));
+    if(a&&!b)left.push(g);
+    else if(b&&!a)right.push(g);
+   }
+   if(!left.length&&!right.length)continue;
+   const rank=g=>weightedChildrenCx(g)??unitCx(g);
+   left.sort((a,b)=>rank(a)-rank(b));right.sort((a,b)=>rank(a)-rank(b));
+   const members=[...left,anchor,...right];
+   members.forEach(g=>used.add(g.id));
+   blocks.push(members);
+  }
+  for(const g of row)if(!used.has(g.id)){blocks.push([g]);used.add(g.id)}
+  const gapInside=36,gapBetween=76;
+  const widthOf=block=>block.reduce((n,g)=>n+ownWidth(g),0)+(block.length-1)*gapInside;
+  const blockAnchor=block=>{
+   const main=block.find(g=>g.members.length===2&&weightedChildrenCx(g)!==null)||block.find(g=>weightedChildrenCx(g)!==null)||block[0];
+   const children=weightedChildrenCx(main);
+   const parents=parentCx(main);
+   // On the bottom-up pass direct children dominate; on the top-down pass
+   // known parents can guide groups which do not yet have descendants.
+   const target=children!==null&&parents!==null?children*(1-parentMix)+parents*parentMix:children??parents??unitCx(main);
+   let before=0;for(const g of block){if(g===main)break;before+=ownWidth(g)+gapInside}
+   return target-(before+ownWidth(main)/2);
+  };
+  if(allowReorder)blocks.sort((a,b)=>blockAnchor(a)-blockAnchor(b)||a[0].i-b[0].i);
+  else blocks.sort((a,b)=>row.indexOf(a[0])-row.indexOf(b[0]));
+  // Shift each cluster towards its own descendants while keeping the ordered
+  // clusters collision-free. Isotonic regression avoids arbitrary large gaps.
+  const xs=[],ws=[],off=[];let total=0;
+  for(let i=0;i<blocks.length;i++){
+   if(i)total+=widthOf(blocks[i-1])+gapBetween;
+   off.push(total);
+   const ideal=blockAnchor(blocks[i]);
+   const anchor=blocks[i].find(g=>weightedChildrenCx(g)!==null);
+   xs.push(ideal-total);ws.push(anchor?4:1);
+  }
+  const pools=[];
+  for(let i=0;i<blocks.length;i++){
+   pools.push({start:i,end:i,w:ws[i],v:xs[i]});
+   while(pools.length>1){
+    const end=pools.at(-1),prior=pools.at(-2);if(prior.v<=end.v)break;
+    pools.splice(-2,2,{start:prior.start,end:end.end,w:prior.w+end.w,v:(prior.v*prior.w+end.v*end.w)/(prior.w+end.w)});
+   }
+  }
+  const target=new Array(blocks.length);
+  for(const pool of pools)for(let i=pool.start;i<=pool.end;i++)target[i]=pool.v+off[i];
+  row.length=0;
+  for(let i=0;i<blocks.length;i++){
+   let x=target[i];
+   for(const g of blocks[i]){g.x=x;x+=ownWidth(g)+gapInside;row.push(g)}
+  }
+ }
+ // Descendant-first placement brings each ancestor closer to its own branch;
+ // the second sweep aligns descendant blocks where a parent already exists.
+ for(let lev=maxDepth;lev>=0;lev--)balanceFamilyRow(lev,true,0);
+ for(let lev=1;lev<=maxDepth;lev++)balanceFamilyRow(lev,true,.85);
+ for(let lev=maxDepth-1;lev>=0;lev--)balanceFamilyRow(lev,false,.4);
  // Normalize all generations into the same positive coordinate system.
  const allGroups=[...groups.values()];
  const minX=allGroups.length?Math.min(...allGroups.map(g=>g.x)):0;
@@ -945,6 +1046,43 @@ function drawTree({fit=false,focusNew=false}={}){
  let bg='';const demoTitle=['Kakek & Nenek','Orang Tua & Keluarga','Anak & Cucu'];
  for(let level=0;level<=maxDepth;level++){const top=level?TOPY+level*ROW-55:0;const bottom=level===maxDepth?size.h:TOPY+(level+1)*ROW-55;const label=data.isDemo&&demoTitle[level]?demoTitle[level]:'Generasi '+(level+1);bg+=`<div class="lane" style="top:${top}px;height:${bottom-top}px"></div><div class="lane-label" style="top:${TOPY+level*ROW-22}px"><div class="lane-number">${String(level+1).padStart(2,'0')}</div><div class="lane-name">${safe(label)}</div><div class="lane-description">Generasi ${level+1}</div></div>`}
  let lines='';for(const [a,b] of displayGraph.partner){const x=positions.get(a),y=positions.get(b);if(!x||!y||Math.abs(x.y-y.y)>25)continue;const left=x.x<y.x?x:y,right=x.x<y.x?y:x;lines+=`<path class="edge-partner" d="M${left.x+W} ${left.y+H/2} H${right.x}"/><circle cx="${(left.x+W+right.x)/2}" cy="${left.y+H/2}" r="4.4" fill="#fff" stroke="#c88e85" stroke-width="2"/>`}
+ // Family-aware connector routing: parent trunks use the free corridor below
+ // their own row. If a link skips generations, pass through an open lane
+ // between profile cards instead of hiding a line behind them with masking.
+ const obstacleByLevel=new Map();
+ for(const p of displayGraph.people){
+  const pos=positions.get(p.id);if(!pos)continue;
+  if(!obstacleByLevel.has(pos.level))obstacleByLevel.set(pos.level,[]);
+  obstacleByLevel.get(pos.level).push({left:pos.x-7,right:pos.x+W+7});
+ }
+ for(const row of obstacleByLevel.values())row.sort((a,b)=>a.left-b.left);
+ const nearestClearLane=(level,from,to)=>{
+  const boxes=obstacleByLevel.get(level)||[];
+  if(!boxes.length)return to;
+  const free=x=>boxes.every(r=>x<r.left||x>r.right);
+  const options=[];
+  if(free(to))options.push(to);
+  if(free(from))options.push(from);
+  options.push(boxes[0].left-10,boxes.at(-1).right+10);
+  for(let i=1;i<boxes.length;i++){
+   const a=boxes[i-1],b=boxes[i];
+   if(b.left-a.right>1)options.push((a.right+b.left)/2);
+  }
+  return options.filter(free).sort((a,b)=>
+   Math.abs(a-from)*.58+Math.abs(a-to)*.42-(Math.abs(b-from)*.58+Math.abs(b-to)*.42))[0]??from;
+ };
+ const familyTrunk=(fromX,fromY,hubX,busY,parentLevel,childLevel,parentBottom)=>{
+  // The partnership itself is drawn between cards, not through either card.
+  const corridor=Math.min(busY-5,parentBottom+12);
+  let d=`M${fromX} ${fromY} V${corridor}`,currentX=fromX;
+  for(let level=parentLevel+1;level<childLevel;level++){
+   const lane=nearestClearLane(level,currentX,hubX),top=TOPY+level*ROW;
+   d+=` H${lane} V${top-14} V${top+H+12}`;
+   currentX=lane;
+  }
+  d+=` H${hubX} V${busY}`;
+  return d;
+ };
  // Each distinct parent set owns its OWN child bus. Never connect the buses
  // of separate couples, even if their children are at the same generation.
  const childParentSets=new Map();
@@ -978,13 +1116,15 @@ function drawTree({fit=false,focusNew=false}={}){
   // If the couple midpoint lies outside its children's block, route a separate
   // upper-level horizontal approach. The actual child bus stays local to its group.
   const hubX=Math.min(rightX,Math.max(leftX,startX));
-  const approachY=Math.min(busY-15,Math.max(parentY+22,parentY+(busY-parentY)*.48));
+  const approachY=Math.min(busY-5,Math.max(...parents.map(p=>p.y+H))+12);
   const unitAttr=encodeURIComponent(parentIds.join('|'));
   if(sameCouple){
-   lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="M${startX} ${parentY} V${approachY} H${hubX} V${busY}"/>`;
+   const path=familyTrunk(startX,parentY,hubX,busY,parents[0].level,children[0].level,Math.max(...parents.map(p=>p.y+H)));
+   lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="${path}"/>`;
   }else{
    for(const p of parents){const x=p.x+W/2;
-    lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="M${x} ${p.y+H} V${approachY} H${hubX} V${busY}"/>`;
+    const path=familyTrunk(x,p.y+H,hubX,busY,p.level,children[0].level,p.y+H);
+    lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="${path}"/>`;
    }
   }
   // Distinct family units never share a horizontal child bus.
@@ -1051,9 +1191,9 @@ function drawTree({fit=false,focusNew=false}={}){
  if(fit||needsFit){requestAnimationFrame(()=>{fitView();if(treeMode==='focus'&&focusRoot){focusOn(focusNew&&selected?selected:focusRoot,window.innerWidth<=650?.88:.78)}needsFit=false})}else if(focusNew&&selected){requestAnimationFrame(()=>{focusOn(selected,window.innerWidth<=650?.88:.78)})}else applyView();
 }
 function applyView(){const scene=$('scene');scene.style.transform=`translate(${pan.x}px,${pan.y}px) scale(${zoom})`;scene.classList.toggle('zoom-compact',zoom<.7);scene.classList.toggle('zoom-far',zoom<.42);scene.style.setProperty('--label-boost',String(Math.min(1.5,Math.max(1,.73/zoom))));$('zoom-value').textContent=Math.round(zoom*100)+'%';if(quickPerson)requestAnimationFrame(positionQuickActions)}
-function fitView(){if(!data.people.length)return;const v=$('viewport');const w=v.clientWidth,h=v.clientHeight;if(!w||!h)return;zoom=Math.min(1.13,Math.max(.1,Math.min((w-24)/size.w,(h-24)/size.h)));const extraY=h-size.h*zoom;pan={x:(w-size.w*zoom)/2,y:extraY>80?Math.max(16,extraY*.22):extraY/2};applyView()}
+function fitView(){if(!data.people.length)return;const v=$('viewport');const w=v.clientWidth,h=v.clientHeight;if(!w||!h)return;zoom=Math.min(1.13,Math.max(.004,Math.min((w-24)/size.w,(h-24)/size.h)));const extraY=h-size.h*zoom;pan={x:(w-size.w*zoom)/2,y:extraY>80?Math.max(16,extraY*.22):extraY/2};applyView()}
 function focusOn(id,scale){const pos=positions.get(id);if(!pos)return;const v=$('viewport');zoom=Math.min(2.5,Math.max(.1,scale||zoom));pan={x:v.clientWidth/2-(pos.x+W/2)*zoom,y:v.clientHeight/2-(pos.y+H/2)*zoom};applyView()}
-function zoomAt(factor,cx,cy){const v=$('viewport');cx??=v.clientWidth/2;cy??=v.clientHeight/2;const next=Math.max(.1,Math.min(2.5,zoom*factor)),ratio=next/zoom;pan={x:cx-(cx-pan.x)*ratio,y:cy-(cy-pan.y)*ratio};zoom=next;applyView()}
+function zoomAt(factor,cx,cy){const v=$('viewport');cx??=v.clientWidth/2;cy??=v.clientHeight/2;const next=Math.max(.004,Math.min(2.5,zoom*factor)),ratio=next/zoom;pan={x:cx-(cx-pan.x)*ratio,y:cy-(cy-pan.y)*ratio};zoom=next;applyView()}
 function renderMeta(){const count=data.people.length;const n=count?maxDepth+1:0;$('crumb-name').textContent=data.treeName;$('side-tree').textContent=data.treeName;$('count-people').textContent=count;$('count-gen').textContent=n;$('count-rel').textContent=data.parent.length+data.partner.length+data.sibling.length;$('page-title').textContent=view==='tree'?'Pohon Keluarga':view==='list'?'Anggota Keluarga':view==='rules'?'Aturan Family Tree':'Profil Anggota';$('mode-focus').classList.toggle('active',treeMode==='focus');$('mode-overview').classList.toggle('active',treeMode==='overview');$('mode-focus').setAttribute('aria-pressed',String(treeMode==='focus'));$('mode-overview').setAttribute('aria-pressed',String(treeMode==='overview'));$('focus-toolbar').classList.toggle('hidden',treeMode!=='focus');$('focus-name').textContent=nameOf(focusRoot);$('back-focus').disabled=focusHistory.length===0;$('visible-count').textContent=displayGraph?`${displayGraph.people.length} / ${data.people.length} terlihat`:'';$('page-desc').textContent=view==='tree'?`${data.treeName} · ${n} generasi yang saling terhubung`:view==='rules'?'Fondasi data, navigasi, penempatan dan privasi KnowYourFam':'Pilih anggota untuk mengelola profil';$('person-links').innerHTML=data.people.map(p=>`<button class="person-link ${p.id===selected?'active':''}" data-person="${safe(p.id)}">${photo(p)}<span>${safe(p.name)}</span></button>`).join('');$('person-links').querySelectorAll('.person-photo').forEach(el=>{el.style.width='25px';el.style.height='25px';el.style.fontSize='9px';el.style.borderRadius='7px'});$('member-grid').innerHTML=data.people.map(p=>`<button class="member-tile" data-person="${safe(p.id)}">${photo(p)}<strong>${safe(p.name)}</strong><small>${safe(years(p))}</small></button>`).join('')||'<p>Belum ada anggota keluarga.</p>'}
 function renderDrawer(){
  const p=byId(selected);if(!p){$('drawer').innerHTML='';return}
@@ -1146,7 +1286,7 @@ function renderRulesPage(){
   <nav class="rules-toc" aria-label="Daftar bagian aturan"><a href="#rules-core">Identitas & hubungan</a><a href="#rules-layout">Penempatan keluarga</a><a href="#rules-focus">Fokus & ekspansi</a><a href="#rules-ux">Interaksi & mobile</a><a href="#rules-data">Data & privasi</a><a href="#rules-future">Berikutnya</a></nav>
   <div class="rules-grid">
    <article class="rules-card" id="rules-core"><div class="rules-card-head"><span class="rules-step">01</span><div><h3>Identitas & hubungan</h3><p>Data keluarga tidak boleh disimpulkan dari bentuk diagram.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Person unik.</b> Setiap orang memiliki satu profil/ID, walaupun terhubung ke beberapa keluarga.</li><li><b>Relasi eksplisit.</b> Pasangan, orang tua–anak, dan saudara adalah hubungan berbeda. Punya anak bersama tidak otomatis berarti menikah; menjadi pasangan juga tidak otomatis menjadikan seseorang orang tua.</li><li><b>Anak dua atau satu orang tua.</b> Menghubungkan anak ke pasangan mencatat dua relasi orang tua–anak. Jika hanya satu orang tua diketahui, tetap sah.</li><li><b>Saudara tanpa orang tua.</b> Hubungan saudara dapat tercatat dan digambar walaupun kedua orang tuanya belum didaftarkan. Orang tua fiktif tidak dibuat.</li><li><b>Hapus hubungan ≠ hapus anggota.</b> Hapus relasi hanya melepas hubungan yang dipilih, profil dan relasi lain tetap ada; perlu konfirmasi.</li></ol></article>
-   <article class="rules-card" id="rules-layout"><div class="rules-card-head"><span class="rules-step">02</span><div><h3>Penempatan dan garis</h3><p>Prioritaskan kebenaran jalur dan keterbacaan keluarga.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Pasangan berdekatan.</b> Dalam pasangan pria–wanita yang gendernya diketahui: laki-laki kiri, perempuan kanan. Jika belum diketahui atau sama, urutan tercatat tetap stabil. Gender <em>tidak</em> mengurutkan saudara.</li><li><b>Cabang menjauh dari pasangan.</b> Saudara pasangan kiri berkembang ke sisi kiri, saudara pasangan kanan berkembang ke sisi kanan. Keluarga asal suami–istri tetap terpisah.</li><li><b>Family Unit per kumpulan orang tua.</b> Anak-anak dari set orang tua yang sama berbagi satu jalur anak. Jalur anak dari pasangan berbeda tidak disatukan.</li><li><b>Penempatan bertingkat.</b> Orang tua di atas anak; saudara pada generasi sama; generasi bertambah dinamis ke atas atau bawah.</li><li><b>Konvensi garis.</b> Hijau: orang tua–anak. Merah muda: pasangan. Biru putus-putus: saudara eksplisit tanpa orang tua bersama tercatat; jangan menggambar konektor saudara ganda jika jalur keturunannya sudah menjelaskan hubungan.</li><li><b>Routing.</b> Pakai jalur vertikal–horizontal dengan bus terpisah, jaga jarak kartu dan hindari persilangan bila memungkinkan.</li></ol></article>
+   <article class="rules-card" id="rules-layout"><div class="rules-card-head"><span class="rules-step">02</span><div><h3>Penempatan dan garis</h3><p>Prioritaskan kebenaran jalur dan keterbacaan keluarga.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Pasangan berdekatan.</b> Dalam pasangan pria–wanita yang gendernya diketahui: laki-laki kiri, perempuan kanan. Jika belum diketahui atau sama, urutan tercatat tetap stabil. Gender <em>tidak</em> mengurutkan saudara.</li><li><b>Cabang menjauh dari pasangan.</b> Saudara pasangan kiri berkembang ke sisi kiri, saudara pasangan kanan berkembang ke sisi kanan. Keluarga asal suami–istri tetap terpisah.</li><li><b>Family Unit per kumpulan orang tua.</b> Anak-anak dari set orang tua yang sama berbagi satu jalur anak. Jalur anak dari pasangan berbeda tidak disatukan.</li><li><b>Penempatan bertingkat.</b> Orang tua di atas anak; saudara pada generasi sama; generasi bertambah dinamis ke atas atau bawah.</li><li><b>Konvensi garis.</b> Hijau: orang tua–anak. Merah muda: pasangan. Biru putus-putus: saudara eksplisit tanpa orang tua bersama tercatat; jangan menggambar konektor saudara ganda jika jalur keturunannya sudah menjelaskan hubungan.</li><li><b>Family Balancing.</b> Pasangan dan saudara bergerak sebagai satu unit keluarga. Posisi pasangan dihitung ulang mengarah ke pusat anak-anaknya, dari generasi bawah ke atas dan atas ke bawah; jarak minimum antarkartu tetap dijaga. Ini adalah optimasi visual, bukan perubahan orang tua atau pasangan.</li><li><b>Routing aman.</b> Garis orang tua–anak melewati koridor kosong antargenerasi. Jika melompati generasi, jalur dialihkan melalui sela antarkartu. Bus anak tetap dipisahkan menurut set orang tua yang tercatat; garis tidak sengaja diteruskan ke keluarga lain.</li><li><b>Kompromi graf keluarga.</b> Sebuah pasangan bisa mempunyai anak dari lebih dari satu hubungan dan cabang leluhur yang saling bertemu. Karena itu tidak semua pasangan bisa tepat di tengah anak-anaknya sekaligus tanpa menabrak anggota lain. Urutan hubungan dan kartu tidak bertumpuk lebih penting daripada simetri mutlak.</li></ol><p class="rules-focus-example"><b>Catatan hasil audit layout:</b> Jika Kakek–NENEK terlihat terlalu jauh dari anak-anaknya, engine merapatkan pasangan dan kelompok saudara sebagai blok serta menghitung ulang garis. Tidak boleh menggeser satu profil secara manual sampai relasinya berubah.</p></article>
    <article class="rules-card" id="rules-focus"><div class="rules-card-head"><span class="rules-step">03</span><div><h3>Focus Person · Expand &amp; Collapse</h3><p>Aturan jangkauan visual per orang dan per arah, bukan perubahan data.</p></div><span class="rules-status">Berlaku</span></div>
      <h4>Jangkauan awal Focus Person</h4><ol>
        <li><b>Ke atas: 2 generasi.</b> Orang tua dan kakek-nenek dari pihak kedua orang tua.</li>
@@ -1168,7 +1308,7 @@ function renderRulesPage(){
        <li><b>Jadikan Fokus</b> memindahkan perspektif, mengatur ulang ekspansi dan menyimpan riwayat Kembali. <b>Expand</b> tidak mengubah fokus.</li>
        <li><b>Collapse ≠ Hapus hubungan.</b> Menutup cabang tidak mengubah JSON atau relasi yang tersimpan.</li>
      </ol><p class="rules-focus-example"><b>Contoh:</b> Fokus Jonathan → kakek/nenek langsung terlihat, tetapi saudara kakek/nenek tetap tersembunyi. Ketuk Kakek lalu ↔ untuk melihat saudara kakek dan pasangan mereka. Ketuk ↓ pada saudara kakek untuk melihat anak-anaknya saja.</p></article>
-   <article class="rules-card" id="rules-ux"><div class="rules-card-head"><span class="rules-step">04</span><div><h3>Interaksi & pengalaman layar</h3><p>Kanvas tetap menjadi pusat pengalaman.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Ketuk kartu:</b> aksi cepat (expand, fokus, tambah hubungan, profil), tidak otomatis menutup pohon dengan panel besar.</li><li><b>Desktop:</b> Floating Profile Card untuk interaksi cepat, halaman profil lengkap untuk biodata, keluarga, dan kenangan.</li><li><b>Mobile:</b> Bottom Sheet untuk ringkasan, halaman penuh untuk profil lengkap; pan satu jari dan pinch-to-zoom dua jari.</li><li><b>Zoom adaptif:</b> saat diagram sangat kecil, detail sekunder disembunyikan agar nama dan struktur lebih jelas.</li><li><b>Petunjuk:</b> legenda warna dan gesture dibuka lewat tombol bantuan pada kanvas, tidak menumpuk di footer.</li><li><b>Orientasi:</b> saat expand/collapse, usahakan orang yang sedang dilihat tidak meloncat keluar layar; tersedia Fit dan kembali ke fokus.</li></ol></article>
+   <article class="rules-card" id="rules-ux"><div class="rules-card-head"><span class="rules-step">04</span><div><h3>Interaksi & pengalaman layar</h3><p>Kanvas tetap menjadi pusat pengalaman.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Ketuk kartu:</b> aksi cepat (expand, fokus, tambah hubungan, profil), tidak otomatis menutup pohon dengan panel besar.</li><li><b>Desktop:</b> Floating Profile Card untuk interaksi cepat, halaman profil lengkap untuk biodata, keluarga, dan kenangan.</li><li><b>Mobile:</b> Bottom Sheet untuk ringkasan, halaman penuh untuk profil lengkap; pan satu jari dan pinch-to-zoom dua jari.</li><li><b>Zoom adaptif:</b> saat diagram sangat kecil, detail sekunder disembunyikan agar nama dan struktur lebih jelas.</li><li><b>Petunjuk:</b> legenda warna dan gesture dibuka lewat tombol bantuan pada kanvas, tidak menumpuk di footer.</li><li><b>Orientasi saat Expand/Collapse:</b> pertahankan posisi orang yang membuka cabang jika masih terlihat di layar. Jika ekspansi dimulai dari orang di luar layar (misalnya lewat panel), pusatkan kembali orang tersebut sebelum memposisikan cabang baru.</li><li><b>Fit All pada keluarga besar:</b> harus menghitung zoom hingga seluruh 10 generasi masuk area kanvas termasuk di HP. Pada zoom sangat kecil, nama memang tidak terbaca; perbesar atau pilih Focus Orang untuk menjelajah.</li><li><b>Tindakan non-destruktif:</b> pergeseran posisi kartu, jalur garis, pan dan zoom tidak disimpan sebagai relasi dan tidak menghapus profil.</li></ol></article>
    <article class="rules-card" id="rules-data"><div class="rules-card-head"><span class="rules-step">05</span><div><h3>Data, penyimpanan & privasi</h3><p>Struktur keluarga dan posisi visual punya tanggung jawab berbeda.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Struktur data:</b> people, parent, partner, sibling. ID anggota disimpan; koordinat dan nomor generasi dihitung ulang dari relasi.</li><li><b>Sumber contoh:</b> <code>knowyourfam-family-tree.json</code> di GitHub digunakan sebagai seed awal aplikasi.</li><li><b>Edit lokal:</b> perubahan dari browser disimpan dalam localStorage, bukan otomatis di-push ke GitHub. Impor/ekspor JSON digunakan untuk mencadangkan data.</li><li><b>Muat ulang GitHub:</b> memerlukan konfirmasi karena dapat mengganti data lokal. Ekspor dulu sebelum menimpa.</li><li><b>Privasi:</b> repository publik dapat dibaca orang lain; jangan mengunggah informasi keluarga sensitif tanpa persetujuan.</li></ol></article>
    <article class="rules-card future" id="rules-future"><div class="rules-card-head"><span class="rules-step">06</span><div><h3>Pengembangan selanjutnya</h3><p>Keputusan arah desain yang belum seluruhnya tersedia di MVP.</p></div><span class="rules-status planned">Rencana</span></div><ol><li>Optimasi lebih lanjut untuk jaringan keluarga dengan perkawinan silang atau graf yang tidak dapat diproyeksikan tanpa persilangan.</li><li>Pengurutan saudara berdasarkan tanggal lahir jika valid, dan opsi manual menukar posisi pasangan.</li><li>Lazy loading data keluarga per cabang, pencarian berskala besar, dan pengelompokan otomatis untuk ratusan hingga ribuan anggota.</li><li>Hak akses, persetujuan, verifikasi profil, dan kolaborasi lintas ruang keluarga.</li><li>Kenangan keluarga (foto, cerita, riwayat perubahan) dan halaman profil yang lebih lengkap.</li></ol></article>
   </div><footer class="rules-bottom">Aturan tampilan tidak membuat hubungan baru. Bila ada konflik data, kebenaran hubungan selalu diutamakan daripada estetika diagram.</footer></div>`;
