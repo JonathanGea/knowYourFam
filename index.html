@@ -506,6 +506,25 @@ function makeLayout(){
  // Keep each spouse's parents in separate ancestor branches. Couple groups are used only
  // to put partners on the same horizontal generation.
  displayGraph=visibleFamilyGraph();const gdata=displayGraph;
+ // Generation and sibling placement must use FAMILY FACTS, not just currently
+ // rendered parent edges. In Focus mode, a spouse's parents can be hidden even
+ // while that spouse and their expanded siblings are visible. Such siblings
+ // still belong to the spouse's generation, never to the top ancestor row.
+ const fullVisibleSiblings=new Map(gdata.people.map(p=>[p.id,new Set()]));
+ const addVisibleSibling=(a,b)=>{
+  if(a===b||!fullVisibleSiblings.has(a)||!fullVisibleSiblings.has(b))return;
+  fullVisibleSiblings.get(a).add(b);fullVisibleSiblings.get(b).add(a);
+ };
+ for(const [a,b] of data.sibling)addVisibleSibling(a,b);
+ const childrenByRecordedParent=new Map();
+ for(const [parent,child] of data.parent){
+  if(!fullVisibleSiblings.has(child))continue;
+  if(!childrenByRecordedParent.has(parent))childrenByRecordedParent.set(parent,[]);
+  childrenByRecordedParent.get(parent).push(child);
+ }
+ for(const children of childrenByRecordedParent.values())
+  for(let i=0;i<children.length;i++)for(let j=i+1;j<children.length;j++)addVisibleSibling(children[i],children[j]);
+ const knownVisibleSibling=(a,b)=>!!fullVisibleSiblings.get(a)?.has(b);
  const ds=Object.fromEntries(gdata.people.map(p=>[p.id,p.id]));
  const find=x=>{if(ds[x]!==x)ds[x]=find(ds[x]);return ds[x]};
  const join=(a,b)=>{if(ds[a]&&ds[b])ds[find(b)]=find(a)};
@@ -547,7 +566,8 @@ function makeLayout(){
  for(const children of siblingsByParent.values()){
   for(let i=1;i<children.length;i++)cohortJoin(idGroup.get(children[0]),idGroup.get(children[i]));
  }
- for(const [a,b] of gdata.sibling)cohortJoin(idGroup.get(a),idGroup.get(b));
+ // Hidden parents still establish that these visible people are siblings.
+ for(const [a,siblings] of fullVisibleSiblings)for(const b of siblings)cohortJoin(idGroup.get(a),idGroup.get(b));
  const cohorts=new Map();
  for(const g of groups.values()){
   const cid=cohortFind(g.id);g.cohort=cid;
@@ -676,7 +696,7 @@ function makeLayout(){
   };
   // Both explicit siblings (unknown parents) AND siblings sharing a parent
   // have the same left/right rules; only their connector styles differ.
-  for(const [a,b] of gdata.sibling)connect(idGroup.get(a),idGroup.get(b));
+  for(const [a,siblings] of fullVisibleSiblings)for(const b of siblings)connect(idGroup.get(a),idGroup.get(b));
   const registeredParentKey=id=>gdata.parent.filter(([,child])=>child===id).map(([parent])=>parent).sort().join('|');
   for(const children of siblingsByParent.values()){
    for(let i=0;i<children.length;i++)for(let j=i+1;j<children.length;j++){
@@ -684,8 +704,7 @@ function makeLayout(){
     if(registeredParentKey(children[i])===registeredParentKey(children[j]))connect(idGroup.get(children[i]),idGroup.get(children[j]));
    }
   }
-  const areSiblings=(a,b)=>gdata.sibling.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a))||
-   gdata.parent.some(([p,c])=>c===a&&gdata.parent.some(([pp,cc])=>pp===p&&cc===b));
+  const areSiblings=knownVisibleSibling;
   const blocks=new Map();
   for(const g of row){const id=root(g.id);g.siblingBlock=id;if(!blocks.has(id))blocks.set(id,[]);blocks.get(id).push(g)}
   const idealOf=arr=>{const anchors=arr.filter(g=>g.ideal!==null);return anchors.length?anchors.reduce((s,g)=>s+g.ideal,0)/anchors.length:null};
@@ -828,8 +847,7 @@ function makeLayout(){
  // inventing new relationships. Every spouse couple is one visual group and
  // its birth families are distinct blocks, separated left/right in that order.
  if(treeMode==='overview'){
-  const siblings=(a,b)=>a!==b&&(gdata.sibling.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a))||
-   gdata.parent.some(([p,c])=>c===a&&gdata.parent.some(([pp,cc])=>pp===p&&cc===b)));
+  const siblings=knownVisibleSibling;
   const cx=g=>g.x+ownWidth(g)/2;
   const parentAnchor=g=>{
    const xs=[];
@@ -933,10 +951,7 @@ function makeLayout(){
  // couple, then align each family unit with the midpoint of its descendants.
  // A sibling of the left spouse goes left; a sibling of the right spouse goes right.
  // Couple and siblings move as atomic groups, never individual cards.
- const siblingRelated=(id,other)=>id!==other&&(
-  gdata.sibling.some(([a,b])=>(a===id&&b===other)||(b===id&&a===other))||
-  gdata.parent.some(([pa,child])=>child===id&&gdata.parent.some(([pb,ch])=>pa===pb&&ch===other))
- );
+ const siblingRelated=knownVisibleSibling;
  const unitCx=g=>g.x+ownWidth(g)/2;
  const weightedChildrenCx=g=>{
   const childIds=new Set();
@@ -1297,7 +1312,7 @@ function renderRulesPage(){
      </ol>
      <h4>Expand individu: satu langkah per aksi</h4><ol>
        <li><b>↑ Atas:</b> membuka orang tua langsung dari orang yang diklik (maks. 1 generasi tambahan). Klik ↑ lagi di ayah/ibu untuk membuka leluhur mereka. Tidak membuka saudara orang tua secara otomatis.</li>
-       <li><b>↔ Samping:</b> membuka saudara orang itu pada generasi yang sama <b>beserta pasangan mereka jika tercatat</b>. Tidak membuka anak saudara atau keluarga asal pasangannya.</li>
+       <li><b>↔ Samping:</b> membuka saudara orang itu pada generasi yang sama <b>beserta pasangan mereka jika tercatat</b>. Walaupun orang tua saudara sedang tersembunyi dalam mode Fokus, generasinya tetap mengikuti hubungan keluarga yang tersimpan—tidak boleh meloncat ke baris leluhur paling atas. Tidak membuka anak saudara atau keluarga asal pasangannya.</li>
        <li><b>↓ Bawah individu:</b> membuka anak yang tidak berada dalam unit anak bersama pasangan tercatat. Hubungan dengan satu orang tua tetap sah.</li>
        <li><b>↓ Bawah pasangan:</b> membuka anak bersama yang tercatat memiliki <b>kedua pasangan sebagai orang tua</b>. Jika hanya satu orang tua tercatat, gunakan ↓ milik individu tersebut. Tidak otomatis membuka cucu.</li>
        <li><b>Jika anggota banyak:</b> tampilkan maksimal <b>12 orang tambahan per langkah</b>; pilih “berikutnya” untuk meneruskan. Batas ini hanya tampilan, bukan penghapusan data.</li>
