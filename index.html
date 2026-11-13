@@ -299,8 +299,8 @@ body.fullscreen-open{overflow:hidden}
    </div>
    <div class="canvas-ops"><button class="btn icon" id="zoom-out" aria-label="Perkecil">−</button><span class="zoom-info" id="zoom-value">100%</span><button class="btn icon" id="zoom-in" aria-label="Perbesar">＋</button><button class="btn" id="fit-btn" title="Pas seluruh area yang ditampilkan">⛶</button><button class="btn icon" id="fullscreen-btn" title="Perbesar kanvas" aria-label="Buka kanvas layar penuh">⤢</button></div>
   </div>
-  <div class="focus-toolbar" id="focus-toolbar"><div class="focus-identity"><span class="focus-icon">◎</span><div><span class="focus-label">Keluarga dua generasi ke atas</span><strong id="focus-name">Anggota</strong></div></div><div class="focus-side"><span id="visible-count">—</span><button class="focus-link" id="back-focus" title="Kembali ke fokus sebelumnya">↶ Kembali</button><button class="focus-link" id="reset-branches">Tutup cabang</button></div></div>
-  <div class="viewport" id="viewport" aria-label="Pohon keluarga interaktif. Ketuk anggota untuk aksi cepat, geser satu jari, cubit dua jari untuk zoom"><div class="scene" id="scene"></div><button type="button" class="tree-help-button" id="tree-help" title="Bantuan garis & navigasi" aria-label="Buka panduan garis dan navigasi" aria-expanded="false">?</button><div class="tree-help-panel" id="tree-help-panel" hidden><div class="tree-help-head"><strong>Petunjuk pohon</strong><button type="button" id="tree-help-close" aria-label="Tutup petunjuk">✕</button></div><div class="legend-item"><span class="legend-line green"></span> Orang tua – anak</div><div class="legend-item"><span class="legend-line coral"></span> Hubungan pasangan</div><div class="legend-item"><span class="legend-line blue"></span> Saudara langsung tanpa orang tua bersama tercatat</div><p>Ketuk kartu untuk aksi cepat. Geser satu jari untuk bergerak, cubit dua jari untuk zoom. ↑ Orang tua · ↔ Saudara · ↓ Anak.</p><button class="btn soft" data-view="rules">Buka semua aturan ↗</button></div></div></section>
+  <div class="focus-toolbar" id="focus-toolbar"><div class="focus-identity"><span class="focus-icon">◎</span><div><span class="focus-label">Keluarga dua generasi ke atas</span><strong id="focus-name">Anggota</strong></div></div><div class="focus-side"><span id="visible-count">—</span><button class="focus-link" id="back-focus" title="Kembali ke fokus sebelumnya">↶ Kembali</button><button class="focus-link" id="reset-branches" title="Kembalikan tampilan Fokus awal">Reset cabang</button></div></div>
+  <div class="viewport" id="viewport" aria-label="Pohon keluarga interaktif. Ketuk anggota untuk aksi cepat, geser satu jari, cubit dua jari untuk zoom"><div class="scene" id="scene"></div><button type="button" class="tree-help-button" id="tree-help" title="Bantuan garis & navigasi" aria-label="Buka panduan garis dan navigasi" aria-expanded="false">?</button><div class="tree-help-panel" id="tree-help-panel" hidden><div class="tree-help-head"><strong>Petunjuk pohon</strong><button type="button" id="tree-help-close" aria-label="Tutup petunjuk">✕</button></div><div class="legend-item"><span class="legend-line green"></span> Orang tua – anak</div><div class="legend-item"><span class="legend-line coral"></span> Hubungan pasangan</div><div class="legend-item"><span class="legend-line blue"></span> Saudara langsung tanpa orang tua bersama tercatat</div><p>Cabang yang tampil otomatis dalam Fokus juga bisa ditutup dengan − dan dibuka lagi. Ketuk kartu untuk aksi cepat. Geser satu jari untuk bergerak, cubit dua jari untuk zoom. ↑ Orang tua · ↔ Saudara · ↓ Anak.</p><button class="btn soft" data-view="rules">Buka semua aturan ↗</button></div></div></section>
  <section class="member-list" id="member-list"><div class="member-grid" id="member-grid"></div></section><section class="person-page" id="profile-page" aria-label="Profil lengkap anggota"></section><section class="rules-page" id="rules-page" aria-label="Aturan Family Tree"></section></main></div>
  <nav class="mobile-nav"><button data-view="tree" class="active"><span>♧</span>Pohon</button><button data-view="list"><span>☷</span>Anggota</button><button id="mobile-add"><span>＋</span>Tambah</button><button id="mobile-menu"><span>⋯</span>Lainnya</button></nav>
 </div>
@@ -379,7 +379,7 @@ if(correctedProfile?.name==='Saudara nenek dari mama'){
  correctedProfile.name='Saudara nenek dari papa';
  try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}
 }
-let selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null,view='tree',treeMode='focus',focusRoot=selected,expandedBranches=new Set(),expansionPages=new Map(),focusHistory=[],displayGraph=null;
+let selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null,view='tree',treeMode='focus',focusRoot=selected,expandedBranches=new Set(),collapsedBranches=new Set(),defaultBranchKeys=new Set(),expansionPages=new Map(),focusHistory=[],displayGraph=null;
 let quickPerson=null,profileTab="bio",profileReturnView="tree";
 let zoom=1,pan={x:0,y:0},size={w:900,h:600},positions=new Map(),maxDepth=0,needsFit=true,modal=null,ctx={},photoData='';
 const W=185,H=113,GAP=26,SPACE=80,ROW=181,PADX=167,TOPY=76;
@@ -413,32 +413,63 @@ function branchMembers(key){
  if(type==='pair'&&ids.length===2&&byId(ids[1])&&rel(id).partners.includes(ids[1]))return [...ids,...sharedChildren(id,ids[1])];
  return [];
 }
+// Focus decides the INITIAL open branches, not a permanent visibility lock.
+// Every auto-open branch has the same expand/collapse control as a manual branch.
+function focusDefaultBranchKeys(id){
+ const keys=new Set();if(!byId(id))return keys;
+ const r=rel(id),up=person=>'up:'+encodeURIComponent(person),side=person=>'side:'+encodeURIComponent(person);
+ if(r.parents.length)keys.add(up(id));
+ for(const parent of r.parents){
+  if(rel(parent).parents.length)keys.add(up(parent));
+  if(rel(parent).siblings.length)keys.add(side(parent));
+ }
+ if(r.siblings.length)keys.add(side(id));
+ if(soloChildren(id).length)keys.add('down:'+encodeURIComponent(id));
+ for(const key of pairChildrenKeys(id))keys.add(key);
+ return keys;
+}
+function branchIsOpen(key){
+ return treeMode==='focus'&&!collapsedBranches.has(key)&&(defaultBranchKeys.has(key)||expandedBranches.has(key));
+}
 function focusFamilyMembers(id){
- // Focus scope: parents, parental siblings and their partners, both grandparents,
- // siblings of focus and their partners, own partners, children. Grandparent
- // siblings and their partners MUST remain hidden until a direct side-expand.
  const visible=new Set(),add=personId=>{if(byId(personId))visible.add(personId)};
- const addMany=ids=>ids.forEach(add);
- const withPartners=ids=>{addMany(ids);for(const member of ids)addMany(rel(member).partners)};
- const subject=rel(id),parents=subject.parents;
+ if(!byId(id))return visible;
  add(id);
- addMany(parents);
- const parentSiblings=[...new Set(parents.flatMap(parent=>rel(parent).siblings))];
- withPartners(parentSiblings);
- const grandparents=[...new Set(parents.flatMap(parent=>rel(parent).parents))];
- addMany(grandparents);
- // Saudara kakek/nenek dan pasangan mereka tidak tampil default; buka lewat Expand samping (↔) pada leluhur tersebut.
- withPartners(subject.siblings);
- addMany(subject.partners);
- addMany(subject.children);
+ // A focused person's partners stay visible. Their parents and siblings are
+ // NOT automatically included, but can still be expanded independently.
+ for(const partner of rel(id).partners)add(partner);
+ const defaults=focusDefaultBranchKeys(id);
+ const reveal=key=>{
+  if(!defaults.has(key)||collapsedBranches.has(key))return;
+  branchMembers(key).forEach(add);
+ };
+ const parentKey='up:'+encodeURIComponent(id);
+ reveal(parentKey);
+ // Do not leave grandparents or parental siblings floating if the focus's
+ // own parent branch was collapsed. Each parent's two directions remain
+ // independently collapsible when their parent node is visible.
+ if(!collapsedBranches.has(parentKey)){
+  for(const parent of rel(id).parents){
+   reveal('up:'+encodeURIComponent(parent));
+   reveal('side:'+encodeURIComponent(parent));
+  }
+ }
+ reveal('side:'+encodeURIComponent(id));
+ reveal('down:'+encodeURIComponent(id));
+ for(const key of pairChildrenKeys(id))reveal(key);
  return visible;
 }
 function visibleFamilyGraph(){
  if(treeMode==='overview'||!focusRoot||!byId(focusRoot))return {people:data.people,parent:data.parent,partner:data.partner,sibling:data.sibling};
  const ids=focusFamilyMembers(focusRoot);
- // Each directional expand shows only its own next family step, non-recursively.
- // An opened branch does not implicitly open the new persons' other branches.
- for(const key of expandedBranches){const limit=expansionPages.get(key)||EXPAND_PAGE;branchMembers(key).slice(0,limit).forEach(id=>{if(byId(id))ids.add(id)})}
+ // Manual expand adds one step only, without automatically opening other
+ // directions of newly revealed people. Collapsed default branches do not
+ // contribute members until explicitly re-opened.
+ for(const key of expandedBranches){
+  if(collapsedBranches.has(key))continue;
+  const limit=expansionPages.get(key)||EXPAND_PAGE;
+  branchMembers(key).slice(0,limit).forEach(id=>{if(byId(id))ids.add(id)});
+ }
  return {people:data.people.filter(p=>ids.has(p.id)),parent:data.parent.filter(([a,b])=>ids.has(a)&&ids.has(b)),partner:data.partner.filter(([a,b])=>ids.has(a)&&ids.has(b)),sibling:data.sibling.filter(([a,b])=>ids.has(a)&&ids.has(b))};
 }
 function branchMissing(key){if(treeMode!=='focus'||!displayGraph)return 0;const visible=new Set(displayGraph.people.map(p=>p.id));return branchMembers(key).filter(id=>!visible.has(id)).length}
@@ -451,14 +482,14 @@ function branchMetadata(key){const {type,ids}=parseBranch(key);if(type==='up')re
 function branchControls(id,compact=false){
  if(treeMode!=='focus')return '';
  return directionalKeys(id).map(key=>{
-  const meta=branchMetadata(key),opened=expandedBranches.has(key),hidden=branchMissing(key);
-  if(!hidden&&!opened)return '';
+  const meta=branchMetadata(key),opened=branchIsOpen(key),hidden=branchMissing(key);
+  if(!branchMembers(key).length||(!hidden&&!opened&&!defaultBranchKeys.has(key)&&!collapsedBranches.has(key)))return '';
   const more=opened&&hidden>0,type=parseBranch(key).type,arrow=dirIcon(type),text=compact?(more?hidden:opened?'−':hidden):more?`${Math.min(EXPAND_PAGE,hidden)} berikutnya`:opened?`Tutup ${meta.short}`:`${meta.short} (${hidden})`;
   return `<button type="button" class="${compact?'branch-toggle':'btn branch-action'} ${opened?'opened':''}" data-expand="${safe(key)}" title="${safe(more?'Tampilkan anggota berikutnya':opened?'Tutup cabang '+meta.title:'Buka '+meta.title)}" aria-label="${safe(more?'Tampilkan berikutnya':opened?'Tutup':'Buka')} ${safe(meta.title)}">${arrow}<span class="${compact?'branch-count':'branch-label'}">${text}</span></button>${!compact&&more?`<button type="button" class="btn branch-action" data-collapse="${safe(key)}">− Tutup ${meta.short}</button>`:''}`;
  }).join('');
 }
 function setTreeMode(mode){if(!['focus','overview'].includes(mode))return;closeQuickActions();treeMode=mode;if(!focusRoot)focusRoot=selected;closeDrawer();render({fit:true});}
-function setFocus(id,{fromHistory=false}={}){if(!byId(id))return;closeQuickActions();if(focusRoot&&focusRoot!==id&&!fromHistory)focusHistory.push(focusRoot);focusRoot=id;selected=id;expandedBranches.clear();expansionPages.clear();treeMode='focus';closeDrawer();if(view!=='tree')showView('tree');else render({fit:true,focusNew:true});toast('Fokus dipindahkan ke '+nameOf(id));}
+function setFocus(id,{fromHistory=false}={}){if(!byId(id))return;closeQuickActions();if(focusRoot&&focusRoot!==id&&!fromHistory)focusHistory.push(focusRoot);focusRoot=id;selected=id;expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();treeMode='focus';closeDrawer();if(view!=='tree')showView('tree');else render({fit:true,focusNew:true});toast('Fokus dipindahkan ke '+nameOf(id));}
 function renderKeepingAnchor(id){
  const before=positions.get(id),previous=before?{x:pan.x+(before.x+W/2)*zoom,y:pan.y+(before.y+H/2)*zoom}:null;
  const viewport=$('viewport');
@@ -496,15 +527,22 @@ function closeDirectionalBranch(key){
 function toggleBranch(key){
  const {type,ids}=parseBranch(key),anchorId=(type==='pair'&&displayGraph&&!displayGraph.people.some(p=>p.id===ids[0])?ids[1]:ids[0]);
  if(!byId(anchorId)||!['up','side','down','pair'].includes(type)||!branchMembers(key).length)return;
- if(!expandedBranches.has(key)){expandedBranches.add(key);expansionPages.set(key,EXPAND_PAGE)}
- else if(branchMissing(key)>0){expansionPages.set(key,(expansionPages.get(key)||EXPAND_PAGE)+EXPAND_PAGE)}
- else closeDirectionalBranch(key)
+ if(!branchIsOpen(key)){
+  collapsedBranches.delete(key);
+  if(!defaultBranchKeys.has(key)){expandedBranches.add(key);expansionPages.set(key,EXPAND_PAGE)}
+ }else if(expandedBranches.has(key)&&branchMissing(key)>0){
+  expansionPages.set(key,(expansionPages.get(key)||EXPAND_PAGE)+EXPAND_PAGE);
+ }else{
+  if(defaultBranchKeys.has(key))collapsedBranches.add(key);
+  closeDirectionalBranch(key);
+ }
  renderKeepingAnchor(anchorId);
 }
 function makeLayout(){
  // A spouse is a member of a couple, NOT a member of the same birth-family as their partner.
  // Keep each spouse's parents in separate ancestor branches. Couple groups are used only
  // to put partners on the same horizontal generation.
+ defaultBranchKeys=treeMode==='focus'&&focusRoot?focusDefaultBranchKeys(focusRoot):new Set();
  displayGraph=visibleFamilyGraph();const gdata=displayGraph;
  // Generation and sibling placement must use FAMILY FACTS, not just currently
  // rendered parent edges. In Focus mode, a spouse's parents can be hidden even
@@ -1210,8 +1248,8 @@ function drawTree({fit=false,focusNew=false}={}){
   const renderedPairs=new Set();
   for(const p of displayGraph.people){const pos=positions.get(p.id);if(!pos)continue;
    for(const key of directionalKeys(p.id)){
-    const {type,ids}=parseBranch(key),opened=expandedBranches.has(key),hidden=branchMissing(key);
-    if(!opened&&!hidden)continue;
+    const {type,ids}=parseBranch(key),opened=branchIsOpen(key),hidden=branchMissing(key);
+    if(!branchMembers(key).length||(!opened&&!hidden&&!defaultBranchKeys.has(key)&&!collapsedBranches.has(key)))continue;
     let left,top;
     if(type==='up'){left=pos.x+W/2-23;top=pos.y-33}
     else if(type==='side'){
@@ -1270,10 +1308,10 @@ function quickBranchActions(id){
  const keys=directionalKeys(id),groups=[['up','↑','Orang tua'],['side','↔','Saudara'],['down','↓','Anak']];
  return groups.map(([type,symbol,label])=>{
   const groupKeys=keys.filter(key=>type==='down'?['down','pair'].includes(parseBranch(key).type):parseBranch(key).type===type);
-  const available=groupKeys.filter(key=>branchMissing(key)>0||expandedBranches.has(key));
+  const available=groupKeys.filter(key=>branchMembers(key).length&&(branchMissing(key)>0||branchIsOpen(key)||defaultBranchKeys.has(key)||collapsedBranches.has(key)));
   if(!available.length)return `<button class="quick-direction" type="button" disabled title="Semua ${safe(label.toLowerCase())} yang tercatat sudah terlihat"><b>${dirIcon(type)}</b><span>${label}</span><small>Terlihat / belum ada</small></button>`;
-  const primary=available[0],open=expandedBranches.has(primary),missing=branchMissing(primary);
-  const other=available.slice(1).map(key=>`<button class="quick-subbranch" data-expand="${safe(key)}">${safe(branchMetadata(key).short)} ${safe(parseBranch(key).ids.map(nameOf).join(' & '))} ${expandedBranches.has(key)?'−':'+'}</button>`).join('');
+  const primary=available[0],open=branchIsOpen(primary),missing=branchMissing(primary);
+  const other=available.slice(1).map(key=>`<button class="quick-subbranch" data-expand="${safe(key)}">${safe(branchMetadata(key).short)} ${safe(parseBranch(key).ids.map(nameOf).join(' & '))} ${branchIsOpen(key)?'−':'+'}</button>`).join('');
   return `<div class="quick-direction-group"><button class="quick-direction ${open?'active':''}" type="button" data-expand="${safe(primary)}" aria-label="${safe((open?'Tutup atau lanjutkan':'Buka')+' '+branchMetadata(primary).title)}"><b>${dirIcon(type)}</b><span>${label}</span><small>${open?(missing?'+'+missing+' lainnya':'Tutup cabang'):'+'+missing+' anggota'}</small></button>${other?`<div class="quick-subbranches">${other}</div>`:''}</div>`;
  }).join('');
 }
@@ -1355,12 +1393,13 @@ function renderRulesPage(){
        <li><b>↓ Bawah pasangan:</b> membuka anak bersama yang tercatat memiliki <b>kedua pasangan sebagai orang tua</b>. Jika hanya satu orang tua tercatat, gunakan ↓ milik individu tersebut. Tidak otomatis membuka cucu.</li>
        <li><b>Jika anggota banyak:</b> tampilkan maksimal <b>12 orang tambahan per langkah</b>; pilih “berikutnya” untuk meneruskan. Batas ini hanya tampilan, bukan penghapusan data.</li>
      </ol>
-     <h4>Collapse per cabang</h4><ol>
-       <li><b>Menutup ↑ / ↔ / ↓</b> menyembunyikan anggota yang hanya terlihat melalui ekspansi arah itu, bukan menutup seluruh pohon.</li>
-       <li>Ekspansi lanjutan milik orang yang menjadi tidak terlihat ikut ditutup. Jika orang yang sama masih terlihat melalui Focus awal atau cabang lain, ia tetap ada.</li>
-       <li><b>Jadikan Fokus</b> memindahkan perspektif, mengatur ulang ekspansi dan menyimpan riwayat Kembali. <b>Expand</b> tidak mengubah fokus.</li>
+     <h4>Collapse per cabang, termasuk yang tampil otomatis</h4><ol>
+       <li><b>Focus adalah kondisi awal, bukan penguncian.</b> Orang tua, kakek/nenek, saudara, paman/bibi, dan anak yang tampil otomatis tetap memiliki kontrol <b>− Collapse</b> pada arah hubungan masing-masing. Tekan lagi untuk Expand dan mengembalikan anggota di cabang itu.</li>
+       <li><b>Menutup ↑ / ↔ / ↓</b> menyembunyikan anggota yang hanya terlihat lewat arah tersebut, baik tampil otomatis karena Focus maupun dibuka manual. Orang yang menjadi fokus selalu dipertahankan.</li>
+       <li>Ekspansi lanjutan milik orang yang menjadi tidak terlihat ikut ditutup. Jika orang yang sama dibutuhkan oleh relasi lain yang masih terbuka, ia tetap ada. Collapse tidak memutus data hubungan.</li>
+       <li><b>Reset cabang</b> menghapus semua pilihan Expand dan Collapse manual serta mengembalikan aturan tampilan awal Focus. <b>Jadikan Fokus</b> memindahkan perspektif, mengatur ulang status cabang, dan menyimpan riwayat Kembali. <b>Expand</b> tidak mengubah fokus.</li>
        <li><b>Collapse ≠ Hapus hubungan.</b> Menutup cabang tidak mengubah JSON atau relasi yang tersimpan.</li>
-     </ol><p class="rules-focus-example"><b>Contoh:</b> Fokus Jonathan → kakek/nenek langsung terlihat, tetapi saudara kakek/nenek tetap tersembunyi. Ketuk Kakek lalu ↔ untuk melihat saudara kakek dan pasangan mereka. Ketuk ↓ pada saudara kakek untuk melihat anak-anaknya saja.</p></article>
+     </ol><p class="rules-focus-example"><b>Contoh:</b> Fokus Jonathan → kakek/nenek langsung terlihat, tetapi saudara kakek/nenek tetap tersembunyi. Ketuk Kakek lalu ↔ untuk melihat saudara kakek dan pasangan mereka. Ketuk ↑ pada Kakek untuk menutup/membuka orang tuanya jika sudah terlihat. Ketuk ↑ pada Jonathan untuk menyembunyikan/membuka kembali orang tua dan cabang leluhurnya. Ketuk ↓ pada pasangan Jonathan untuk menutup/membuka anak bersama.</p></article>
    <article class="rules-card" id="rules-ux"><div class="rules-card-head"><span class="rules-step">04</span><div><h3>Interaksi & pengalaman layar</h3><p>Kanvas tetap menjadi pusat pengalaman.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Ketuk kartu:</b> aksi cepat (expand, fokus, tambah hubungan, profil), tidak otomatis menutup pohon dengan panel besar.</li><li><b>Desktop:</b> Floating Profile Card untuk interaksi cepat, halaman profil lengkap untuk biodata, keluarga, dan kenangan.</li><li><b>Mobile:</b> Bottom Sheet untuk ringkasan, halaman penuh untuk profil lengkap; pan satu jari dan pinch-to-zoom dua jari.</li><li><b>Zoom adaptif:</b> saat diagram sangat kecil, detail sekunder disembunyikan agar nama dan struktur lebih jelas.</li><li><b>Petunjuk:</b> legenda warna dan gesture dibuka lewat tombol bantuan pada kanvas, tidak menumpuk di footer.</li><li><b>Orientasi saat Expand/Collapse:</b> pertahankan posisi orang yang membuka cabang jika masih terlihat di layar. Jika ekspansi dimulai dari orang di luar layar (misalnya lewat panel), pusatkan kembali orang tersebut sebelum memposisikan cabang baru.</li><li><b>Fit All pada keluarga besar:</b> harus menghitung zoom hingga seluruh 10 generasi masuk area kanvas termasuk di HP. Pada zoom sangat kecil, nama memang tidak terbaca; perbesar atau pilih Focus Orang untuk menjelajah.</li><li><b>Tindakan non-destruktif:</b> pergeseran posisi kartu, jalur garis, pan dan zoom tidak disimpan sebagai relasi dan tidak menghapus profil.</li></ol></article>
    <article class="rules-card" id="rules-data"><div class="rules-card-head"><span class="rules-step">05</span><div><h3>Data, penyimpanan & privasi</h3><p>Struktur keluarga dan posisi visual punya tanggung jawab berbeda.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Struktur data:</b> people, parent, partner, sibling. ID anggota disimpan; koordinat dan nomor generasi dihitung ulang dari relasi.</li><li><b>Sumber contoh:</b> <code>knowyourfam-family-tree.json</code> di GitHub digunakan sebagai seed awal aplikasi.</li><li><b>Edit lokal:</b> perubahan dari browser disimpan dalam localStorage, bukan otomatis di-push ke GitHub. Impor/ekspor JSON digunakan untuk mencadangkan data.</li><li><b>Muat ulang GitHub:</b> memerlukan konfirmasi karena dapat mengganti data lokal. Ekspor dulu sebelum menimpa.</li><li><b>Privasi:</b> repository publik dapat dibaca orang lain; jangan mengunggah informasi keluarga sensitif tanpa persetujuan.</li></ol></article>
    <article class="rules-card future" id="rules-future"><div class="rules-card-head"><span class="rules-step">06</span><div><h3>Pengembangan selanjutnya</h3><p>Keputusan arah desain yang belum seluruhnya tersedia di MVP.</p></div><span class="rules-status planned">Rencana</span></div><ol><li>Optimasi lebih lanjut untuk jaringan keluarga dengan perkawinan silang atau graf yang tidak dapat diproyeksikan tanpa persilangan.</li><li>Pengurutan saudara berdasarkan tanggal lahir jika valid, dan opsi manual menukar posisi pasangan.</li><li>Lazy loading data keluarga per cabang, pencarian berskala besar, dan pengelompokan otomatis untuk ratusan hingga ribuan anggota.</li><li>Hak akses, persetujuan, verifikasi profil, dan kolaborasi lintas ruang keluarga.</li><li>Kenangan keluarga (foto, cerita, riwayat perubahan) dan halaman profil yang lebih lengkap.</li></ol></article>
@@ -1448,14 +1487,14 @@ function linkChildToCouple(a,b,child){
 }
 function savePerson(form){const fields=new FormData(form),p=ctx.id?byId(ctx.id):null,name=String(fields.get('name')||'').trim(),birth=String(fields.get('birth')||''),death=String(fields.get('death')||'');if(!name){toast('Nama wajib diisi');return}if(birth&&death&&death<birth){toast('Tanggal wafat tidak valid');return}const item={id:p?.id||newId(),name,gender:String(fields.get('gender')),birth,death,notes:String(fields.get('notes')||'').trim(),nickname:String(fields.get('nickname')||'').trim(),birthPlace:String(fields.get('birthPlace')||'').trim(),residence:String(fields.get('residence')||'').trim(),occupation:String(fields.get('occupation')||'').trim(),photo:photoData,self:p?.self||false};if(!p&&fields.has('self')){data.people.forEach(p=>p.self=false);item.self=true}if(p)Object.assign(p,item);else{data.people.push(item);if(ctx.target&&fields.get('relation')!=='none'){const r=String(fields.get('relation')),type=(r==='parent'||r==='child')?'parent':r,a=r==='parent'?item.id:ctx.target,b=r==='parent'?ctx.target:item.id;const coparent=r==='child'?String(fields.get('coparent')||''):'';const error=coparent?linkChildToCouple(a,coparent,b):addRelation(a,b,type);if(error){data.people.pop();toast(error);return}}}selected=item.id;if(!focusRoot)focusRoot=item.id;if(ctx.target){const direction=String(fields.get('relation')||'child');if(direction==='parent')expandedBranches.add('up:'+encodeURIComponent(ctx.target));else if(direction==='sibling')expandedBranches.add('side:'+encodeURIComponent(ctx.target));else if(direction==='child'){const other=String(fields.get('coparent')||'');expandedBranches.add(other?pairKey(ctx.target,other):'down:'+encodeURIComponent(ctx.target));}}save();closeModal();closeDrawer();if(p&&view==='profile'){render();toast('Profil diperbarui');return}showView('tree');render({fit:true,focusNew:true});toast(p?'Profil diperbarui':'Anggota ditambahkan ke pohon');}
 function exportJSON(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='knowyourfam-family-tree.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Cadangan berhasil dibuat')}
-function importJSON(file){if(!file||file.size>3000000)return toast('File tidak valid atau terlalu besar');const reader=new FileReader();reader.onload=()=>{try{const next=validate(JSON.parse(String(reader.result)));if(!confirm(`Impor ${next.people.length} anggota dan mengganti pohon sekarang?`))return;data=next;selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');render({fit:true});toast('Berhasil mengimpor data')}catch(e){toast('File JSON tidak cocok: '+e.message)}};reader.readAsText(file)}
+function importJSON(file){if(!file||file.size>3000000)return toast('File tidak valid atau terlalu besar');const reader=new FileReader();reader.onload=()=>{try{const next=validate(JSON.parse(String(reader.result)));if(!confirm(`Impor ${next.people.length} anggota dan mengganti pohon sekarang?`))return;data=next;selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');render({fit:true});toast('Berhasil mengimpor data')}catch(e){toast('File JSON tidak cocok: '+e.message)}};reader.readAsText(file)}
 async function loadGithubData(){
  const paths=['./knowyourfam-family-tree.json','https://raw.githubusercontent.com/JonathanGea/knowYourFam/main/knowyourfam-family-tree.json'];
  let latest=null;
  for(const url of paths){try{const response=await fetch(url,{cache:'no-store'});if(!response.ok)continue;latest=validate(await response.json());break}catch(e){}}
  const next=latest||validate(clone(githubSeed));
  data=next;selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;
- focusRoot=selected;focusHistory=[];expandedBranches.clear();expansionPages.clear();treeMode='focus';
+ focusRoot=selected;focusHistory=[];expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();treeMode='focus';
  save();closeModal();showView('tree');toast(latest?'Data JSON GitHub berhasil dimuat':'Salinan data GitHub berhasil dimuat (offline)');
 }
 function usePhoto(file){if(!file||!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>8000000)return toast('Gunakan PNG/JPG/WEBP di bawah 8MB');const im=new Image(),url=URL.createObjectURL(file);im.onload=()=>{const canvas=document.createElement('canvas'),scale=Math.min(1,180/Math.max(im.width,im.height));canvas.width=Math.max(1,Math.round(im.width*scale));canvas.height=Math.max(1,Math.round(im.height*scale));canvas.getContext('2d').drawImage(im,0,0,canvas.width,canvas.height);photoData=canvas.toDataURL('image/jpeg',.72);$('photo-preview').innerHTML=photo({name:'Foto',gender:'unknown',photo:photoData});URL.revokeObjectURL(url)};im.onerror=()=>URL.revokeObjectURL(url);im.src=url}
@@ -1487,7 +1526,7 @@ viewport.addEventListener('click',e=>{if(e.target.closest('#tree-help,#tree-help
 viewport.addEventListener('wheel',e=>{if(!data.people.length)return;e.preventDefault();const r=viewport.getBoundingClientRect();zoomAt(e.deltaY<0?1.12:1/1.12,e.clientX-r.left,e.clientY-r.top)},{passive:false});
 function click(id,fn){$(id).addEventListener('click',fn)}
 click('mode-focus',()=>setTreeMode('focus'));click('mode-overview',()=>setTreeMode('overview'));
-click('reset-branches',()=>{expandedBranches.clear();expansionPages.clear();render({fit:true});toast('Cabang tambahan ditutup')});
+click('reset-branches',()=>{expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();render({fit:true});toast('Cabang dikembalikan ke tampilan Fokus awal')});
 click('back-focus',()=>{const last=focusHistory.pop();if(last)setFocus(last,{fromHistory:true});else toast('Belum ada riwayat fokus')});
 function toggleFullscreen(){
  closeQuickActions();const shell=$('canvas-shell');const open=!shell.classList.contains('is-fullscreen');shell.classList.toggle('is-fullscreen',open);document.body.classList.toggle('fullscreen-open',open);
@@ -1520,9 +1559,9 @@ document.addEventListener('click',e=>{const el=e.target.closest('button');if(!el
  if(el.id==='drawer-full-profile'){openProfilePage(selected);return}
  if(el.id==='make-focus'){setFocus(selected);return}if(el.id==='close-drawer'){closeDrawer();return}if(el.id==='drawer-link'){openModal('link',{target:selected});return}if(el.id==='remove-person'){openModal('remove',{id:selected});return}if(el.id==='photo-btn'){$('image-input').click();return}if(el.id==='clear-photo'){photoData='';$('photo-preview').innerHTML=photo({name:'Foto',gender:'unknown',photo:''});return}
  if(el.id==='confirm-unlink'){const {owner,other,relation}=ctx;let kind=relation==='parent'||relation==='child'?'parent':relation;let before=data[kind].length;data[kind]=data[kind].filter(([a,b])=>kind==='parent'?(relation==='parent'?!(a===other&&b===owner):!(a===owner&&b===other)):!((a===owner&&b===other)||(a===other&&b===owner)));if(data[kind].length===before)return toast('Hubungan langsung tidak ditemukan');save();closeModal();closeDrawer();render({fit:true});toast('Hubungan dihapus, kedua profil tetap ada');return}
- if(el.id==='confirm-new'){data={version:1,treeName:'Keluarga Saya',isDemo:false,people:[],parent:[],partner:[],sibling:[]};selected=null;focusRoot=null;expandedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');toast('Pohon baru siap');return}
- if(el.id==='confirm-remove'){data.people=data.people.filter(p=>p.id!==ctx.id);for(const k of ['parent','partner','sibling'])data[k]=data[k].filter(pair=>!pair.includes(ctx.id));selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;if(!byId(focusRoot))focusRoot=selected;expandedBranches.clear();expansionPages.clear();save();closeModal();closeDrawer();render({fit:true});toast('Anggota dihapus');return}
- if(el.id==='menu-merge-test'){openModal('merge-test');return}if(el.id==='confirm-merge-test'){mergeTestingMembers();return}if(el.id==='menu-rules'){closeModal();showView('rules');return}if(el.id==='menu-github'){openModal('github');return}if(el.id==='confirm-github'){loadGithubData();return}if(el.id==='menu-export'){closeModal();exportJSON();return}if(el.id==='menu-import'){closeModal();$('import-file').click();return}if(el.id==='menu-rename'){openModal('rename');return}if(el.id==='menu-new'){openModal('new');return}if(el.id==='menu-layout-test'){openModal('layout-test');return}if(el.id==='confirm-layout-test'){data=validate(clone(layoutTestSeed));selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;focusHistory=[];expandedBranches.clear();expansionPages.clear();treeMode='focus';save();closeModal();showView('tree');toast('67 anggota pengujian fiktif telah dimuat');return}if(el.id==='menu-demo'){openModal('demo');return}if(el.id==='confirm-demo'){data=clone(sample);selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();expansionPages.clear();treeMode='focus';save();data.isDemo=true;try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}closeModal();showView('tree');toast('31 anggota contoh telah dimuat');return}
+ if(el.id==='confirm-new'){data={version:1,treeName:'Keluarga Saya',isDemo:false,people:[],parent:[],partner:[],sibling:[]};selected=null;focusRoot=null;expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();save();closeModal();showView('tree');toast('Pohon baru siap');return}
+ if(el.id==='confirm-remove'){data.people=data.people.filter(p=>p.id!==ctx.id);for(const k of ['parent','partner','sibling'])data[k]=data[k].filter(pair=>!pair.includes(ctx.id));selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;if(!byId(focusRoot))focusRoot=selected;expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();save();closeModal();closeDrawer();render({fit:true});toast('Anggota dihapus');return}
+ if(el.id==='menu-merge-test'){openModal('merge-test');return}if(el.id==='confirm-merge-test'){mergeTestingMembers();return}if(el.id==='menu-rules'){closeModal();showView('rules');return}if(el.id==='menu-github'){openModal('github');return}if(el.id==='confirm-github'){loadGithubData();return}if(el.id==='menu-export'){closeModal();exportJSON();return}if(el.id==='menu-import'){closeModal();$('import-file').click();return}if(el.id==='menu-rename'){openModal('rename');return}if(el.id==='menu-new'){openModal('new');return}if(el.id==='menu-layout-test'){openModal('layout-test');return}if(el.id==='confirm-layout-test'){data=validate(clone(layoutTestSeed));selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;focusHistory=[];expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();treeMode='focus';save();closeModal();showView('tree');toast('67 anggota pengujian fiktif telah dimuat');return}if(el.id==='menu-demo'){openModal('demo');return}if(el.id==='confirm-demo'){data=clone(sample);selected=data.people.find(p=>p.self)?.id||data.people[0]?.id||null;focusRoot=selected;expandedBranches.clear();collapsedBranches.clear();expansionPages.clear();treeMode='focus';save();data.isDemo=true;try{localStorage.setItem(STORE,JSON.stringify(data))}catch(e){}closeModal();showView('tree');toast('31 anggota contoh telah dimuat');return}
 });
 $('modal-content').addEventListener('change',e=>{
  if(e.target.id==='image-input')usePhoto(e.target.files[0]);
