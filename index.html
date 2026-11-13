@@ -1148,21 +1148,59 @@ function drawTree({fit=false,focusNew=false}={}){
    lines+=`<path class="edge-parent" data-family-unit="${unitAttr}" d="M${x} ${busY} V${c.y-5}"/><circle cx="${x}" cy="${c.y-5}" r="4" fill="#76a887"/>`;
   }
  }
- // Explicit sibling link with no shared registered parent: draw a distinct dashed
- // sibling bracket. Never infer a parent or merge it into a parent-child line.
- // The link is persisted in data.sibling and remains visible in Focus/Overview.
- const drawnSiblings=new Set();
+ // Sibling connectors must be derived from the STORED family relationships, not
+ // only from parent links present in the Focus viewport. When parents are hidden,
+ // their visible children still need a dashed sibling bracket on the SAME row.
+ // The shared-parent bracket does not invent a new relationship or reveal the
+ // hidden parents, and is omitted if the visible parent-child bus already shows it.
+ const visibleIds=new Set(displayGraph.people.map(p=>p.id));
+ const hiddenParentChildren=new Map();
+ for(const [parent,child] of data.parent){
+  if(visibleIds.has(parent)||!visibleIds.has(child))continue;
+  const pos=positions.get(child);if(!pos)continue;
+  const key=parent+'@'+pos.level;
+  if(!hiddenParentChildren.has(key))hiddenParentChildren.set(key,[]);
+  hiddenParentChildren.get(key).push(child);
+ }
+ const siblingPairKey=(a,b)=>[a,b].sort().join('|');
+ const siblingDrawnPairs=new Set();
+ const siblingGroupsDrawn=new Set();
  let siblingLane=0;
- for(const [a,b] of displayGraph.sibling){
-  const key=[a,b].sort().join('|');if(drawnSiblings.has(key))continue;drawnSiblings.add(key);
-  const knownParents=new Set(displayGraph.parent.filter(([,c])=>c===a).map(([p])=>p));
-  if(displayGraph.parent.some(([p,c])=>c===b&&knownParents.has(p)))continue;
-  const pa=positions.get(a),pb=positions.get(b);if(!pa||!pb)continue;
-  const left=pa.x<pb.x?pa:pb,right=pa.x<pb.x?pb:pa;
-  const fromX=left.x+W*.29,toX=right.x+W*.71;
-  const bandY=Math.min(left.y,right.y)-19-(siblingLane%2)*11;
+ const addSiblingBracket=(members,source)=>{
+  const unique=[...new Set(members)].filter(id=>positions.has(id)).sort((a,b)=>positions.get(a).x-positions.get(b).x);
+  if(unique.length<2)return;
+  const level=positions.get(unique[0]).level;
+  if(unique.some(id=>positions.get(id).level!==level))return;
+  const groupKey=unique.slice().sort().join('|');
+  if(siblingGroupsDrawn.has(groupKey))return;
+  // A visible common parent already has a green parent-child bus; don't duplicate it.
+  if(data.parent.some(([parent,child])=>visibleIds.has(parent)&&unique.includes(child)&&unique.every(id=>data.parent.some(([p,c])=>p===parent&&c===id))))return;
+  siblingGroupsDrawn.add(groupKey);
+  const top=positions.get(unique[0]).y;
+  const bandY=top-44-(siblingLane%2)*14;
   siblingLane++;
-  lines+=`<path class="edge-sibling" d="M${fromX} ${left.y-1} V${bandY} H${toX} V${right.y-1}"/>`;
+  const centers=unique.map(id=>positions.get(id).x+W*.24);
+  lines+=`<path class="edge-sibling edge-sibling-bus" data-sibling-source="${safe(source)}" data-sibling-members="${safe(groupKey)}" d="M${centers[0]} ${bandY} H${centers.at(-1)}"/>`;
+  for(const x of centers)lines+=`<path class="edge-sibling" d="M${x} ${top-1} V${bandY}"/>`;
+  for(let i=0;i<unique.length;i++)for(let j=i+1;j<unique.length;j++)siblingDrawnPairs.add(siblingPairKey(unique[i],unique[j]));
+ };
+ // One bus for each group of visible siblings whose parent is hidden. Siblings
+ // with both hidden parents share the SAME bus; partners are not endpoints.
+ for(const [source,children] of hiddenParentChildren)addSiblingBracket(children,'hidden-parent');
+ // Explicit sibling relations with unknown/different recorded parents still
+ // draw their dashed bracket, including in Overview. Do not double-draw pairs
+ // already represented by a shared hidden parent above.
+ for(const [a,b] of displayGraph.sibling){
+  const key=siblingPairKey(a,b);if(siblingDrawnPairs.has(key))continue;
+  const pa=positions.get(a),pb=positions.get(b);if(!pa||!pb)continue;
+  const knownParents=new Set(data.parent.filter(([,c])=>c===a).map(([p])=>p));
+  if(data.parent.some(([p,c])=>c===b&&knownParents.has(p)&&visibleIds.has(p)))continue;
+  const left=pa.x<pb.x?pa:pb,right=pa.x<pb.x?pb:pa;
+  const fromX=left.x+W*.24,toX=right.x+W*.24;
+  const bandY=Math.min(left.y,right.y)-44-(siblingLane%2)*14;
+  siblingLane++;
+  lines+=`<path class="edge-sibling" data-sibling-source="explicit" d="M${fromX} ${left.y-1} V${bandY} H${toX} V${right.y-1}"/>`;
+  siblingDrawnPairs.add(key);
  }
  const roleDemo={p1:'Kakek',p2:'Nenek',p3:'Ayah',p4:'Bibi',p5:'Ibu',p6:'Paman',p7:'Saya',p8:'Saudara',p9:'Sepupu',p10:'Kakek (pihak ibu)',p11:'Nenek (pihak ibu)'};
  const cards=displayGraph.people.map(p=>{const pos=positions.get(p.id);if(!pos)return '';const related=rel(p.id),connections=new Set([...related.parents,...related.children,...related.partners,...related.siblings]).size;const role=p.self?'Profil saya':data.isDemo&&roleDemo[p.id]?roleDemo[p.id]:`${connections} hubungan`;return `<button class="node ${p.id.startsWith('uji-')?'test-node':''} ${selected===p.id?'selected':''} ${p.id===focusRoot&&treeMode==='focus'?'focus-person':''}" data-person="${safe(p.id)}" style="left:${pos.x}px;top:${pos.y}px" aria-label="Aksi cepat ${safe(p.name)}"><span class="node-top">${photo(p)}<span style="min-width:0"><span class="node-name">${safe(p.name)}</span><span class="node-years">${safe(years(p))}</span></span></span><span class="node-bottom ${p.self?'self':''}"><span>${safe(role)}</span><span>•••</span></span></button>`}).join('');
@@ -1301,7 +1339,7 @@ function renderRulesPage(){
   <nav class="rules-toc" aria-label="Daftar bagian aturan"><a href="#rules-core">Identitas & hubungan</a><a href="#rules-layout">Penempatan keluarga</a><a href="#rules-focus">Fokus & ekspansi</a><a href="#rules-ux">Interaksi & mobile</a><a href="#rules-data">Data & privasi</a><a href="#rules-future">Berikutnya</a></nav>
   <div class="rules-grid">
    <article class="rules-card" id="rules-core"><div class="rules-card-head"><span class="rules-step">01</span><div><h3>Identitas & hubungan</h3><p>Data keluarga tidak boleh disimpulkan dari bentuk diagram.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Person unik.</b> Setiap orang memiliki satu profil/ID, walaupun terhubung ke beberapa keluarga.</li><li><b>Relasi eksplisit.</b> Pasangan, orang tua–anak, dan saudara adalah hubungan berbeda. Punya anak bersama tidak otomatis berarti menikah; menjadi pasangan juga tidak otomatis menjadikan seseorang orang tua.</li><li><b>Anak dua atau satu orang tua.</b> Menghubungkan anak ke pasangan mencatat dua relasi orang tua–anak. Jika hanya satu orang tua diketahui, tetap sah.</li><li><b>Saudara tanpa orang tua.</b> Hubungan saudara dapat tercatat dan digambar walaupun kedua orang tuanya belum didaftarkan. Orang tua fiktif tidak dibuat.</li><li><b>Hapus hubungan ≠ hapus anggota.</b> Hapus relasi hanya melepas hubungan yang dipilih, profil dan relasi lain tetap ada; perlu konfirmasi.</li></ol></article>
-   <article class="rules-card" id="rules-layout"><div class="rules-card-head"><span class="rules-step">02</span><div><h3>Penempatan dan garis</h3><p>Prioritaskan kebenaran jalur dan keterbacaan keluarga.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Pasangan berdekatan.</b> Dalam pasangan pria–wanita yang gendernya diketahui: laki-laki kiri, perempuan kanan. Jika belum diketahui atau sama, urutan tercatat tetap stabil. Gender <em>tidak</em> mengurutkan saudara.</li><li><b>Cabang menjauh dari pasangan.</b> Saudara pasangan kiri berkembang ke sisi kiri, saudara pasangan kanan berkembang ke sisi kanan. Keluarga asal suami–istri tetap terpisah.</li><li><b>Family Unit per kumpulan orang tua.</b> Anak-anak dari set orang tua yang sama berbagi satu jalur anak. Jalur anak dari pasangan berbeda tidak disatukan.</li><li><b>Penempatan bertingkat.</b> Orang tua di atas anak; saudara pada generasi sama; generasi bertambah dinamis ke atas atau bawah.</li><li><b>Konvensi garis.</b> Hijau: orang tua–anak. Merah muda: pasangan. Biru putus-putus: saudara eksplisit tanpa orang tua bersama tercatat; jangan menggambar konektor saudara ganda jika jalur keturunannya sudah menjelaskan hubungan.</li><li><b>Family Balancing.</b> Pasangan dan saudara bergerak sebagai satu unit keluarga. Posisi pasangan dihitung ulang mengarah ke pusat anak-anaknya, dari generasi bawah ke atas dan atas ke bawah; jarak minimum antarkartu tetap dijaga. Ini adalah optimasi visual, bukan perubahan orang tua atau pasangan.</li><li><b>Routing aman.</b> Garis orang tua–anak melewati koridor kosong antargenerasi. Jika melompati generasi, jalur dialihkan melalui sela antarkartu. Bus anak tetap dipisahkan menurut set orang tua yang tercatat; garis tidak sengaja diteruskan ke keluarga lain.</li><li><b>Kompromi graf keluarga.</b> Sebuah pasangan bisa mempunyai anak dari lebih dari satu hubungan dan cabang leluhur yang saling bertemu. Karena itu tidak semua pasangan bisa tepat di tengah anak-anaknya sekaligus tanpa menabrak anggota lain. Urutan hubungan dan kartu tidak bertumpuk lebih penting daripada simetri mutlak.</li></ol><p class="rules-focus-example"><b>Catatan hasil audit layout:</b> Jika Kakek–NENEK terlihat terlalu jauh dari anak-anaknya, engine merapatkan pasangan dan kelompok saudara sebagai blok serta menghitung ulang garis. Tidak boleh menggeser satu profil secara manual sampai relasinya berubah.</p></article>
+   <article class="rules-card" id="rules-layout"><div class="rules-card-head"><span class="rules-step">02</span><div><h3>Penempatan dan garis</h3><p>Prioritaskan kebenaran jalur dan keterbacaan keluarga.</p></div><span class="rules-status">Berlaku</span></div><ol><li><b>Pasangan berdekatan.</b> Dalam pasangan pria–wanita yang gendernya diketahui: laki-laki kiri, perempuan kanan. Jika belum diketahui atau sama, urutan tercatat tetap stabil. Gender <em>tidak</em> mengurutkan saudara.</li><li><b>Cabang menjauh dari pasangan.</b> Saudara pasangan kiri berkembang ke sisi kiri, saudara pasangan kanan berkembang ke sisi kanan. Keluarga asal suami–istri tetap terpisah.</li><li><b>Family Unit per kumpulan orang tua.</b> Anak-anak dari set orang tua yang sama berbagi satu jalur anak. Jalur anak dari pasangan berbeda tidak disatukan.</li><li><b>Penempatan bertingkat.</b> Orang tua di atas anak; saudara pada generasi sama; generasi bertambah dinamis ke atas atau bawah.</li><li><b>Konvensi garis.</b> Hijau: orang tua–anak. Merah muda: pasangan. Biru putus-putus: saudara eksplisit atau saudara yang orang tua bersamanya sedang tersembunyi di Focus. Jika orang tua bersama tampak dan jalur keturunannya sudah menunjukkan hubungan, jangan menggambar konektor saudara ganda.</li><li><b>Family Balancing.</b> Pasangan dan saudara bergerak sebagai satu unit keluarga. Posisi pasangan dihitung ulang mengarah ke pusat anak-anaknya, dari generasi bawah ke atas dan atas ke bawah; jarak minimum antarkartu tetap dijaga. Ini adalah optimasi visual, bukan perubahan orang tua atau pasangan.</li><li><b>Routing aman.</b> Garis orang tua–anak melewati koridor kosong antargenerasi. Jika melompati generasi, jalur dialihkan melalui sela antarkartu. Bus anak tetap dipisahkan menurut set orang tua yang tercatat; garis tidak sengaja diteruskan ke keluarga lain.</li><li><b>Kompromi graf keluarga.</b> Sebuah pasangan bisa mempunyai anak dari lebih dari satu hubungan dan cabang leluhur yang saling bertemu. Karena itu tidak semua pasangan bisa tepat di tengah anak-anaknya sekaligus tanpa menabrak anggota lain. Urutan hubungan dan kartu tidak bertumpuk lebih penting daripada simetri mutlak.</li></ol><p class="rules-focus-example"><b>Catatan hasil audit layout:</b> Jika Kakek–NENEK terlihat terlalu jauh dari anak-anaknya, engine merapatkan pasangan dan kelompok saudara sebagai blok serta menghitung ulang garis. Tidak boleh menggeser satu profil secara manual sampai relasinya berubah.</p></article>
    <article class="rules-card" id="rules-focus"><div class="rules-card-head"><span class="rules-step">03</span><div><h3>Focus Person · Expand &amp; Collapse</h3><p>Aturan jangkauan visual per orang dan per arah, bukan perubahan data.</p></div><span class="rules-status">Berlaku</span></div>
      <h4>Jangkauan awal Focus Person</h4><ol>
        <li><b>Ke atas: 2 generasi.</b> Orang tua dan kakek-nenek dari pihak kedua orang tua.</li>
@@ -1312,7 +1350,7 @@ function renderRulesPage(){
      </ol>
      <h4>Expand individu: satu langkah per aksi</h4><ol>
        <li><b>↑ Atas:</b> membuka orang tua langsung dari orang yang diklik (maks. 1 generasi tambahan). Klik ↑ lagi di ayah/ibu untuk membuka leluhur mereka. Tidak membuka saudara orang tua secara otomatis.</li>
-       <li><b>↔ Samping:</b> membuka saudara orang itu pada generasi yang sama <b>beserta pasangan mereka jika tercatat</b>. Walaupun orang tua saudara sedang tersembunyi dalam mode Fokus, generasinya tetap mengikuti hubungan keluarga yang tersimpan—tidak boleh meloncat ke baris leluhur paling atas. Tidak membuka anak saudara atau keluarga asal pasangannya.</li>
+       <li><b>↔ Samping:</b> membuka saudara orang itu pada generasi yang sama <b>beserta pasangan mereka jika tercatat</b>. Walaupun orang tua saudara sedang tersembunyi dalam mode Fokus, generasinya tetap mengikuti hubungan keluarga yang tersimpan—tidak boleh meloncat ke baris leluhur paling atas. Garis biru putus-putus tetap menghubungkan saudara ketika orang tua mereka tidak tampil; pasangan saudara bukan bagian dari konektor saudara. Tidak membuka anak saudara atau keluarga asal pasangannya.</li>
        <li><b>↓ Bawah individu:</b> membuka anak yang tidak berada dalam unit anak bersama pasangan tercatat. Hubungan dengan satu orang tua tetap sah.</li>
        <li><b>↓ Bawah pasangan:</b> membuka anak bersama yang tercatat memiliki <b>kedua pasangan sebagai orang tua</b>. Jika hanya satu orang tua tercatat, gunakan ↓ milik individu tersebut. Tidak otomatis membuka cucu.</li>
        <li><b>Jika anggota banyak:</b> tampilkan maksimal <b>12 orang tambahan per langkah</b>; pilih “berikutnya” untuk meneruskan. Batas ini hanya tampilan, bukan penghapusan data.</li>
