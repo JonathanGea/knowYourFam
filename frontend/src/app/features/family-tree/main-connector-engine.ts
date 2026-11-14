@@ -1,7 +1,7 @@
 // @ts-nocheck
 /**
  * Transitional extraction of the latest main Canvas SVG connector routing.
- * Exact source: main/index.html blob c1252c980dd584703b8d054dfb034faaabb43aa9.
+ * Exact source: main/index.html blob 1d52703f6572639c4b64b1e476fe7a0eba201a72.
  * Preserves family buses, corridor obstacle avoidance and hidden-parent
  * sibling brackets, but outputs typed SVG paths rather than unsafe HTML.
  * TODO: replace string emission with typed edge objects after parity tests.
