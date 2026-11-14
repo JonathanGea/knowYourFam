@@ -55,6 +55,21 @@
 9. One click opens only the specified directional branch; no recursive explosion. Manual expansions load at most 12 new members per page.
 10. Re-centering changes visual focus; data and authorization stay unchanged.
 
+## Same-tree visual comparison (important)
+
+`main` currently loads its own `githubSeed` by default (or user data from localStorage), whereas the Angular demo initially loads the **fictional `sample`** (31 Persons) included in `main/index.html`. The two initial trees are therefore not necessarily identical even when both layouts obey the same rules.
+
+To compare **the exact same family graph**:
+
+1. Open the running `main` prototype and click **Ekspor JSON**.
+2. Open Angular `dev/fullstack-mvp` and click **Impor JSON**.
+3. Review the replacement confirmation (browser-local demo only).
+4. Compare Focus Person, Full Overview, sibling order, partner spacing, parent-child buses, and branch actions at the same person.
+
+The Angular demo importer accepts both `main` `people/parent/partner/sibling` JSON and the Angular `people/relationships` format. It validates duplicate IDs, missing endpoints and parent cycles. **Do not use this client-side importer as a substitute for backend permissions.** The imported JSON is kept in localStorage, not sent to a server.
+
+The source SVG router additionally renders main-style parent junction and partnership circles, instead of dropping the circle elements.
+
 ## What remains to reach full feature parity
 
 Stage 2 does **not** claim that all `main` UI features were copied:
