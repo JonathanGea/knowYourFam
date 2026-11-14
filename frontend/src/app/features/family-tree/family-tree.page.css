@@ -304,3 +304,6 @@
 
 .hidden-import{display:none}
 @media(max-width:700px){.header-button{padding:7px 8px}.topbar{gap:5px}}
+
+.connection-layer circle.parent-dot{fill:#76a887;stroke:#f9fff9;stroke-width:1}
+.connection-layer circle.partner-dot{fill:#fff;stroke:#c88e85;stroke-width:2}
