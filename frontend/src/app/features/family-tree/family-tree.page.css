@@ -301,3 +301,6 @@
   .topbar{gap:7px}
   .demo-pill{font-size:9px}
 }
+
+.hidden-import{display:none}
+@media(max-width:700px){.header-button{padding:7px 8px}.topbar{gap:5px}}
