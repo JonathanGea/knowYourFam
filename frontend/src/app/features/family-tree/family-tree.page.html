@@ -7,14 +7,13 @@
     <span class="brand-divider" aria-hidden="true"></span>
     <span class="product-label">Family workspace <span class="mvp-chip">MVP</span></span>
     <div class="topbar-spacer"></div>
-    @if (showDeveloperDocs) {
-      <a class="header-button developer-shortcut" routerLink="/developer"
-        title="Dokumentasi internal — hanya tersedia selama development">
-        <span aria-hidden="true">⌘</span>
-        <span class="desktop-only">Developer Docs</span><span class="mobile-dev-label">Docs</span>
-        <span class="dev-only-tag">DEV ONLY</span>
-      </a>
-    }
+    <!-- TEMPORARY: remove this link manually when documentation should no longer be public. -->
+    <a class="header-button developer-shortcut" routerLink="/developer"
+      title="Tombol sementara — hapus manual jika sudah tidak diperlukan">
+      <span aria-hidden="true">⌘</span>
+      <span class="desktop-only">Developer Docs</span><span class="mobile-dev-label">Docs</span>
+      <span class="dev-only-tag">TEMP</span>
+    </a>
     <span class="demo-pill"><span class="demo-dot"></span> Data demo lokal</span>
     <input #importFile type="file" accept=".json,application/json" class="hidden-import" aria-label="Pilih file JSON" (change)="importJson($event)">
     <button type="button" class="header-button" (click)="importFile.click()" title="Impor JSON dari branch main">
