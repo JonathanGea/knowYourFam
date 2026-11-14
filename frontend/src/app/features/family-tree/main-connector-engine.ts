@@ -285,11 +285,11 @@ export function createMainCanvasRouting(input: CanvasRoutingInput): CanvasRoutin
     paths.push({id:'canvas-path-'+i,kind,d,unconfirmed:provisional});
   }
   const dots: CanvasDot[] = [];
-  const circles = [...lines.matchAll(/<circle\\b([^>]+)\\/>/g)];
+  const circles = [...lines.matchAll(/<circle\b([^>]+)\/>/g)];
   for (let i=0;i<circles.length;i++) {
     const attributes=circles[i][1];
     const get=(name: string): number => {
-      const matched=new RegExp('\\\\b'+name+'="([^"]*)"').exec(attributes);
+      const matched=new RegExp('\\b'+name+'="([^"]*)"').exec(attributes);
       return matched?Number(matched[1]):Number.NaN;
     };
     const x=get('cx'),y=get('cy'),radius=get('r');
