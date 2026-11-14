@@ -16,7 +16,7 @@ Prerequisite: Node.js **24.15+** (Angular v22) and npm.
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
 
 Open http://localhost:4200.
@@ -27,6 +27,23 @@ npm run check
 ```
 
 **Important:** The initial Angular scaffold was authored from ChatGPT without access to the npm registry in its execution container. There is not yet a committed npm lockfile. Generate and commit `package-lock.json` from an environment that can run `npm install`; CI currently uses `npm install`. Until CI succeeds, do not describe this project as build-verified.
+
+## Deploy Angular to Railway (production)
+
+**Railway service source:** GitHub `dev/fullstack-mvp` with **Root Directory `/frontend`**. This directory contains `railway.json`, `package.json`, and `server.mjs`. A service deployed from the repository root will not use this configuration.
+
+- **Build command** (set in `frontend/railway.json`): `npm install --include=dev --no-audit --no-fund && npm run build`. Including development dependencies at build time is required for the Angular compiler.
+- **Start command:** `npm start` → `node server.mjs`. This serves `dist/knowyourfam/browser`, not `ng serve`.
+- **Healthcheck:** `/health` checks that the process is responding.
+- **PORT:** automatically read from `process.env.PORT`, bound to `0.0.0.0`. No fixed port in Railway variables is needed.
+- **SPA fallback:** direct navigation to `/developer` returns `index.html`, then Angular handles routing.
+- **Node.js:** v24.15+; see `.nvmrc` and the package `engines` field.
+
+**Tablet/manual deploy:** Railway → knowYourFam Angular → Settings → ensure Root Directory is `/frontend`, GitHub branch is `dev/fullstack-mvp`, and the service uses the latest `railway.json`. Then deploy manually from the Deployments tab. If the service has a custom Start Command overriding its config, set it to `npm start` (never `ng serve`). Confirm the **Build Logs** include a successful `ng build` and the **Deploy Logs** show `KnowYourFam Angular static server listening`.
+
+**Not a hosting test:** local static-server smoke tests are not evidence that the Angular bundle builds successfully. Both `npm run build` and `npm run test:serve` must pass before treating deployment as verified.
+
+**Local development:** use `npm run dev` (Angular HMR). `npm start` intentionally serves an already-compiled production build, so run `npm run build` first if you need to test it locally.
 
 ## What works in this frontend foundation
 

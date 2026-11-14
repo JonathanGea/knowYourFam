@@ -30,5 +30,9 @@ jobs:
         run: node --experimental-strip-types --test scripts/*.test.mjs
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Validate production server syntax
+        run: node --check server.mjs
       - name: Build application
         run: npm run build
+      - name: Verify production static server and SPA routes
+        run: npm run test:serve

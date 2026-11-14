@@ -4,11 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "ng serve --host 0.0.0.0",
+    "start": "node server.mjs",
     "build": "ng build",
     "check": "ng build --configuration development",
     "test": "npm run check",
-    "test:canvas": "node --experimental-strip-types --test scripts/*.test.mjs"
+    "test:canvas": "node --experimental-strip-types --test scripts/*.test.mjs",
+    "dev": "ng serve --host 0.0.0.0",
+    "test:serve": "node scripts/server-smoke.mjs"
   },
   "dependencies": {
     "@angular/common": "^22.2.0",
@@ -27,5 +29,8 @@
     "tailwindcss": "^4.1.0",
     "@tailwindcss/postcss": "^4.1.0",
     "postcss": "^8.5.0"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
   }
 }
