@@ -26,6 +26,7 @@ interface PinchGesture {
 @Component({
   selector: 'app-family-tree-page',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './family-tree.page.html',
   styleUrl: './family-tree.page.css'
 })
