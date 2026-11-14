@@ -256,12 +256,12 @@ export function createMainCanvasPaths(input: {
   // Path data is produced by the internal geometry engine only; attributes
   // and embedded HTML from the original prototype are never rendered as HTML.
   const paths: CanvasPath[] = [];
-  const nodes = [...lines.matchAll(/<path\\b([^>]+)>/g)];
+  const nodes = [...lines.matchAll(/<path\b([^>]+)>/g)];
   for (let i=0;i<nodes.length;i++) {
     const attributes=nodes[i][1];
-    const d=/\\bd="([^"]*)"/.exec(attributes)?.[1];
-    const className=/\\bclass="([^"]*)"/.exec(attributes)?.[1] || '';
-    if (!d || !/^[MmLlHhVvCcSsQqTtAaZz0-9., +\\-Ee]+$/.test(d)) continue;
+    const d=/\bd="([^"]*)"/.exec(attributes)?.[1];
+    const className=/\bclass="([^"]*)"/.exec(attributes)?.[1] || '';
+    if (!d || !/^[MmLlHhVvCcSsQqTtAaZz0-9., +\-Ee]+$/.test(d)) continue;
     const kind: 'parent'|'partner'|'sibling' =
       className.includes('edge-partner')?'partner':className.includes('edge-sibling')?'sibling':'parent';
     const tag=/data-family-unit="([^"]+)"/.exec(attributes)?.[1];
