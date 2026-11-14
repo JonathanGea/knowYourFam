@@ -1,8 +1,8 @@
 # KnowYourFam — Main Canvas → Angular Migration
 
-**Status:** Stage 1 implemented, pending Angular build and browser parity QA  
+**Status:** Stage 2 implemented — source engine, interactive canvas, matching demo, Developer Guide. Browser visual QA and Angular build still require verification.  
 **Target:** `dev/fullstack-mvp`, `frontend/` only  
-**Source:** `main/index.html` captured at Git blob `c1252c980dd584703b8d054dfb034faaabb43aa9` (14 Nov 2026).  
+**Source:** `main/index.html` captured at Git blob `1d52703f6572639c4b64b1e476fe7a0eba201a72` (14 Nov 2026).  
 **Rule:** `main` is the living HTML/JSON reference; Angular is an independent implementation, **never auto-merge main into dev**.
 
 ## Why simple git merge does not work
@@ -23,10 +23,24 @@
 | Family balance / nonoverlap / sibling order | Extracted layout engine | Reused original row packing and optimization |
 | Canvas panning & mouse wheel/trackpad/pinch zoom | `family-tree.page.ts` | PointerEvents, pointer capture, anchored zoom |
 | Keep anchor on Expand/Collapse | `keepAnchor()` | Attempts stable screen position of expanded Person |
-| Fit view, generation lanes | Angular page and scoped CSS | Canvas transform, dynamic generations |
+| Fit view, generation lanes | Angular page and scoped CSS | Main-style Fit All (minimum .004), canvas transform, dynamic generations |
+| Node-level expand buttons | `family-tree.page.html` / `branchControls` | Up / side / down / pair positioned around visible Person cards |
+| Quick person actions and sibling shortcuts | `family-tree.page.ts/html` | Demo quick panel; not the full profile page yet |
+| Focus history, branch reset and fullscreen | `family-tree.store.ts` / page | History back, reset and fullscreen fit |
+| Main sample demo 31 Persons | `infrastructure/main-sample.data.ts` | Fictional sample from main, independent v2 localStorage key |
+| Read-only Developer Guide route | `/developer`, `developer-reference.data.ts` | 15 source chapters from main, explicitly labeled as main documentation |
+| Overview Lineage Spine V2 | `main-layout-engine.ts` | Latest source port, only applied for Overview of 6+ generations |
 | Add parent/child/partner demo | Angular demo modal + store | localStorage only; provisional relationships, NO real permission/auth |
 
 **Compatibility boundary:** The extracted `makeLayout()` and connector bodies are initially quarantined under `// @ts-nocheck`. Their **public interfaces are typed**. This preserves the complex working geometry while subsequent work introduces strict internal typing without changing outputs. Do not add unrelated features to these transitional files.
+
+## Source documentation and UI
+
+- Markdown transcription of all 15 original developer chapters: `docs/DEVELOPER-CANVAS-MAIN-REFERENCE.md`
+- Read-only Angular route: `/developer`
+- Source snapshot data: `frontend/src/app/features/developer/developer-reference.data.ts`
+- Every chapter still describes **main**. Only this migration ledger describes Angular's achieved parity.
+- Frozen source blob for current port: `1d52703f6572639c4b64b1e476fe7a0eba201a72`. Re-check on every new main change.
 
 ## Non-negotiable geometry invariants
 
@@ -43,10 +57,10 @@
 
 ## What remains to reach full feature parity
 
-Stage 1 does **not** claim that all `main` UI features were copied:
+Stage 2 does **not** claim that all `main` UI features were copied:
 
-- Quick person action menu, rich profile editor, multiple photo fields, local import controls.
-- Fullscreen button, tutorial/interactive help and technical documentation pages from `main`.
+- Full legacy Quick Actions parity (Angular has a basic quick panel), rich editable profile page, multiple photo fields, and local import controls.
+- User guide and isolated interactive tutorials from `main`. Developer Guide is now available at `/developer`.
 - Accessibility / keyboard navigation checks, refined collision avoidance for massive graphs and multi-partner arrangements.
 - Perfect rendering equivalence of SVG connector decorations (dots/circles), lane labels and all responsive toolbar details.
 - UX parity for modal confirmation, delete-relation, editable sibling facts, relationship date fields, local history.
@@ -62,6 +76,8 @@ node --experimental-strip-types --test scripts/canvas-parity.test.mjs
 ```
 
 Checks include:
+- Exact 31-person fictional sample from main and 15 documentation chapters.
+- Ten-generation Overview with Overview Lineage Spine V2 and collision tests.
 - Partner groups, elder sibling left, child generation below parent.
 - Non-overlapping cards on the same generation.
 - Family bus + partner connectors built successfully.
