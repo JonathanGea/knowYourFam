@@ -23,7 +23,7 @@ A family-tree editor may create a Person for a real relative before that relativ
 4. Rudi signs up using an email or phone OTP, or signs in if already registered. Authentication is handled through an interchangeable auth adapter.
 5. User explicitly confirms "This is me" and sends a claim request.
 6. Owner/editor with claim-approval permission reviews the request and approves it. An approver must not be the requester; initially only tree owner can approve.
-7. In one transaction, the system links the verified application user to existing Person `P_RUDI`, establishes membership `viewer`, marks the claim approved and writes an audit event. The invitation token was already redeemed and reserved for this requester when the request was submitted.
+7. In one transaction, the system links the verified application user to existing Person `P_RUDI`, establishes membership `contributor`, marks the claim approved and writes an audit event. The invitation token was already redeemed and reserved for this requester when the request was submitted.
 8. Rudi sees his existing data and family relationships. **No INSERT into persons occurs during claim approval.**
 
 ## User flow
@@ -70,7 +70,8 @@ Add:
 | contact_kind | text nullable | email / phone |
 | expires_at | timestamptz | Link expiry (suggest 48h–7d configurable) |
 | redeemed_at | timestamptz nullable | Set atomically on first accepted claim submission, not on GET preview or later approval |
-| redeemed_by_user_id | uuid nullable FK | Account that first submitted the claim; blocks reuse while review is pending |\n| revoked_at | timestamptz nullable | Revoked by owner |
+| redeemed_by_user_id | uuid nullable FK | Account that first submitted the claim; blocks reuse while review is pending |
+| revoked_at | timestamptz nullable | Revoked by owner |
 | created_at | timestamptz | Audit timestamp |
 
 Enforce composite foreign key `(tree_id, person_id) -> persons(tree_id, id)`. Index `(tree_id, person_id)` for active invites, token_hash unique, and expiration queries. Token generated with secure random bytes (e.g., 32 bytes); transmit through HTTPS; do not log/query-analytics its raw value.
@@ -114,8 +115,8 @@ If soft-delete memberships are added later, adjust uniqueness to only active row
 
 - Never create a new Person automatically when approving a claim.
 - All profile fields and relationships retain the existing `person_id`; the newly approved `tree_members.self_person_id` only references it.
-- The invited user initially receives `viewer` membership plus limited authorization to edit allowed fields on their own Person (e.g. nickname, residence, profile photo), subject to chosen privacy consent settings. They do **not** gain global editor access or permission to rewrite all family links.
-- Parent, partner and child relationship changes remain restricted to owner/editor in the first MVP; request-correction workflow is deferred.
+- The invited user receives `contributor` membership after approved claim and may edit permitted fields on their own Person or contribute new records according to `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`. They do **not** gain global Editor rights or permission to rewrite all family links.
+- New parent/partner/child links and corrections follow the definitive permission policy in `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`: Contributor can add own/new unconfirmed relations without indirect-relative consent; high-impact or claimed-party changes use proposals.
 - The family-tree owner retains the ability to correct relationship data but cannot use a person's login credentials.
 - Claiming a profile is not equivalent to formal real-world identity verification; represent state as "linked to account", not "identity legally verified".
 - For minors, deceased people or profiles with no clear real-world claimant, do not offer open self-claim; future guardian/legacy authority rules require separate design.
