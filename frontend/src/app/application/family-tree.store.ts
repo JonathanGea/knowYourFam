@@ -165,12 +165,9 @@ export class FamilyTreeStore {
     };
     this.tree.set(updated);
     this.repository.save(updated);
-    this.select(id);
-    if (draft.targetId) {
-      this.expandedBranches.update(branches => ({
-        ...branches, ['family:' + draft.targetId]: 12, ['origin:' + draft.targetId]: 12
-      }));
-    }
+    // Make new records discoverable even when their previous relative
+    // was selected from the sidebar but not visible in the focused canvas.
+    this.setFocus(id);
     return person;
   }
 
