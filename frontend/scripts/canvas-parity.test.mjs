@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { computeMainCanvasLayout, CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT } from '../src/app/features/family-tree/main-layout-engine.ts';
 import { createMainCanvasPaths } from '../src/app/features/family-tree/main-connector-engine.ts';
+import { MAIN_SAMPLE_TREE } from '../src/app/infrastructure/main-sample.data.ts';
+import { MAIN_DEVELOPER_SECTIONS } from '../src/app/features/developer/developer-reference.data.ts';
 
 const person = (id, date, gender='unknown') => ({
   id, name:id, gender, birthDate:date, claimed:false
@@ -89,4 +91,62 @@ test('Adding a fifth ancestor generation does not clip the family tree', () => {
   const result=geometry(input),p=byId(result);
   assert.ok(p.get('hasan').level>p.get('great').level);
   assert.ok(result.height>=p.get('arka').y+CANVAS_CARD_HEIGHT);
+});
+
+test('Fictional source dataset has exactly 31 unique Persons and canvas nodes', () => {
+  const tree=MAIN_SAMPLE_TREE;
+  assert.equal(tree.people.length,31);
+  assert.equal(new Set(tree.people.map(p=>p.id)).size,tree.people.length);
+  const input={
+    allPeople:tree.people,allRelationships:tree.relationships,
+    visiblePeople:tree.people,visibleRelationships:tree.relationships,
+    focusId:'p7',mode:'overview'
+  };
+  const result=geometry(input);
+  assert.equal(result.positions.length,tree.people.length);
+  assert.equal(new Set(result.positions.map(p=>p.id)).size,tree.people.length);
+  assert.ok(result.height>CANVAS_CARD_HEIGHT*3);
+  const paths=createMainCanvasPaths({...input,positions:result.positions});
+  assert.ok(paths.some(p=>p.kind==='parent'));
+  assert.ok(paths.some(p=>p.kind==='partner'));
+});
+
+test('Ten-generation overview preserves family units, no overlaps, depth and spine', () => {
+  const generations=10, members=[],links=[];
+  for(let i=0;i<generations;i++){
+    const year=1900+i*10;
+    members.push(person('a'+i,String(year)+'-01-01','male'));
+    members.push(person('b'+i,String(year+2)+'-01-01','female'));
+    members.push(person('s'+i,String(year+3)+'-01-01','male'));
+    links.push({id:'couple-'+i,kind:'partner',fromId:'a'+i,toId:'b'+i,status:'confirmed'});
+    if(i>0) {
+      for(const child of ['a'+i,'s'+i]) {
+        links.push({id:'parent-a-'+i+'-'+child,kind:'parent',
+          fromId:'a'+(i-1),toId:child,status:'confirmed'});
+        links.push({id:'parent-b-'+i+'-'+child,kind:'parent',
+          fromId:'b'+(i-1),toId:child,status:'confirmed'});
+      }
+    }
+  }
+  const input={allPeople:members,allRelationships:links,visiblePeople:members,
+    visibleRelationships:links,focusId:'a9',mode:'overview'};
+  const result=geometry(input),ids=byId(result);
+  assert.equal(result.positions.length,members.length);
+  assert.ok(result.maxDepth>=9);
+  for(let gen=0;gen<generations;gen++){
+    assert.equal(ids.get('a'+gen).level,ids.get('b'+gen).level);
+    if(gen>0) assert.ok(ids.get('a'+gen).level>ids.get('a'+(gen-1)).level);
+  }
+  for(let i=0;i<result.positions.length;i++)for(let j=i+1;j<result.positions.length;j++){
+    const a=result.positions[i],b=result.positions[j];
+    if(a.level===b.level) assert.ok(
+      a.x+CANVAS_CARD_WIDTH<=b.x+0.01 || b.x+CANVAS_CARD_WIDTH<=a.x+0.01,
+      'Overlapping cards: '+a.id+' & '+b.id);
+  }
+});
+
+test('Developer reference includes all 15 chapters from main', () => {
+  assert.equal(MAIN_DEVELOPER_SECTIONS.length,15);
+  assert.ok(MAIN_DEVELOPER_SECTIONS.some(c=>c.title.includes('Overview Lineage Spine V2')));
+  assert.ok(MAIN_DEVELOPER_SECTIONS.some(c=>c.title.includes('Orthogonal Family Routing V3')));
 });
