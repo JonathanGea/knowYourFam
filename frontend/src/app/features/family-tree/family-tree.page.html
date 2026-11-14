@@ -209,6 +209,8 @@
         <label>Jenis kelamin
           <select name="gender"><option value="unknown">Belum diketahui</option><option value="male">Laki-laki</option><option value="female">Perempuan</option><option value="other">Lainnya</option></select>
         </label>
+        <label>Tanggal lahir (opsional) <input name="birthDate" type="date"></label>
+        <label>Urutan lahir dalam saudara (opsional) <input name="birthOrder" type="number" min="1" max="999" placeholder="Contoh: 1 untuk anak pertama"></label>
         <label>Hubungan ke {{ store.selectedPerson()?.name ?? 'Person terpilih' }}
           <select name="relationTo">
             <option value="child">Anak dari Person terpilih</option>
