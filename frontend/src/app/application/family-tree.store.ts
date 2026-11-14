@@ -351,5 +351,21 @@ export class FamilyTreeStore {
     this.setFocus(id);
     return person;
   }
+  async importDemoTree(next: FamilyTree): Promise<void> {
+    const previous=this.tree();
+    this.tree.set(next);
+    try { await this.repository.save(next); }
+    catch(error) { this.tree.set(previous); throw error; }
+    this.focusHistory.set([]);
+    const first=next.people.find(p=>p.id==='p7')?.id ?? next.people.find(p=>p.claimed)?.id ??
+      next.people[0]?.id ?? '';
+    if (first) this.setFocus(first,true);
+    else {
+      this.focusPersonId.set('');
+      this.selectedPersonId.set('');
+      this.resetBranches();
+    }
+  }
+
   exportJson(): string { return JSON.stringify(this.tree(), null, 2); }
 }
