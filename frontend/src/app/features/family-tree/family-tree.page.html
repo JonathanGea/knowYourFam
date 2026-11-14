@@ -1,252 +1,307 @@
-<div class="app-shell">
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-symbol" aria-hidden="true">♧</span>
-      <span class="brand-text">Know <span>Your</span> Fam</span>
+<div class="app main-parity-ui">
+  <header class="header">
+    <div class="brand"><span class="logo">♧</span>Know <b>Your</b> Fam</div>
+    <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
+    <div class="header-right">
+      <span class="save-indicator">Tersimpan di browser</span>
+      <button type="button" id="export-btn" class="btn" (click)="downloadLegacyJson()" title="Ekspor dengan format HTML main">↓ Ekspor</button>
+      <button type="button" id="top-add" class="btn primary" (click)="openAdd(store.people().length ? 'child' : 'none')">＋ Tambah anggota</button>
     </div>
-    <span class="brand-divider" aria-hidden="true"></span>
-    <span class="product-label">Family workspace <span class="mvp-chip">MVP</span></span>
-    <div class="topbar-spacer"></div>
-    <!-- TEMPORARY: remove this link manually when documentation should no longer be public. -->
-    <a class="header-button developer-shortcut" routerLink="/developer"
-      title="Tombol sementara — hapus manual jika sudah tidak diperlukan">
-      <span aria-hidden="true">⌘</span>
-      <span class="desktop-only">Developer Docs</span><span class="mobile-dev-label">Docs</span>
-      <span class="dev-only-tag">TEMP</span>
-    </a>
-    <span class="demo-pill"><span class="demo-dot"></span> Data demo lokal</span>
-    <input #importFile type="file" accept=".json,application/json" class="hidden-import" aria-label="Pilih file JSON" (change)="importJson($event)">
-    <button type="button" class="header-button" (click)="importFile.click()" title="Impor JSON dari branch main">
-      <span aria-hidden="true">⇧</span> <span class="desktop-only">Impor JSON</span>
-    </button>
-    <button type="button" class="header-button" (click)="downloadLegacyJson()" title="Ekspor JSON kompatibel dengan prototype main">↓ <span class="desktop-only">Ekspor ke main</span></button>
-    <button type="button" class="header-button" (click)="downloadJson()" title="Ekspor cadangan lengkap Angular">
-      <span aria-hidden="true">⇩</span> <span class="desktop-only">Ekspor JSON</span>
-    </button>
   </header>
 
-  <div class="workspace" [class.has-inspector]="detailsOpen()">
-    <aside class="members-panel" [class.mobile-visible]="mobileListOpen()">
-      <nav class="main-nav" aria-label="Menu utama">
-        <span class="eyebrow">MENU UTAMA</span>
-        <a routerLink="/" class="nav-item active">♧ <span>Pohon keluarga</span></a>
-        <a routerLink="/members" class="nav-item">☷ <span>Semua anggota</span></a>
-        <a routerLink="/guide" class="nav-item">◉ <span>Panduan Pengguna</span></a>
-        <a routerLink="/rules" class="nav-item">▤ <span>Aturan Family Tree</span></a>
-        <a routerLink="/developer" class="nav-item">⌘ <span>Dokumentasi Developer</span></a>
-      </nav>
-      <div class="members-top">
-        <div class="eyebrow">RUANG KELUARGA</div>
-        <div class="workspace-title">
-          <div>
-            <h1>{{ store.tree().name }}</h1>
-            <p>Tempat cerita keluarga terhubung.</p>
-          </div>
-          <span class="tree-mark" aria-hidden="true">⌘</span>
-        </div>
-        <div class="metrics">
-          <div><strong>{{ store.people().length }}</strong><span>Anggota</span></div>
-          <div><strong>{{ store.relationships().length }}</strong><span>Relasi</span></div>
-          <div><strong>{{ store.people().length - store.people().filter(p => p.claimed).length }}</strong><span>Belum klaim</span></div>
-        </div>
+  <div class="body">
+    <aside class="side" aria-label="Navigasi KnowYourFam">
+      <div class="side-title">Menu utama</div>
+      <a class="nav active" routerLink="/">♧ &nbsp;Pohon keluarga</a>
+      <a class="nav" routerLink="/members">☷ &nbsp;Semua anggota</a>
+      <a class="nav" routerLink="/guide">◉ &nbsp;Panduan Pengguna</a>
+      <a class="nav" routerLink="/rules">▤ &nbsp;Aturan Family Tree</a>
+      <a class="nav" routerLink="/developer">⌘ &nbsp;Dokumentasi Developer</a>
+      <button type="button" class="nav" (click)="addTestGenerations()">⊕ &nbsp;Lengkapi data uji (10 generasi)</button>
+      <div class="side-separator"></div>
+      <div class="side-title">Pohon aktif</div>
+      <div class="family-chip">
+        <div class="family-icon">♧</div>
+        <div><strong>{{ store.tree().name }}</strong><small>Family Tree</small></div>
       </div>
-
-      <div class="members-list-header">
-        <div class="section-title"><span>Anggota keluarga</span><span class="count-bubble">{{ store.people().length }}</span></div>
-        <label class="searchbox">
-          <span aria-hidden="true">⌕</span>
-          <input aria-label="Cari anggota keluarga" placeholder="Cari nama anggota..." [value]="store.searchTerm()" (input)="store.setSearch($any($event.target).value)">
-        </label>
-      </div>
-
-      <div class="members-scroll">
-        @for (person of store.filteredPeople(); track person.id) {
-          <button type="button" class="member-row" [class.active]="store.selectedPersonId() === person.id" (click)="selectPerson(person.id)">
-            <span class="mini-avatar" [class.female]="person.gender === 'female'">
-              @if (person.photo) { <img class="avatar-photo" [src]="person.photo" alt=""> }
+      <div class="side-title" style="margin-top:15px">Anggota</div>
+      <div class="person-links">
+        @for (person of store.people(); track person.id) {
+          <button type="button" class="person-link" [class.active]="person.id===store.selectedPersonId()"
+            (click)="openSidebarPerson(person.id)">
+            <span class="person-photo mini" [class.female]="person.gender==='female'" [class.male]="person.gender==='male'">
+              @if (person.photo) { <img [src]="person.photo" alt="" /> }
               @else { {{ initials(person.name) }} }
             </span>
-            <span class="member-copy"><strong>{{ person.name }}</strong><small>{{ person.claimed ? 'Akun terhubung' : 'Belum klaim profil' }}</small></span>
-            @if (person.id === store.focusPersonId()) { <span class="focus-marker" title="Person fokus">●</span> }
-            @else { <span class="member-arrow" aria-hidden="true">›</span> }
+            <span>{{ person.name }}</span>
           </button>
-        } @empty {
-          <div class="empty-search">Tidak ada anggota dengan nama tersebut.</div>
         }
       </div>
-
-      <div class="sidebar-foot">
-        <button type="button" class="primary-add" (click)="openAdd()"><span aria-hidden="true">＋</span> Tambah anggota</button>
-        <p>Perubahan dalam demo ini tersimpan hanya di browser perangkatmu.</p>
+      <div class="side-bottom">
+        <div class="note">
+          <strong>Versi MVP</strong>
+          <p>Bangun silsilah ke atas atau ke bawah sebanyak generasi yang dibutuhkan.</p>
+          <button type="button" (click)="createNewTree()">Buat pohon baru</button>
+        </div>
+        <input #importFile type="file" accept=".json,application/json" class="hidden-import" aria-label="Pilih berkas JSON" (change)="importJson($event)" />
+        <button type="button" class="btn" (click)="importFile.click()">↑ Impor data JSON</button>
+        <button type="button" class="btn secondary-export" (click)="downloadJson()" title="Cadangan data Angular lengkap">⇩ Cadangan lengkap</button>
       </div>
     </aside>
 
-    <main class="main-area">
-      <div class="main-intro">
+    <main class="main">
+      <div class="heading">
         <div>
-          <div class="breadcrumb">Keluarga <span>›</span> {{ store.tree().name }} <span>›</span> Pohon keluarga</div>
-          <h2>Pohon Keluarga <span class="title-leaf" aria-hidden="true">❧</span></h2>
+          <div class="eyebrow">Ruang keluarga</div>
+          <h1>Pohon Keluarga</h1>
           <p>{{ store.tree().name }} · {{ layout().generationCount }} generasi yang saling terhubung</p>
         </div>
-        <div class="intro-actions">
-          <button type="button" class="intro-soft" (click)="dialog.set('rename')">✎ Nama pohon</button>
-          <button type="button" class="intro-soft" (click)="openLink()">♧ Hubungkan</button>
-          <button type="button" class="intro-primary" (click)="openAdd()">＋ Tambah anggota</button>
-          <button type="button" class="mobile-members-button" (click)="mobileListOpen.set(!mobileListOpen())">
-            {{ mobileListOpen() ? 'Tutup daftar' : '☷ Anggota' }}
-          </button>
+        <div class="heading-actions">
+          <button type="button" id="rename-btn" class="btn" (click)="dialog.set('rename')">✎ Nama pohon</button>
+          <button type="button" id="link-btn" class="btn soft" (click)="openLink()">⚭ Hubungkan</button>
+          <button type="button" id="add-btn" class="btn primary" (click)="openAdd(store.people().length ? 'child' : 'none')">＋ Tambah anggota</button>
         </div>
       </div>
+      <div class="stats" aria-label="Statistik keluarga">
+        <div class="stat">♙ <strong>{{ store.people().length }}</strong> anggota</div>
+        <div class="stat">♧ <strong>{{ layout().generationCount }}</strong> generasi</div>
+        <div class="stat">♢ <strong>{{ store.relationships().length }}</strong> hubungan</div>
+      </div>
 
-      <section class="tree-panel" [class.is-fullscreen]="fullscreen()" aria-label="Family Tree">
-        <div class="tree-toolbar">
+      <section class="canvas-shell" [class.is-fullscreen]="fullscreen()" aria-label="Family Tree Canvas">
+        <div class="canvas-top">
           <div class="mode-switch" role="group" aria-label="Mode pohon">
-            <button type="button" [class.selected]="store.mode() === 'focus'" (click)="setMode('focus')">⌖ <span>Focus Person</span></button>
-            <button type="button" [class.selected]="store.mode() === 'overview'" (click)="setMode('overview')">☷ <span>Full Overview</span></button>
+            <button type="button" class="mode" [class.active]="store.mode()==='focus'"
+              [attr.aria-pressed]="store.mode()==='focus'" (click)="setMode('focus')">◎ Fokus Orang</button>
+            <button type="button" class="mode" [class.active]="store.mode()==='overview'"
+              [attr.aria-pressed]="store.mode()==='overview'" (click)="setMode('overview')">♧ Seluruh Pohon</button>
           </div>
-          <div class="toolbar-actions">
-            <button type="button" class="tool-reset" [disabled]="!store.focusHistory().length"
-              (click)="goBackFocus()" title="Kembali ke orang yang sebelumnya difokuskan">← Kembali</button>
-            <button type="button" class="tool-reset" (click)="resetBranches()" title="Reset semua cabang">Reset cabang</button>
-            <span class="focus-caption">Fokus: <strong>{{ store.focusPerson()?.name ?? '—' }}</strong></span>
-            <span class="toolbar-separator"></span>
-            <button type="button" class="tool-square" title="Perkecil" aria-label="Perkecil" (click)="zoomBy(-0.1)">−</button>
-            <span class="zoom-text">{{ (store.zoom() * 100).toFixed(0) }}%</span>
-            <button type="button" class="tool-square" title="Perbesar" aria-label="Perbesar" (click)="zoomBy(0.1)">＋</button>
-            <button type="button" class="tool-reset" (click)="fitCanvas()" title="Pas seluruh kanvas">Pas</button>
-            <button type="button" class="tool-square" (click)="toggleFullscreen()" [attr.aria-label]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'"
-              [attr.title]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'">{{ fullscreen() ? '×' : '⤢' }}</button>
+          <div class="canvas-ops">
+            <button type="button" id="zoom-out" class="btn icon" aria-label="Perkecil" (click)="zoomBy(-0.1)">−</button>
+            <span id="zoom-value" class="zoom-info">{{ (store.zoom()*100).toFixed(0) }}%</span>
+            <button type="button" id="zoom-in" class="btn icon" aria-label="Perbesar" (click)="zoomBy(0.1)">＋</button>
+            <button type="button" id="fit-btn" class="btn" (click)="fitCanvas()" aria-label="Pas seluruh area" title="Pas seluruh area">⛶</button>
+            <button type="button" id="fullscreen-btn" class="btn icon" (click)="toggleFullscreen()"
+              [attr.aria-label]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'"
+              [attr.title]="fullscreen() ? 'Tutup layar penuh' : 'Perbesar kanvas'">{{ fullscreen() ? '×' : '⤢' }}</button>
           </div>
         </div>
-
-        <div #canvasWindow class="canvas-window" (wheel)="onWheel($event)"
+        <div class="focus-toolbar" [class.hidden]="store.mode()!=='focus'">
+          <div class="focus-identity">
+            <span class="focus-icon">◎</span>
+            <div><span class="focus-label">Keluarga dua generasi ke atas</span>
+              <strong>{{ store.focusPerson()?.name ?? 'Anggota' }}</strong></div>
+          </div>
+          <div class="focus-side">
+            <span>{{ store.visiblePeople().length }} / {{ store.people().length }} terlihat</span>
+            <button type="button" class="focus-link" [disabled]="!store.focusHistory().length"
+              title="Kembali ke fokus sebelumnya" (click)="goBackFocus()">↶ Kembali</button>
+            <button type="button" class="focus-link" title="Kembalikan tampilan Fokus awal"
+              (click)="resetBranches()">Reset cabang</button>
+          </div>
+        </div>
+        <div #canvasWindow class="viewport" aria-label="Pohon keluarga interaktif. Ketuk anggota untuk aksi cepat, geser dengan satu jari, cubit dengan dua jari untuk zoom"
+          (wheel)="onWheel($event)"
           (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)"
           (pointerup)="onPointerUp($event)" (pointercancel)="onPointerUp($event)"
           (lostpointercapture)="onPointerUp($event)" (click)="onCanvasBackground($event)">
-          <div class="canvas-grid" aria-hidden="true"></div>
           @if (store.people().length === 0) {
-            <div class="canvas-empty">
+            <div class="empty-state">
               <h3>Mulai dari dirimu</h3>
-              <p>Tambahkan satu anggota terlebih dahulu, lalu hubungkan orang tua, pasangan, atau anak.</p>
-              <button type="button" (click)="openAdd('none')">＋ Tambah profil pertama</button>
+              <p>Tambahkan satu Person, lalu hubungkan orang tua, pasangan, atau anak.</p>
+              <button type="button" class="btn primary" (click)="openAdd('none')">＋ Tambah anggota pertama</button>
             </div>
           }
-          <div class="canvas-scene" [style.width.px]="layout().width" [style.height.px]="layout().height"
-            [style.transform]="'translate(' + panX() + 'px, ' + panY() + 'px) scale(' + store.zoom() + ')'">
+          <div class="scene" [style.width.px]="layout().width" [style.height.px]="layout().height"
+            [class.zoom-compact]="store.zoom()<0.7" [class.zoom-far]="store.zoom()<0.42"
+            [style.--label-boost]="labelBoost()"
+            [style.transform]="'translate('+panX()+'px, '+panY()+'px) scale('+store.zoom()+')'">
             @for (tier of tiers(); track tier) {
-              <div class="generation-lane" [style.top.px]="tier * 181" [style.height.px]="181"></div>
-              <div class="generation-label" [style.top.px]="tier * 181 + 43">GENERASI {{ tier + 1 }}</div>
+              <div class="lane" [style.top.px]="tier===0 ? 0 : 76+tier*181-55"
+                [style.height.px]="tier===layout().generationCount-1
+                  ? layout().height-(tier===0 ? 0 : 76+tier*181-55)
+                  : tier===0 ? 202 : 181"></div>
+              <div class="lane-label" [style.top.px]="76+tier*181-22">
+                <div class="lane-number">{{ (tier+1).toString().padStart(2,'0') }}</div>
+                <div class="lane-name">Generasi {{ tier+1 }}</div>
+                <div class="lane-description">Generasi {{ tier+1 }}</div>
+              </div>
             }
-            <svg class="connection-layer" [attr.width]="layout().width" [attr.height]="layout().height"
-              [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height" aria-hidden="true">
-              @for (edge of layout().edges; track edge.id) {
-                <path [attr.d]="edge.path" [class.partner-link]="edge.kind === 'partner'"
-                  [class.sibling-link]="edge.kind === 'sibling'" [class.unconfirmed-link]="edge.unconfirmed"/>
-              }
-              @for (dot of layout().dots; track dot.id) {
-                <circle [attr.cx]="dot.x" [attr.cy]="dot.y" [attr.r]="dot.radius"
-                  [class.partner-dot]="dot.kind === 'partner'" [class.parent-dot]="dot.kind === 'parent'"/>
-              }
+            <svg class="connections" [attr.width]="layout().width" [attr.height]="layout().height"
+              [attr.viewBox]="'0 0 '+layout().width+' '+layout().height" aria-hidden="true">
+              <defs>
+                <mask id="kyf-card-clearance-mask" maskUnits="userSpaceOnUse"
+                  x="0" y="0" [attr.width]="layout().width" [attr.height]="layout().height">
+                  <rect width="100%" height="100%" fill="white" />
+                  @for (node of layout().nodes; track node.person.id) {
+                    <rect [attr.x]="node.x-5" [attr.y]="node.y-4"
+                      width="195" height="121" rx="14" fill="black"/>
+                  }
+                </mask>
+              </defs>
+              <g mask="url(#kyf-card-clearance-mask)">
+                @for (edge of layout().edges; track edge.id) {
+                  <path [attr.d]="edge.path" [class.edge-parent]="edge.kind==='parent'"
+                    [class.edge-partner]="edge.kind==='partner'" [class.edge-sibling]="edge.kind==='sibling'"
+                    [class.unconfirmed-link]="edge.unconfirmed"/>
+                }
+                @for (dot of layout().dots; track dot.id) {
+                  <circle [attr.cx]="dot.x" [attr.cy]="dot.y" [attr.r]="dot.radius"
+                    [class.partner-dot]="dot.kind==='partner'" [class.parent-dot]="dot.kind==='parent'" />
+                }
+              </g>
             </svg>
             @for (node of layout().nodes; track node.person.id) {
-              <button type="button" class="person-node"
-                [class.focus-person]="node.person.id === store.focusPersonId()"
-                [class.selected-person]="node.person.id === store.selectedPersonId()"
-                [style.left.px]="node.x" [style.top.px]="node.y"
-                (click)="selectPerson(node.person.id)" [attr.data-person-id]="node.person.id"
-                [attr.aria-label]="'Buka aksi cepat untuk ' + node.person.name">
-                @if (node.person.id === store.focusPersonId()) { <span class="node-focus-flag">FOKUS</span> }
-                <span class="node-avatar" [class.female]="node.person.gender === 'female'">
-                  @if (node.person.photo) { <img class="avatar-photo" [src]="node.person.photo" alt=""> }
-                  @else { {{ initials(node.person.name) }} }
+              <button type="button" class="node" [class.selected]="node.person.id===store.selectedPersonId()"
+                [class.focus-person]="store.mode()==='focus' && node.person.id===store.focusPersonId()"
+                [class.partner-person]="store.mode()==='focus' && store.relationsFor(store.focusPersonId()).partners.includes(node.person.id)"
+                [class.test-node]="node.person.id.startsWith('uji-')"
+                [attr.data-person-id]="node.person.id" [style.left.px]="node.x" [style.top.px]="node.y"
+                [attr.aria-label]="'Aksi cepat '+node.person.name" (click)="selectPerson(node.person.id)">
+                <span class="node-top">
+                  <span class="person-photo" [class.female]="node.person.gender==='female'"
+                    [class.male]="node.person.gender==='male'">
+                    @if (node.person.photo) { <img [src]="node.person.photo" alt="" /> }
+                    @else { {{ initials(node.person.name) }} }
+                  </span>
+                  <span class="node-copy">
+                    <span class="node-name">{{ node.person.name }}</span>
+                    <span class="node-years">{{ yearsOf(node.person) }}</span>
+                  </span>
                 </span>
-                <span class="node-name">{{ node.person.name }}</span>
-                <span class="node-caption">{{ node.person.birthDate ? 'Lahir ' + birthYear(node.person) : 'Data belum lengkap' }}</span>
-                <span class="node-claim" [class.claimed]="node.person.claimed">{{ node.person.claimed ? '● Terhubung' : '○ Belum klaim' }}</span>
+                <span class="node-bottom" [class.self]="node.person.claimed">
+                  <span>{{ node.person.claimed ? 'Profil saya' : relationshipCount(node.person.id)+' hubungan' }}</span>
+                  <span>•••</span>
+                </span>
               </button>
             }
             @for (control of branchControls(); track control.key) {
-              <button type="button" class="branch-toggle" [class.opened]="control.open"
+              <button type="button" class="branch-toggle"
+                [class.opened]="control.open" [class.direction-up]="control.symbol==='↑'"
+                [class.direction-side]="control.symbol==='↔'" [class.direction-down]="control.symbol==='↓'"
                 [style.left.px]="control.left" [style.top.px]="control.top"
-                [attr.title]="control.label + ' — ' + (control.open ? (control.hidden ? 'berikutnya' : 'tutup') : 'buka')"
-                [attr.aria-label]="control.label"
-                (click)="$event.stopPropagation(); toggleBranch(control.key, control.anchorId)">
-                <span>{{ control.symbol }}</span>
-                <small>{{ control.open && !control.hidden ? '−' : control.hidden }}</small>
+                [attr.title]="control.label" [attr.aria-label]="control.label"
+                (click)="$event.stopPropagation();toggleBranch(control.key,control.anchorId)">
+                {{ control.symbol }} <span class="branch-count">{{ control.open && !control.hidden ? '−' : control.hidden }}</span>
               </button>
             }
           </div>
           @if (quickPerson(); as qp) {
-            <div class="quick-panel" [style.left.px]="quickPosition().left" [style.top.px]="quickPosition().top"
-              role="dialog" [attr.aria-label]="'Aksi cepat ' + qp.name"
-              (click)="$event.stopPropagation()">
+            <div class="quick-panel main-angular-quick"
+              [style.left.px]="quickPosition().left" [style.top.px]="quickPosition().top"
+              role="dialog" [attr.aria-label]="'Aksi cepat '+qp.name" (click)="$event.stopPropagation()">
               <div class="quick-head">
-                <span class="mini-avatar" [class.female]="qp.gender === 'female'">
-                  @if (qp.photo) { <img class="avatar-photo" [src]="qp.photo" alt=""> }
+                <span class="person-photo" [class.female]="qp.gender==='female'"
+                  [class.male]="qp.gender==='male'">
+                  @if (qp.photo) { <img [src]="qp.photo" alt="" /> }
                   @else { {{ initials(qp.name) }} }
                 </span>
-                <div><strong>{{ qp.name }}</strong><small>{{ birthYear(qp) }}</small></div>
-                <button type="button" class="quick-close" title="Tutup aksi" aria-label="Tutup aksi" (click)="quickPersonId.set(null)">×</button>
+                <div class="quick-identity"><strong>{{ qp.name }}</strong><small>{{ yearsOf(qp) }}</small></div>
+                <button type="button" class="quick-close" aria-label="Tutup aksi cepat"
+                  (click)="quickPersonId.set(null)">✕</button>
               </div>
-              <div class="quick-stats">
-                <span><strong>{{ store.relationsFor(qp.id).parents.length }}</strong> orang tua</span>
-                <span><strong>{{ store.relationsFor(qp.id).partners.length }}</strong> pasangan</span>
-                <span><strong>{{ store.relationsFor(qp.id).children.length }}</strong> anak</span>
+              <div class="quick-profile-summary">
+                <div class="quick-profile-metric"><b>{{ store.relationsFor(qp.id).parents.length }}</b><span>Orang tua</span></div>
+                <div class="quick-profile-metric"><b>{{ store.relationsFor(qp.id).partners.length }}</b><span>Pasangan</span></div>
+                <div class="quick-profile-metric"><b>{{ store.relationsFor(qp.id).children.length }}</b><span>Anak</span></div>
               </div>
-              <div class="quick-section-label">SAUDARA</div>
-              <div class="quick-siblings">
-                @for (siblingId of store.relationsFor(qp.id).siblings; track siblingId) {
-                  <button type="button" (click)="setFocus(siblingId)">
-                    {{ store.findPerson(siblingId)?.name || 'Saudara' }} <span>↗</span>
-                  </button>
-                } @empty { <span>Belum ada saudara tercatat.</span> }
-              </div>
-              @if (store.mode() === 'focus') {
-                <div class="quick-section-label">JELAJAHI HUBUNGAN</div>
-                <div class="quick-branches">
-                  @for (branch of store.branchOptions(qp.id); track branch.key) {
-                    <button type="button" (click)="toggleBranch(branch.key, qp.id)">
-                      {{ branch.kind==='up'?'↑':branch.kind==='side'?'↔':'↓' }}
-                      {{ branch.title }} <small>{{ branch.open ? (branch.hidden ? '+' + branch.hidden : '−') : '+' + branch.hidden }}</small>
-                    </button>
+              <div class="quick-sibling-section">
+                <div class="quick-sibling-heading">Saudara <b>({{ store.relationsFor(qp.id).siblings.length }})</b></div>
+                <div class="quick-sibling-list">
+                  @for (siblingId of store.relationsFor(qp.id).siblings; track siblingId; let index=$index) {
+                    @if (index<4 || showAllQuickSiblings()) {
+                      <button type="button" class="quick-sibling-link" (click)="setFocus(siblingId)">
+                        <span class="person-photo mini">{{ initials(store.findPerson(siblingId)?.name ?? '') }}</span>
+                        <span>{{ store.findPerson(siblingId)?.name }}</span><span class="quick-sibling-arrow">↗</span>
+                      </button>
+                    }
+                  } @empty {
+                    <p class="quick-sibling-empty">Belum ada saudara tercatat.</p>
                   }
                 </div>
-              }
-              <div class="quick-bottom">
-                <button type="button" class="quick-focus" (click)="setFocus(qp.id)"
-                  [disabled]="qp.id === store.focusPersonId() && store.mode() === 'focus'">⌖ Jadikan fokus</button>
-                <button type="button" (click)="viewPersonDetails()">☷ Detail profil</button>
-              </div>
-              <div class="quick-management">
-                <button type="button" (click)="openEdit(qp.id)">✎ Edit</button>
-                <button type="button" (click)="openLink(qp.id)">↔ Hubungkan</button>
-                @if (store.relationsFor(qp.id).partners.length) {
-                  <button type="button" (click)="openPairChild(qp.id)">♡ Anak pasangan</button>
+                @if (store.relationsFor(qp.id).siblings.length>4 && !showAllQuickSiblings()) {
+                  <button type="button" class="quick-sibling-more-link"
+                    (click)="showAllQuickSiblings.set(true)">Lihat {{ store.relationsFor(qp.id).siblings.length-4 }} saudara lainnya</button>
                 }
               </div>
-              <button type="button" class="quick-add" (click)="store.select(qp.id); openAdd('child',qp.id)">＋ Tambah keluarga</button>
+              <div class="quick-caption">Jelajahi hubungan</div>
+              <div class="quick-directions">
+                @for (dir of quickDirections(qp.id); track dir.kind) {
+                  <button type="button" class="quick-direction" [class.active]="dir.open"
+                    [disabled]="!dir.key" (click)="dir.key && toggleBranch(dir.key,qp.id)">
+                    <b>{{ dir.symbol }}</b><span>{{ dir.label }}</span>
+                    <small>{{ !dir.key ? 'Belum ada' : dir.open ? dir.hidden ? '+'+dir.hidden+' lagi' : 'Tutup cabang' : '+'+dir.hidden+' anggota' }}</small>
+                  </button>
+                }
+              </div>
+              <div class="quick-actions">
+                <button type="button" class="btn soft" (click)="setFocus(qp.id)"
+                  [disabled]="qp.id===store.focusPersonId() && store.mode()==='focus'">◎ Jadikan fokus</button>
+                <button type="button" class="btn" (click)="viewPersonDetails()">☷ Profil lengkap</button>
+              </div>
+              <button type="button" class="quick-relation" (click)="openLink(qp.id)">＋ Tambah hubungan keluarga</button>
             </div>
           }
-          <div class="canvas-hint">Geser untuk pindah · Cubit atau scroll untuk zoom · Pas untuk reset</div>
+          @if (!onboardingDismissed() && !tutorial() && store.people().length>0) {
+            <div class="guide-onboard" role="region" aria-label="Panduan untuk pengguna baru">
+              <div class="guide-onboard-head">
+                <span style="font-size:20px" aria-hidden="true">♧</span>
+                <b>Baru menggunakan KnowYourFam?</b>
+                <button type="button" class="guide-close" aria-label="Tutup ajakan tutorial"
+                  (click)="$event.stopPropagation();dismissOnboarding()">✕</button>
+              </div>
+              <p>Pelajari cara membuat dan menjelajahi silsilah. Latihan aman dan tidak mengubah keluarga asli.</p>
+              <div class="guide-onboard-actions">
+                <button type="button" class="btn primary" (click)="$event.stopPropagation();startTutorial('kartu')">Mulai tutorial</button>
+                <a class="btn" routerLink="/guide">Baca panduan</a>
+              </div>
+            </div>
+          }
+          <div class="viewport-footer">Geser satu jari untuk pindah · Cubit dua jari untuk zoom · Ketuk kartu untuk aksi cepat</div>
+          <button type="button" class="tree-help-button" aria-label="Buka panduan garis dan navigasi"
+            [attr.aria-expanded]="helpOpen()" title="Bantuan garis & navigasi"
+            (click)="$event.stopPropagation();helpOpen.set(!helpOpen())">?</button>
+          @if (helpOpen()) {
+            <div class="tree-help-panel" (click)="$event.stopPropagation()">
+              <div class="tree-help-head"><strong>Petunjuk pohon</strong>
+                <button type="button" aria-label="Tutup petunjuk" (click)="helpOpen.set(false)">✕</button>
+              </div>
+              <div class="legend-item"><span class="legend-line green"></span> Orang tua – anak</div>
+              <div class="legend-item"><span class="legend-line coral"></span> Hubungan pasangan</div>
+              <div class="legend-item"><span class="legend-line blue"></span> Saudara langsung tanpa orang tua bersama tercatat</div>
+              <p>Cabang dalam Fokus dapat ditutup dan dibuka lagi. Ketuk kartu untuk aksi cepat; geser dan cubit untuk navigasi. ↑ Orang tua · ↔ Saudara · ↓ Anak.</p>
+              <a class="btn soft" routerLink="/guide">Panduan Pengguna ↗</a>
+              <a class="btn" routerLink="/rules">Aturan Family Tree</a>
+            </div>
+          }
         </div>
-        @if (canvasWarning()) {
-          <div class="canvas-warning" role="status">{{ canvasWarning() }}</div>
-        }
-
-        <div class="tree-footer">
-          <div class="legend"><span class="legend-focus"></span> Fokus <span class="legend-line"></span> Hubungan <span class="legend-dashed"></span> Belum dikonfirmasi</div>
-          <span>{{ store.visiblePeople().length }} dari {{ store.people().length }} anggota ditampilkan</span>
-        </div>
+        @if (canvasWarning()) { <p class="canvas-warning" role="status">{{ canvasWarning() }}</p> }
+        @if (fullscreen()) { <div class="fullscreen-help">Tekan tombol × untuk kembali</div> }
       </section>
-
-      <div class="main-disclaimer">
-        <span class="info-icon">i</span>
-        <div><strong>Mode demo — bukan data tersinkron.</strong> Permission, undangan klaim Person dan database PostgreSQL akan dihubungkan pada tahap berikutnya. Tidak ada pengguna yang diotorisasi oleh frontend demo ini.</div>
-      </div>
     </main>
+  </div>
+  <nav class="mobile-nav" aria-label="Menu bawah">
+    <a class="active" routerLink="/"><span>♧</span>Pohon</a>
+    <a routerLink="/members"><span>☷</span>Anggota</a>
+    <button type="button" (click)="openAdd(store.people().length ? 'child':'none')"><span>＋</span>Tambah</button>
+    <button type="button" (click)="mobileMenuOpen.set(!mobileMenuOpen())"
+      [attr.aria-expanded]="mobileMenuOpen()"><span>⋯</span>Lainnya</button>
+  </nav>
+  @if (mobileMenuOpen()) {
+    <div class="mobile-menu-popover">
+      <a routerLink="/guide">◉ Panduan Pengguna</a>
+      <a routerLink="/rules">▤ Aturan Family Tree</a>
+      <a routerLink="/developer">⌘ Dokumentasi Developer</a>
+      <button type="button" (click)="downloadLegacyJson()">↓ Ekspor JSON</button>
+      <button type="button" (click)="mobileMenuOpen.set(false);startTutorial('kanvas')">▶ Mulai tutorial</button>
+    </div>
+  }
+</div>
 
-    @if (detailsOpen()) {
-    <aside id="person-inspector" class="inspector">
+@if (detailsOpen()) {
+  <div class="shade show" (click)="detailsOpen.set(false)"></div>
+  <aside class="drawer open" id="person-inspector" aria-label="Detail anggota">
+    <div class="inspector">
       @if (store.selectedPerson(); as person) {
         <div class="inspector-heading">
           <span class="eyebrow">PROFIL ANGGOTA</span>
@@ -353,10 +408,9 @@
       } @else {
         <div class="empty-profile">Pilih kartu Person untuk melihat profilnya.</div>
       }
-    </aside>
-    }
-  </div>
-</div>
+    </div>
+  </aside>
+}
 
 @if (tutorial(); as tour) {
   <div class="tutorial-panel" role="status">
@@ -491,3 +545,4 @@
     </div>
   </div>
 }
+

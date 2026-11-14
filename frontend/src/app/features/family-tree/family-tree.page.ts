@@ -2,7 +2,7 @@ import {
   AfterViewInit, Component, computed, effect, ElementRef, HostListener,
   inject, OnDestroy, signal, ViewChild
 } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
@@ -34,6 +34,7 @@ interface PinchGesture {
 export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly store = inject(FamilyTreeStore);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private queryApplied = false;
   readonly dialog = signal<'add'|'edit'|'link'|'pair-child'|'delete'|'rename'|null>(null);
   readonly dialogPersonId = signal('');
@@ -69,6 +70,11 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly quickPersonId = signal<string | null>(null);
   readonly fullscreen = signal(false);
   readonly detailsOpen = signal(false);
+  readonly helpOpen = signal(false);
+  readonly onboardingDismissed = signal(false);
+  readonly labelBoost = computed(() => Math.min(1.5, Math.max(1, 0.73 / this.store.zoom())));
+  readonly mobileMenuOpen = signal(false);
+  readonly showAllQuickSiblings = signal(false);
   readonly quickPerson = computed(() => this.quickPersonId() ? this.store.findPerson(this.quickPersonId()!) : undefined);
   readonly viewportSize = signal({ width: 1, height: 1 });
   readonly branchControls = computed(() => {
@@ -123,7 +129,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const {width,height}=this.viewportSize();
     const x = this.panX() + node.x * zoom, y = this.panY() + node.y * zoom;
     const right = x + CANVAS_CARD_WIDTH * zoom;
-    const maxWidth = 315;
+    const maxWidth = 324;
     const left = right + 12 + maxWidth < width ? right + 12 : x - maxWidth - 12;
     return {
       left: Math.max(8, Math.min(width - maxWidth - 8, left)),
@@ -139,13 +145,25 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   private suppressClickUntil = 0;
 
   constructor() {
+    try {
+      const raw = localStorage.getItem('knowyourfam_learning_v1');
+      if (raw && JSON.parse(raw)?.dismissed) this.onboardingDismissed.set(true);
+    } catch { /* Browser storage is optional in demo. */ }
     effect(() => {
       const ready = !this.store.loading() && this.layout().nodes.length > 0;
-      if (ready && !this.fitted) requestAnimationFrame(() => this.fitCanvas());
+      if (ready && !this.fitted) requestAnimationFrame(() => this.fitThenFocus());
       if (ready && !this.queryApplied) {
         this.queryApplied = true;
         const id = this.route.snapshot.queryParamMap.get('person');
         if (id && this.store.findPerson(id)) this.store.setFocus(id);
+        const action = this.route.snapshot.queryParamMap.get('action');
+        if (id && this.store.findPerson(id)) {
+          if (action === 'edit') this.openEdit(id);
+          if (action === 'link') this.openLink(id);
+          if (action === 'add') this.openAdd('child', id);
+          if (action === 'pair') this.openPairChild(id);
+          if (action === 'delete') this.openDelete(id);
+        }
         const tutorialName = this.route.snapshot.queryParamMap.get('tutorial');
         if (tutorialName) this.startTutorial(tutorialName);
       }
@@ -153,7 +171,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => { if (!this.store.loading()) this.fitCanvas(); });
+    requestAnimationFrame(() => { if (!this.store.loading()) this.fitThenFocus(); });
   }
 
   ngOnDestroy(): void {
@@ -161,7 +179,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  onResize(): void { if (this.fitted) this.fitCanvas(); }
+  onResize(): void { if (this.fitted) this.fitThenFocus(); }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
@@ -178,12 +196,23 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   viewPersonDetails(): void {
+    const id = this.quickPersonId() ?? this.store.selectedPersonId();
     this.quickPersonId.set(null);
-    this.detailsOpen.set(true);
-    requestAnimationFrame(()=>document.getElementById('person-inspector')?.scrollIntoView({behavior:'smooth',block:'start'}));
+    if (id && this.store.findPerson(id)) void this.router.navigate(['/person', id]);
+  }
+
+  dismissOnboarding(): void {
+    this.onboardingDismissed.set(true);
+    try {
+      const raw = localStorage.getItem('knowyourfam_learning_v1');
+      const parsed: unknown = raw ? JSON.parse(raw) : {};
+      const old = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+      localStorage.setItem('knowyourfam_learning_v1', JSON.stringify({ ...old, dismissed: true }));
+    } catch { /* Dismissed for this page even if browser storage is unavailable. */ }
   }
 
   startTutorial(module: string): void {
+    this.dismissOnboarding();
     this.store.startTutorialTree();
     this.tutorial.set({module,index:0});
     requestAnimationFrame(()=>this.fitCanvas());
@@ -328,20 +357,87 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     if (Date.now() < this.suppressClickUntil) return;
     this.store.select(id);
     this.quickPersonId.set(id);
+    this.showAllQuickSiblings.set(false);
+    this.helpOpen.set(false);
     this.mobileListOpen.set(false);
   }
 
   setFocus(id: string): void {
     this.quickPersonId.set(null);
+    this.helpOpen.set(false);
+    this.detailsOpen.set(false);
     this.store.setFocus(id);
     this.mobileListOpen.set(false);
-    requestAnimationFrame(() => this.fitCanvas());
+    requestAnimationFrame(() => this.fitThenFocus());
+  }
+
+  openSidebarPerson(id: string): void {
+    this.store.select(id);
+    this.quickPersonId.set(null);
+    this.detailsOpen.set(true);
+  }
+
+  yearsOf(person: Person): string {
+    if (!person.birthDate && !person.deathDate) return 'Tahun belum diisi';
+    return (person.birthDate?.slice(0, 4) ?? '—') +
+      (person.deathDate ? ' – ' + person.deathDate.slice(0, 4) : '');
+  }
+
+  relationshipCount(id: string): number {
+    const relation = this.store.relationsFor(id);
+    return new Set([
+      ...relation.parents, ...relation.partners, ...relation.children, ...relation.siblings
+    ]).size;
+  }
+
+  quickDirections(id: string): readonly {
+    kind: string; label: string; symbol: string; key: string|null;
+    open: boolean; hidden: number
+  }[] {
+    const groups = [
+      { kind: 'up', label: 'Orang tua', symbol: '↑' },
+      { kind: 'side', label: 'Saudara', symbol: '↔' },
+      { kind: 'down', label: 'Anak', symbol: '↓' }
+    ];
+    const options = this.store.branchOptions(id);
+    return groups.map(group => {
+      const option = options.find(branch => group.kind === 'down'
+        ? branch.kind === 'down' || branch.kind === 'pair' : branch.kind === group.kind);
+      return { ...group, key:option?.key ?? null, open:option?.open ?? false, hidden:option?.hidden ?? 0 };
+    });
+  }
+
+  async addTestGenerations(): Promise<void> {
+    if (!window.confirm('Tambahkan anggota uji dari main untuk menguji 10 generasi? Data yang ada tidak akan dihapus.')) return;
+    try {
+      const changed = await this.store.mergeTestMembers();
+      window.alert(changed.persons || changed.relationships
+        ? changed.persons + ' anggota uji dan ' + changed.relationships + ' hubungan ditambahkan.'
+        : 'Seluruh anggota uji sudah ada pada pohon ini.');
+      requestAnimationFrame(() => this.fitCanvas());
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Tidak dapat menambah data uji.');
+    }
+  }
+
+  async createNewTree(): Promise<void> {
+    if (!window.confirm('Buat pohon baru? Pohon demo saat ini akan diganti di browser ini. Ekspor JSON terlebih dahulu untuk cadangan.')) return;
+    try {
+      await this.store.createEmptyTree();
+      this.quickPersonId.set(null);
+      this.detailsOpen.set(false);
+      this.helpOpen.set(false);
+      this.mobileMenuOpen.set(false);
+      requestAnimationFrame(() => this.fitCanvas());
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Tidak dapat membuat pohon.');
+    }
   }
 
   setMode(mode: 'focus' | 'overview'): void {
     this.quickPersonId.set(null);
     this.store.setMode(mode);
-    requestAnimationFrame(() => this.fitCanvas());
+    requestAnimationFrame(() => this.fitThenFocus());
   }
 
   toggleBranch(key: string, anchorId: string): void {
@@ -382,6 +478,20 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.fitted = true;
   }
 
+  /** Main's render({fit:true}) first fits then centers the Focus Person at .78/.88 zoom.
+   * The explicit Fit button must still fit ALL visible members instead. */
+  private fitThenFocus(): void {
+    this.fitCanvas();
+    if (this.store.mode() !== 'focus') return;
+    const viewport = this.canvasWindow?.nativeElement;
+    const person = this.layout().nodes.find(node => node.person.id === this.store.focusPersonId());
+    if (!viewport || !person) return;
+    const z = viewport.clientWidth <= 650 ? 0.88 : 0.78;
+    this.store.setZoom(z);
+    this.panX.set(viewport.clientWidth/2 - (person.x + CANVAS_CARD_WIDTH/2)*z);
+    this.panY.set(viewport.clientHeight/2 - (person.y + CANVAS_CARD_HEIGHT/2)*z);
+  }
+
   zoomAt(newZoom: number, screenX: number, screenY: number): void {
     const before = this.store.zoom();
     this.store.setZoom(newZoom);
@@ -412,12 +522,12 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const target = event.target as HTMLElement;
     if (target.closest('.branch-toggle, .quick-panel')) return;
     // Mouse clicks on cards open quick actions; touch drag can start on cards.
-    if (event.pointerType === 'mouse' && target.closest('.person-node')) return;
+    if (event.pointerType === 'mouse' && target.closest('.person-node, .node')) return;
     const element = this.canvasWindow?.nativeElement;
     if (!element) return;
     const rect = element.getBoundingClientRect();
     const point = {x:event.clientX-rect.left, y:event.clientY-rect.top};
-    const tapId = target.closest<HTMLElement>('.person-node')?.dataset['personId'] ?? null;
+    const tapId = target.closest<HTMLElement>('.person-node, .node')?.dataset['personId'] ?? null;
     this.pointers.set(event.pointerId,point);
     try { element.setPointerCapture(event.pointerId); } catch { /* some browsers deny capture */ }
     if (this.pointers.size === 1) {
@@ -486,7 +596,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   onCanvasBackground(event: MouseEvent): void {
-    if ((event.target as HTMLElement).closest('.person-node,.branch-toggle,.quick-panel')) return;
+    if ((event.target as HTMLElement).closest('.person-node,.node,.branch-toggle,.quick-panel')) return;
     this.quickPersonId.set(null);
   }
 
@@ -494,14 +604,14 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const previous=this.store.goBackFocus();
     if (previous) {
       this.quickPersonId.set(null);
-      requestAnimationFrame(()=>this.fitCanvas());
+      requestAnimationFrame(()=>this.fitThenFocus());
     }
   }
 
   resetBranches(): void {
     this.store.resetBranches();
     this.quickPersonId.set(null);
-    requestAnimationFrame(()=>this.fitCanvas());
+    requestAnimationFrame(()=>this.fitThenFocus());
   }
 
   async submitPerson(event: Event): Promise<void> {

@@ -58,6 +58,17 @@ npm run check
 - Both Angular JSON backup and main-compatible JSON export are available.
 - Browser-local demo data persists in localStorage and can be exported as JSON.
 
+## Main HTML → Angular UI parity
+
+`src/main-parity.css` contains the **original 50 KB stylesheet** from `main/index.html`, pinned to Git blob `1d52703f6572639c4b64b1e476fe7a0eba201a72`.
+Angular uses the source's exact application shell and card classes: `.header`, `.side`, `.main`, `.canvas-shell`, `.viewport`, `.scene`, `.node`, `.drawer` and `.mobile-nav`.
+
+The Angular route `/person/:id` implements the source's profile page and Biodata/Keluarga/Kenangan tabs. Profile actions navigate back to Angular Family Tree with explicit action query parameters; they never inject or execute legacy JavaScript. The route pages `/members`, `/guide`, `/rules`, `/developer` now use the **same source-style shell and relevant content classes**.
+
+Canvas SVG includes the source safety mask that clips parent/sibling/partner connectors behind cards.
+
+**Validation:** `npm run test:canvas` includes UI parity contracts (layout class hierarchy, 185 × 113 card size, mask, focus controls, responsive nav) and graph tests. Exact screenshot equivalence still requires browser-side comparison with matching JSON and viewport. See `docs/MAIN-ANGULAR-UI-PARITY.md`.
+
 ## Source-parity canvas implementation
 
 The main-branch `index.html` has a mature 33k-character layout engine. Rather than rebuilding its geometry from scratch, the Angular canvas now reuses that core algorithm inside isolated modules. The extracted code is temporarily marked `// @ts-nocheck`; the public `LayoutNode` / `LayoutEdge` interfaces stay typed.

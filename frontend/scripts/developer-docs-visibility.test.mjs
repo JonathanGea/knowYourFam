@@ -17,8 +17,8 @@ test('temporary developer button is visible without configuration flags', () => 
   const page = read('src/app/features/family-tree/family-tree.page.ts');
   const template = read('src/app/features/family-tree/family-tree.page.html');
   assert.match(template, /routerLink="\/developer"/);
-  assert.match(template, /TEMPORARY: remove this link manually/);
-  assert.match(template, /<span class="dev-only-tag">TEMP<\/span>/);
+  assert.match(template, /Dokumentasi Developer/);
+  assert.match(template, /class="nav" routerLink="\/developer"/);
   assert.doesNotMatch(page, /showDeveloperDocs|environments\/environment/);
   assert.doesNotMatch(template, /@if\s*\(showDeveloperDocs\)/);
 });

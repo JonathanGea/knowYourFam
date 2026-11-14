@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { FamilyTreeRepository, FAMILY_TREE_REPOSITORY } from '../domain/family-tree.repository';
 import { BranchKind, FamilyRelationship, FamilyTree, Person, PersonDraft, RelationKind } from '../domain/family-tree.model';
 import { MAIN_SAMPLE_TREE } from '../infrastructure/main-sample.data';
+import { MAIN_REFERENCE_TREE } from '../infrastructure/main-reference.data';
 import { addRelation, archivePerson, createPerson, editPerson, linkChildToCouple as linkCouple,
   renameFamilyTree, unlinkRelation, PersonDetails } from './family-graph';
 
@@ -404,6 +405,50 @@ export class FamilyTreeStore {
   async renameTree(name: string): Promise<void> {
     await this.persist(renameFamilyTree(this.tree(), name));
   }
+  /** Mirrors main.mergeTestingMembers() without replacing an existing family. */
+  async mergeTestMembers(): Promise<{ persons: number; relationships: number }> {
+    if (this.tutorialActive()) throw new Error('Selesaikan tutorial terlebih dahulu.');
+    const tree = this.tree();
+    const existing = new Set(tree.people.map(p => p.id));
+    const additions = MAIN_REFERENCE_TREE.people.filter(
+      p => p.id.startsWith('uji-') && !existing.has(p.id)
+    );
+    const allIds = new Set([...existing, ...additions.map(p => p.id)]);
+    const allEdges = new Set(tree.relationships.map(r =>
+      r.kind + ':' + (r.kind === 'parent' ? r.fromId + '>' + r.toId
+        : [r.fromId, r.toId].sort().join('|'))));
+    const links = MAIN_REFERENCE_TREE.relationships.filter(r => {
+      if (!r.fromId.startsWith('uji-') && !r.toId.startsWith('uji-')) return false;
+      if (!allIds.has(r.fromId) || !allIds.has(r.toId)) return false;
+      const key = r.kind + ':' + (r.kind === 'parent' ? r.fromId + '>' + r.toId
+        : [r.fromId, r.toId].sort().join('|'));
+      if (allEdges.has(key)) return false;
+      allEdges.add(key);
+      return true;
+    });
+    if (additions.length || links.length) {
+      await this.persist({
+        ...tree,
+        people: [...tree.people, ...additions],
+        relationships: [...tree.relationships, ...links]
+      });
+    }
+    return { persons: additions.length, relationships: links.length };
+  }
+
+  async createEmptyTree(name = 'Keluarga Saya'): Promise<void> {
+    if (this.tutorialActive()) throw new Error('Selesaikan tutorial terlebih dahulu.');
+    const next: FamilyTree = {
+      id: crypto.randomUUID(), name, people: [], relationships: []
+    };
+    await this.persist(next);
+    this.focusPersonId.set('');
+    this.selectedPersonId.set('');
+    this.focusHistory.set([]);
+    this.mode.set('focus');
+    this.resetBranches();
+  }
+
 
   /** One direct edge only. Inferred sibling links have no edge to delete. */
   directRelationship(from: string, to: string, kind: RelationKind): FamilyRelationship | undefined {

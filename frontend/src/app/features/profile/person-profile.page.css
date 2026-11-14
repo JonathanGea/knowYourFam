@@ -1,0 +1,32 @@
+:host{display:block;height:100dvh}
+.main-parity-ui{height:100dvh}
+.main-parity-ui .main{overflow:auto;min-height:0}
+.main-parity-ui .person-page.active{display:block;overflow:auto}
+.main-parity-ui .profile-container{max-width:1060px;margin:0 auto}
+.main-parity-ui .person-photo{display:grid;place-items:center;overflow:hidden;flex:none}
+.main-parity-ui .person-photo img{width:100%;height:100%;object-fit:cover}
+.main-parity-ui .person-photo.mini{height:25px;width:25px;border-radius:7px;font-size:9px}
+.main-parity-ui .profile-relation-row{display:flex;gap:12px;align-items:center;
+  justify-content:space-between;border-bottom:1px solid #e8eee7;padding:10px 0;font-size:12px}
+.main-parity-ui .profile-relation-row a{color:#2c6b44;text-decoration:none;font-weight:700}
+.main-parity-ui .profile-relation-row .btn{padding:5px 9px;font-size:10px}
+.main-parity-ui .profile-group-title{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.main-parity-ui .profile-group-title .btn{font-size:12px;padding:5px}
+.main-parity-ui .profile-relation-group{padding:15px 0;border-bottom:1px solid #e8eee7}
+.main-parity-ui .profile-section-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.main-parity-ui .profile-section-tools .btn{text-decoration:none}
+.main-parity-ui .profile-hero-actions .btn{text-decoration:none}
+.main-parity-ui .profile-breadcrumb .btn{text-decoration:none}
+.main-parity-ui .couple-actions{display:flex;gap:7px}
+.main-parity-ui .couple-actions a{text-decoration:none}
+.main-parity-ui .profile-placeholder{text-align:center;display:grid;justify-items:center;gap:8px;padding:30px}
+.main-parity-ui .profile-placeholder .placeholder-icon{font-size:32px}
+.main-parity-ui .mobile-nav a{background:transparent;border:0;font-weight:700;
+  font-size:10px;color:#839786;display:grid;gap:2px;justify-items:center;text-decoration:none}
+.main-parity-ui .mobile-nav a span{font-size:19px}
+@media(max-width:650px){
+  .main-parity-ui .mobile-nav{display:flex}
+  .main-parity-ui .profile-hero{padding:14px;gap:10px}
+  .main-parity-ui .profile-hero>.person-photo{width:70px;height:70px;border-radius:16px;font-size:19px}
+  .main-parity-ui .profile-hero-actions{width:100%}
+}

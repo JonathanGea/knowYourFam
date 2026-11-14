@@ -40,7 +40,7 @@ try {
     await sleep(100);
   }
   assert.ok(healthy, 'Static server healthcheck failed: ' + log);
-  for (const route of ['/', '/developer', '/members', '/rules', '/guide', '/guide/focus']) {
+  for (const route of ['/', '/developer', '/members', '/rules', '/guide', '/guide/focus', '/person/p7']) {
     const response = await fetch(base + route);
     assert.equal(response.status, 200, route);
     assert.match(await response.text(), /<app-root\b/i, route);

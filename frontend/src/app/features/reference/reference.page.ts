@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -20,10 +20,15 @@ export class ReferencePage {
   private readonly route = inject(ActivatedRoute);
   readonly view = this.route.snapshot.data['view'] as ReferenceView;
   readonly groups = LEARNING_GROUPS;
+  readonly guideSearch = signal('');
   readonly rulesHtml = MAIN_RULES_HTML;
   readonly articleId = toSignal(this.route.paramMap.pipe(map(params => params.get('id'))),
     {initialValue:this.route.snapshot.paramMap.get('id')});
   get article() { return LEARNING_ARTICLES.find(article => article.id === this.articleId()); }
   getGroupTitle(id: string) { return LEARNING_GROUPS.find(group => group.id === id)?.title ?? 'Panduan'; }
-  articlesFor(id: string) { return LEARNING_ARTICLES.filter(article => article.group === id); }
+  articlesFor(id: string) {
+    const q = this.guideSearch().trim().toLocaleLowerCase('id');
+    return LEARNING_ARTICLES.filter(article => article.group === id &&
+      (!q || (article.title + ' ' + article.summary + ' ' + article.steps.join(' ')).toLocaleLowerCase('id').includes(q)));
+  }
 }
