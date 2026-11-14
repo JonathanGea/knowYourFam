@@ -3,7 +3,6 @@ import {
   inject, signal, ViewChild
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { environment } from '../../../environments/environment';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
@@ -33,8 +32,6 @@ interface PinchGesture {
   styleUrl: './family-tree.page.css'
 })
 export class FamilyTreePage implements AfterViewInit {
-  /** Temporary navigation: removed automatically in production builds. */
-  readonly showDeveloperDocs = environment.showDeveloperDocs;
   readonly store = inject(FamilyTreeStore);
   readonly layout = computed(() => createFamilyLayout(
     this.store.visiblePeople(),
