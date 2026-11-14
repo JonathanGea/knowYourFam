@@ -6,6 +6,7 @@ import { FamilyTreePage } from './features/family-tree/family-tree.page';
 
 const routes: Routes = [
   { path: '', component: FamilyTreePage },
+  { path: 'developer', loadComponent: () => import('./features/developer/developer.page').then(m => m.DeveloperPage) },
   { path: '**', redirectTo: '' }
 ];
 
