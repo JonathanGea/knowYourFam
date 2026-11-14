@@ -1,7 +1,7 @@
 // @ts-nocheck
 /**
  * Transitional pure-logic port of KnowYourFam main canvas layout.
- * Original source: main/index.html at blob c1252c980dd584703b8d054dfb034faaabb43aa9.
+ * Original source: main/index.html at blob 1d52703f6572639c4b64b1e476fe7a0eba201a72.
  * Keeps original spouse groups, ancestor cohorts, birth-order constraints,
  * family balancing and collision-avoidance passes intact.
  * TODO: type the internal groups/maps and remove ts-nocheck after parity tests.
@@ -30,7 +30,7 @@ export interface LegacyLayoutOutput {
   readonly positions: readonly LegacyLayoutPosition[];
   readonly warnings: readonly string[];
 }
-export const MAIN_LAYOUT_SOURCE_BLOB = 'c1252c980dd584703b8d054dfb034faaabb43aa9';
+export const MAIN_LAYOUT_SOURCE_BLOB = '1d52703f6572639c4b64b1e476fe7a0eba201a72';
 export const CANVAS_CARD_WIDTH = 185;
 export const CANVAS_CARD_HEIGHT = 113;
 
@@ -730,6 +730,63 @@ function makeLayout(){
   }
  }
  relaxFamilyCenters();
+ // OVERVIEW_LINEAGE_SPINE_V2: anchor one-child ancestor chains to a stable
+ // lower-generation reference, so cumulative row packing cannot make a staircase.
+ function alignOverviewLineageSpines(){
+  if(treeMode!=='overview')return;
+  // Keep three descendant generations as the positional reference. Earlier
+  // ancestors share that stable horizontal spine instead of accumulating a
+  // member-within-couple offset at each step. Short trees keep their layout.
+  if(maxDepth<5)return;
+  const stop=maxDepth-3;
+  const target=new Map();
+  for(const g of rows.get(stop)||[])target.set(g.id,g.x+ownWidth(g)/2);
+  for(let level=stop-1;level>=0;level--){
+   const row=rows.get(level)||[];
+   for(const g of row){
+    const anchor=[];
+    for(const person of g.members)for(const [pa,ch] of gdata.parent){
+     if(pa!==person)continue;
+     const cg=groups.get(idGroup.get(ch));if(!cg||cg.level<=level||cg.level>stop)continue;
+     const expected=target.get(cg.id);
+     if(expected===undefined)continue;
+     // Target represents a COUPLE / atomic-group CENTER. Do not subtract
+     // the child's spouse/member offset again on every ancestor generation:
+     // repeated offsets were the root cause of the staircase in Overview.
+     anchor.push(expected);
+    }
+    target.set(g.id,anchor.length?(Math.min(...anchor)+Math.max(...anchor))/2:g.x+ownWidth(g)/2);
+   }
+   if(row.length<2)continue;
+   const byBlock=new Map();
+   for(const g of row){const id=g.siblingBlock||g.id;if(!byBlock.has(id))byBlock.set(id,[]);byBlock.get(id).push(g);}
+   const blocks=[...byBlock.values()].map(members=>{
+    members.sort((a,b)=>a.x-b.x);
+    let off=0,wt=0,sum=0;
+    for(const g of members){
+     const anchor=target.get(g.id);
+     const isLineage=g.children.size>0;
+     if(isLineage){const w=3;sum+=(anchor-off-ownWidth(g)/2)*w;wt+=w;}
+     off+=ownWidth(g)+36;
+    }
+    return {members,width:off-36,anchor:wt?sum/wt:members[0].x,weight:wt?4:1,prior:members[0].x};
+   });
+   blocks.sort((a,b)=>a.anchor-b.anchor||a.prior-b.prior);
+   const offsets=[],pools=[];let off=0;
+   for(let i=0;i<blocks.length;i++){
+    if(i)off+=blocks[i-1].width+66;
+    offsets.push(off);
+    pools.push({start:i,end:i,w:blocks[i].weight,v:blocks[i].anchor-off});
+    while(pools.length>1){const b=pools.at(-1),a=pools.at(-2);if(a.v<=b.v)break;
+     pools.splice(-2,2,{start:a.start,end:b.end,w:a.w+b.w,v:(a.v*a.w+b.v*b.w)/(a.w+b.w)});}
+   }
+   row.length=0;
+   for(const p of pools)for(let i=p.start;i<=p.end;i++){
+    let x=p.v+offsets[i];for(const g of blocks[i].members){g.x=x;x+=ownWidth(g)+36;row.push(g);}
+   }
+  }
+ }
+ alignOverviewLineageSpines();
  // Normalize all generations into the same positive coordinate system.
  const allGroups=[...groups.values()];
  const minX=allGroups.length?Math.min(...allGroups.map(g=>g.x)):0;
