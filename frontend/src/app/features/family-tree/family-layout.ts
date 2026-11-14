@@ -1,6 +1,6 @@
 import type { FamilyRelationship, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_HEIGHT, CANVAS_CARD_WIDTH, computeMainCanvasLayout } from './main-layout-engine';
-import { createMainCanvasPaths } from './main-connector-engine';
+import { createMainCanvasRouting } from './main-connector-engine';
 
 export { CANVAS_CARD_HEIGHT, CANVAS_CARD_WIDTH };
 
@@ -16,11 +16,13 @@ export interface LayoutEdge {
   readonly path: string;
   readonly unconfirmed: boolean;
 }
+export interface LayoutDot { readonly id: string; readonly x: number; readonly y: number; readonly radius: number; readonly kind: 'partner'|'parent'; }
 export interface FamilyLayout {
   readonly width: number;
   readonly height: number;
   readonly nodes: readonly LayoutNode[];
   readonly edges: readonly LayoutEdge[];
+  readonly dots: readonly LayoutDot[];
   readonly warnings: readonly string[];
   readonly generationCount: number;
 }
@@ -39,7 +41,7 @@ export function createFamilyLayout(
   context: LayoutContext
 ): FamilyLayout {
   if (!visiblePeople.length) {
-    return { width: 900, height: 500, nodes: [], edges: [], warnings: [], generationCount: 0 };
+    return { width: 900, height: 500, nodes: [], edges: [], dots: [], warnings: [], generationCount: 0 };
   }
   const input = {
     visiblePeople,
@@ -56,7 +58,8 @@ export function createFamilyLayout(
     if (!person) return [];
     return [{ person, x: position.x, y: position.y, tier: position.level }];
   });
-  const edges = createMainCanvasPaths({ ...input, positions: geometry.positions }).map(edge => ({
+  const routing = createMainCanvasRouting({ ...input, positions: geometry.positions });
+  const edges = routing.paths.map(edge => ({
     id: edge.id,
     kind: edge.kind,
     path: edge.d,
@@ -67,6 +70,7 @@ export function createFamilyLayout(
     height: geometry.height,
     nodes,
     edges,
+    dots: routing.dots,
     warnings: geometry.warnings,
     generationCount: geometry.maxDepth + 1
   };
