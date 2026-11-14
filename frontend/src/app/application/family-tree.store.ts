@@ -240,8 +240,14 @@ export class FamilyTreeStore {
     if (draft.relationTo !== 'none' && (!draft.targetId || !this.findPerson(draft.targetId))) {
       throw new Error('Person tujuan tidak ditemukan');
     }
+    const birthDate = draft.birthDate?.trim() || undefined;
+    if (birthDate && !/^\\d{4}-\\d{2}-\\d{2}$/.test(birthDate)) throw new Error('Tanggal lahir tidak valid');
+    const birthOrder = draft.birthOrder;
+    if (birthOrder !== undefined && (!Number.isInteger(birthOrder) || birthOrder < 1 || birthOrder > 999)) {
+      throw new Error('Urutan lahir harus 1–999');
+    }
     const id = globalThis.crypto.randomUUID();
-    const person: Person = { id, name, gender: draft.gender, claimed: false };
+    const person: Person = { id, name, gender: draft.gender, birthDate, birthOrder, claimed: false };
     const links: FamilyRelationship[] = [];
     if (draft.relationTo !== 'none' && draft.targetId) {
       const relation: Record<Exclude<PersonDraft['relationTo'], 'none'>, {
