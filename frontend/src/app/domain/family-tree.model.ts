@@ -2,13 +2,15 @@ export type Gender = 'male' | 'female' | 'other' | 'unknown';
 export type RelationKind = 'parent' | 'partner' | 'sibling';
 export type RelationStatus = 'unconfirmed' | 'confirmed' | 'disputed';
 export type Role = 'owner' | 'editor' | 'contributor' | 'viewer';
-export type BranchKind = 'family' | 'origin';
+export type BranchKind = 'up' | 'side' | 'down' | 'pair';
 
 export interface Person {
   readonly id: string;
   readonly name: string;
   readonly gender: Gender;
   readonly nickname?: string;
+  /** Explicit 1-based sibling birth order, only used when known. */
+  readonly birthOrder?: number;
   readonly birthDate?: string;
   readonly occupation?: string;
   readonly notes?: string;
