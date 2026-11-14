@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
+import { parseDemoTreeJson } from '../../infrastructure/demo-import';
 
 interface TouchPoint { x: number; y: number }
 interface PointerGesture {
@@ -359,6 +360,24 @@ export class FamilyTreePage implements AfterViewInit {
       requestAnimationFrame(() => this.fitCanvas());
     } catch (error: unknown) {
       this.formError.set(error instanceof Error ? error.message : 'Gagal menyimpan orang baru.');
+    }
+  }
+
+  async importJson(event: Event): Promise<void> {
+    const input=event.target as HTMLInputElement;
+    const file=input.files?.[0];
+    if (!file) return;
+    try {
+      if (file.size>3_000_000) throw new Error('Maksimal ukuran JSON adalah 3 MB.');
+      const parsed=parseDemoTreeJson(await file.text());
+      if (!window.confirm('Impor '+parsed.people.length+' anggota dan mengganti data demo di browser ini? Sebaiknya ekspor cadangan terlebih dahulu.')) return;
+      await this.store.importDemoTree(parsed);
+      this.quickPersonId.set(null);
+      requestAnimationFrame(()=>this.fitCanvas());
+    } catch(error: unknown) {
+      window.alert(error instanceof Error ? error.message : 'Gagal mengimpor file JSON.');
+    } finally {
+      input.value='';
     }
   }
 
