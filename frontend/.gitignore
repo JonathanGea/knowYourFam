@@ -1,0 +1,9 @@
+/node_modules
+/dist
+/.angular
+/out-tsc
+/.env
+/.env.*
+!.env.example
+*.log
+.DS_Store
