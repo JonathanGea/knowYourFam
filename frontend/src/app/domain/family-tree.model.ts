@@ -36,6 +36,8 @@ export interface FamilyTree {
 export interface PersonDraft {
   readonly name: string;
   readonly gender: Gender;
+  readonly birthDate?: string;
+  readonly birthOrder?: number;
   readonly relationTo: 'none' | 'parent' | 'child' | 'partner';
   readonly targetId?: string;
 }
