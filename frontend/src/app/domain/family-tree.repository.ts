@@ -6,8 +6,8 @@ import { FamilyTree } from './family-tree.model';
  * A future HTTP adapter implements the same interface for a custom backend.
  */
 export interface FamilyTreeRepository {
-  load(): FamilyTree;
-  save(tree: FamilyTree): void;
+  load(): Promise<FamilyTree>;
+  save(tree: FamilyTree): Promise<void>;
 }
 
 export const FAMILY_TREE_REPOSITORY = new InjectionToken<FamilyTreeRepository>(
