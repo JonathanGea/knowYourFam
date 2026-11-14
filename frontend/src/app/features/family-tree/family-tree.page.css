@@ -291,3 +291,13 @@
   .tree-toolbar .tool-reset{padding:6px 4px;font-size:10px;}
   .quick-branches{grid-template-columns:1fr 1fr;}
 }
+
+
+.mobile-dev-label{display:none}
+.developer-shortcut{text-decoration:none;white-space:nowrap}
+@media(max-width:700px){
+  .mobile-dev-label{display:inline}
+  .developer-shortcut{font-size:11px;padding:7px 9px}
+  .topbar{gap:7px}
+  .demo-pill{font-size:9px}
+}
