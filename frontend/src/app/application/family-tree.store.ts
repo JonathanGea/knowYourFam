@@ -7,9 +7,16 @@ import {
 @Injectable({ providedIn: 'root' })
 export class FamilyTreeStore {
   private readonly repository: FamilyTreeRepository = inject(FAMILY_TREE_REPOSITORY);
-  readonly tree = signal<FamilyTree>(this.repository.load());
-  readonly focusPersonId = signal<string>('rudi');
-  readonly selectedPersonId = signal<string>('rudi');
+  readonly tree = signal<FamilyTree>({
+    id: 'loading',
+    name: 'Memuat keluarga...',
+    people: [],
+    relationships: []
+  });
+  readonly loading = signal<boolean>(true);
+  readonly loadError = signal<string | null>(null);
+  readonly focusPersonId = signal<string>('');
+  readonly selectedPersonId = signal<string>('');
   readonly mode = signal<'focus' | 'overview'>('focus');
   readonly searchTerm = signal<string>('');
   readonly zoom = signal<number>(1);
@@ -25,6 +32,24 @@ export class FamilyTreeStore {
     return this.people().filter(p => !query || p.name.toLocaleLowerCase('id').includes(query))
       .slice().sort((a, b) => a.name.localeCompare(b.name, 'id'));
   });
+
+  constructor() {
+    void this.initialize();
+  }
+
+  private async initialize(): Promise<void> {
+    try {
+      const tree = await this.repository.load();
+      this.tree.set(tree);
+      const focus = tree.people.find(person => person.id === 'rudi')?.id ?? tree.people[0]?.id ?? '';
+      this.focusPersonId.set(focus);
+      this.selectedPersonId.set(focus);
+    } catch {
+      this.loadError.set('Gagal memuat data pohon keluarga.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   readonly visiblePersonIds = computed<ReadonlySet<string>>(() => {
     const ids = new Set<string>();
@@ -137,7 +162,7 @@ export class FamilyTreeStore {
 
   resetZoom(): void { this.zoom.set(1); }
 
-  addPerson(draft: PersonDraft): Person {
+  async addPerson(draft: PersonDraft): Promise<Person> {
     const name = draft.name.trim().slice(0, 150);
     if (!name) throw new Error('Nama wajib diisi');
     if (draft.relationTo !== 'none' && (!draft.targetId || !this.findPerson(draft.targetId))) {
@@ -164,7 +189,12 @@ export class FamilyTreeStore {
       relationships: [...tree.relationships, ...links]
     };
     this.tree.set(updated);
-    this.repository.save(updated);
+    try {
+      await this.repository.save(updated);
+    } catch (error) {
+      this.tree.set(tree);
+      throw error;
+    }
     // Make new records discoverable even when their previous relative
     // was selected from the sidebar but not visible in the focused canvas.
     this.setFocus(id);
