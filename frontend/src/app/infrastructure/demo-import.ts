@@ -113,7 +113,7 @@ function parsePerson(value: unknown,index: number): Person {
   };
 }
 function validDate(s: string): boolean {
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(s)) return false;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
   const d=new Date(s+'T12:00:00Z');
   return !Number.isNaN(d.valueOf()) && d.toISOString().slice(0,10)===s;
 }
