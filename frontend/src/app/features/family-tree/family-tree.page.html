@@ -70,26 +70,31 @@
         </button>
       </div>
 
-      <section class="tree-panel" aria-label="Family Tree">
+      <section class="tree-panel" [class.is-fullscreen]="fullscreen()" aria-label="Family Tree">
         <div class="tree-toolbar">
           <div class="mode-switch" role="group" aria-label="Mode pohon">
             <button type="button" [class.selected]="store.mode() === 'focus'" (click)="setMode('focus')">⌖ <span>Focus Person</span></button>
             <button type="button" [class.selected]="store.mode() === 'overview'" (click)="setMode('overview')">☷ <span>Full Overview</span></button>
           </div>
           <div class="toolbar-actions">
+            <button type="button" class="tool-reset" [disabled]="!store.focusHistory().length"
+              (click)="goBackFocus()" title="Kembali ke orang yang sebelumnya difokuskan">← Kembali</button>
+            <button type="button" class="tool-reset" (click)="resetBranches()" title="Reset semua cabang">Reset cabang</button>
             <span class="focus-caption">Fokus: <strong>{{ store.focusPerson()?.name ?? '—' }}</strong></span>
             <span class="toolbar-separator"></span>
             <button type="button" class="tool-square" title="Perkecil" aria-label="Perkecil" (click)="zoomBy(-0.1)">−</button>
             <span class="zoom-text">{{ (store.zoom() * 100).toFixed(0) }}%</span>
             <button type="button" class="tool-square" title="Perbesar" aria-label="Perbesar" (click)="zoomBy(0.1)">＋</button>
             <button type="button" class="tool-reset" (click)="fitCanvas()" title="Pas seluruh kanvas">Pas</button>
+            <button type="button" class="tool-square" (click)="toggleFullscreen()" [attr.aria-label]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'"
+              [attr.title]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'">{{ fullscreen() ? '×' : '⤢' }}</button>
           </div>
         </div>
 
         <div #canvasWindow class="canvas-window" (wheel)="onWheel($event)"
           (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)"
           (pointerup)="onPointerUp($event)" (pointercancel)="onPointerUp($event)"
-          (lostpointercapture)="onPointerUp($event)">
+          (lostpointercapture)="onPointerUp($event)" (click)="onCanvasBackground($event)">
           <div class="canvas-grid" aria-hidden="true"></div>
           <div class="canvas-scene" [style.width.px]="layout().width" [style.height.px]="layout().height"
             [style.transform]="'translate(' + panX() + 'px, ' + panY() + 'px) scale(' + store.zoom() + ')'">
@@ -109,7 +114,8 @@
                 [class.focus-person]="node.person.id === store.focusPersonId()"
                 [class.selected-person]="node.person.id === store.selectedPersonId()"
                 [style.left.px]="node.x" [style.top.px]="node.y"
-                (click)="selectPerson(node.person.id)" [attr.aria-label]="'Pilih ' + node.person.name">
+                (click)="selectPerson(node.person.id)" [attr.data-person-id]="node.person.id"
+                [attr.aria-label]="'Buka aksi cepat untuk ' + node.person.name">
                 @if (node.person.id === store.focusPersonId()) { <span class="node-focus-flag">FOKUS</span> }
                 <span class="node-avatar" [class.female]="node.person.gender === 'female'">{{ initials(node.person.name) }}</span>
                 <span class="node-name">{{ node.person.name }}</span>
@@ -117,7 +123,58 @@
                 <span class="node-claim" [class.claimed]="node.person.claimed">{{ node.person.claimed ? '● Terhubung' : '○ Belum klaim' }}</span>
               </button>
             }
+            @for (control of branchControls(); track control.key) {
+              <button type="button" class="branch-toggle" [class.opened]="control.open"
+                [style.left.px]="control.left" [style.top.px]="control.top"
+                [attr.title]="control.label + ' — ' + (control.open ? (control.hidden ? 'berikutnya' : 'tutup') : 'buka')"
+                [attr.aria-label]="control.label"
+                (click)="$event.stopPropagation(); toggleBranch(control.key, control.anchorId)">
+                <span>{{ control.symbol }}</span>
+                <small>{{ control.open && !control.hidden ? '−' : control.hidden }}</small>
+              </button>
+            }
           </div>
+          @if (quickPerson(); as qp) {
+            <div class="quick-panel" [style.left.px]="quickPosition().left" [style.top.px]="quickPosition().top"
+              role="dialog" [attr.aria-label]="'Aksi cepat ' + qp.name"
+              (click)="$event.stopPropagation()">
+              <div class="quick-head">
+                <span class="mini-avatar" [class.female]="qp.gender === 'female'">{{ initials(qp.name) }}</span>
+                <div><strong>{{ qp.name }}</strong><small>{{ birthYear(qp) }}</small></div>
+                <button type="button" class="quick-close" title="Tutup aksi" aria-label="Tutup aksi" (click)="quickPersonId.set(null)">×</button>
+              </div>
+              <div class="quick-stats">
+                <span><strong>{{ store.relationsFor(qp.id).parents.length }}</strong> orang tua</span>
+                <span><strong>{{ store.relationsFor(qp.id).partners.length }}</strong> pasangan</span>
+                <span><strong>{{ store.relationsFor(qp.id).children.length }}</strong> anak</span>
+              </div>
+              <div class="quick-section-label">SAUDARA</div>
+              <div class="quick-siblings">
+                @for (siblingId of store.relationsFor(qp.id).siblings; track siblingId) {
+                  <button type="button" (click)="setFocus(siblingId)">
+                    {{ store.findPerson(siblingId)?.name || 'Saudara' }} <span>↗</span>
+                  </button>
+                } @empty { <span>Belum ada saudara tercatat.</span> }
+              </div>
+              @if (store.mode() === 'focus') {
+                <div class="quick-section-label">JELAJAHI HUBUNGAN</div>
+                <div class="quick-branches">
+                  @for (branch of store.branchOptions(qp.id); track branch.key) {
+                    <button type="button" (click)="toggleBranch(branch.key, qp.id)">
+                      {{ branch.kind==='up'?'↑':branch.kind==='side'?'↔':'↓' }}
+                      {{ branch.title }} <small>{{ branch.open ? (branch.hidden ? '+' + branch.hidden : '−') : '+' + branch.hidden }}</small>
+                    </button>
+                  }
+                </div>
+              }
+              <div class="quick-bottom">
+                <button type="button" class="quick-focus" (click)="setFocus(qp.id)"
+                  [disabled]="qp.id === store.focusPersonId() && store.mode() === 'focus'">⌖ Jadikan fokus</button>
+                <button type="button" (click)="viewPersonDetails()">☷ Detail profil</button>
+              </div>
+              <button type="button" class="quick-add" (click)="store.select(qp.id); openAdd(); quickPersonId.set(null)">＋ Tambah keluarga</button>
+            </div>
+          }
           <div class="canvas-hint">Geser untuk pindah · Cubit atau scroll untuk zoom · Pas untuk reset</div>
         </div>
         @if (canvasWarning()) {
@@ -136,7 +193,7 @@
       </div>
     </main>
 
-    <aside class="inspector">
+    <aside id="person-inspector" class="inspector">
       @if (store.selectedPerson(); as person) {
         <div class="inspector-heading">
           <span class="eyebrow">PROFIL ANGGOTA</span>
