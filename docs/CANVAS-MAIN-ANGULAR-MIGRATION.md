@@ -1,0 +1,85 @@
+# KnowYourFam — Main Canvas → Angular Migration
+
+**Status:** Stage 1 implemented, pending Angular build and browser parity QA  
+**Target:** `dev/fullstack-mvp`, `frontend/` only  
+**Source:** `main/index.html` captured at Git blob `c1252c980dd584703b8d054dfb034faaabb43aa9` (14 Nov 2026).  
+**Rule:** `main` is the living HTML/JSON reference; Angular is an independent implementation, **never auto-merge main into dev**.
+
+## Why simple git merge does not work
+
+`main` contains a monolithic HTML file with DOM event handlers, CSS and embedded vanilla JavaScript. Angular is a TypeScript standalone app with separate components, signals and DI. Merging the Git branches would copy files, **not translate canvas algorithms**. The migration intentionally extracts pure geometry code, adapts its data contract, then connects it to Angular UI.
+
+## Implemented in Angular (Stage 1)
+
+| Rule/function in main | Angular implementation | Notes |
+|---|---|---|
+| `makeLayout()` | `features/family-tree/main-layout-engine.ts` | Original sophisticated grouping + balancing logic extracted into pure module, source hash pinned |
+| Family bus, connector routing & hidden-parent sibling brackets | `main-connector-engine.ts` | Extracts SVG paths as data (no legacy HTML injection) |
+| Graph/position adapter | `family-layout.ts` | Typed public output: node positions, edge paths, generations, warnings |
+| `focusDefaultBranchKeys()` / `focusFamilyMembers()` | `application/family-tree.store.ts` | Direct parents, grandparents, parent siblings, focal siblings, partners & children per current main source |
+| `up`, `side`, `down`, `pair` | `store.branchKeys`, `branchMembers`, `branchOptions` | Independent collapse/open on every eligible Person |
+| Birth-order sibling ranking | `Person.birthOrder`, `Person.birthDate` | Known order/date first; no inference from gender or name |
+| Spouse grouping, separate birth families | Extracted layout engine | No duplicate Person cards; all groups are visual only |
+| Family balance / nonoverlap / sibling order | Extracted layout engine | Reused original row packing and optimization |
+| Canvas panning & mouse wheel/trackpad/pinch zoom | `family-tree.page.ts` | PointerEvents, pointer capture, anchored zoom |
+| Keep anchor on Expand/Collapse | `keepAnchor()` | Attempts stable screen position of expanded Person |
+| Fit view, generation lanes | Angular page and scoped CSS | Canvas transform, dynamic generations |
+| Add parent/child/partner demo | Angular demo modal + store | localStorage only; provisional relationships, NO real permission/auth |
+
+**Compatibility boundary:** The extracted `makeLayout()` and connector bodies are initially quarantined under `// @ts-nocheck`. Their **public interfaces are typed**. This preserves the complex working geometry while subsequent work introduces strict internal typing without changing outputs. Do not add unrelated features to these transitional files.
+
+## Non-negotiable geometry invariants
+
+1. No visual duplicate of a Person within one canvas. Position keyed by Person UUID/id.
+2. Couple/partner cards stay together on one generation; male-left/female-right when both explicitly known; otherwise preserve recorded order. **Do not infer sibling age from gender.**
+3. Each spouse's birth family is a separate ancestral branch; marriage does not create parent-child edges.
+4. Siblings from the same recorded parents are on the same generation and grouped; known `birthOrder` or birth date orders elder left to younger right. Unknown dates are not fabricated.
+5. Parent-child is a directed relation and must be visible in correct generation direction. Adding an ancestor can introduce 4th/5th/6th+ generations.
+6. Parent/child buses are based on parent set; a bus cannot be shared by unrelated families. Orthogonal corridors should avoid routing through cards.
+7. Hidden parents may still establish a dashed sibling bracket among visible children without making the hidden parents visible.
+8. Focus controls *initial visibility*, never permanently locks expansion. Expand/Collapse does not delete people or relationships.
+9. One click opens only the specified directional branch; no recursive explosion. Manual expansions load at most 12 new members per page.
+10. Re-centering changes visual focus; data and authorization stay unchanged.
+
+## What remains to reach full feature parity
+
+Stage 1 does **not** claim that all `main` UI features were copied:
+
+- Quick person action menu, rich profile editor, multiple photo fields, local import controls.
+- Fullscreen button, tutorial/interactive help and technical documentation pages from `main`.
+- Accessibility / keyboard navigation checks, refined collision avoidance for massive graphs and multi-partner arrangements.
+- Perfect rendering equivalence of SVG connector decorations (dots/circles), lane labels and all responsive toolbar details.
+- UX parity for modal confirmation, delete-relation, editable sibling facts, relationship date fields, local history.
+- Auth, invitations, permission review, Supabase adapter / custom backend are separate **later stages**, not included in this canvas migration.
+
+## Required verification
+
+Automated Node-only tests (no database required):
+
+```bash
+cd frontend
+node --experimental-strip-types --test scripts/canvas-parity.test.mjs
+```
+
+Checks include:
+- Partner groups, elder sibling left, child generation below parent.
+- Non-overlapping cards on the same generation.
+- Family bus + partner connectors built successfully.
+- Hidden-parent siblings drawn as siblings.
+- Adding fifth ancestor generation grows layout.
+
+Angular CI (`.github/workflows/angular-dev.yml`) runs these checks before `npm install` and `npm run build`. Browser/Playwright mobile and visual regression tests are a recommended next task, not represented as completed.
+
+## Safe workflow for future changes in main
+
+1. Record the latest `main/index.html` blob SHA and compare to the pinned source SHA in the engine.
+2. Inspect new changes in geometry, branching, pointer behavior, data and related developer documentation in main.
+3. Migrate only the affected logic into the typed Angular modules. **Do not copy/overwrite Angular app files with the monolithic HTML.**
+4. Add or update a focused parity test for the new behavior.
+5. Run Node canvas tests, Angular build, and browser visual tests when available.
+6. Commit the changes to `dev/fullstack-mvp`, give the user a commit SHA and list of features / known gaps.
+7. Do not modify or merge `main` unless explicitly asked.
+
+## Data and backend portability
+
+The canvas engine consumes standard `Person` and `FamilyRelationship` read models, independent of Supabase/Auth. Core genealogy is plain PostgreSQL (ADR-001); Angular talks to `FamilyTreeRepository`. A future Supabase or custom Spring Boot API only changes the data adapter, not layout rules. UI interactions are not authorization; follow `PERMISSIONS-AND-CONTRIBUTIONS-MVP.md` for real writes.
