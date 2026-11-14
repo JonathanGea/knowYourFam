@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { FamilyTree } from '../domain/family-tree.model';
 import { FamilyTreeRepository } from '../domain/family-tree.repository';
+import { MAIN_SAMPLE_TREE } from './main-sample.data';
 
-const KEY = 'knowyourfam.angular.demo.v1';
+const KEY = 'knowyourfam.angular.main-parity.v2';
 
 const DEMO: FamilyTree = {
   id: 'tree-surya-demo',
@@ -63,7 +64,7 @@ export class DemoFamilyTreeRepository implements FamilyTreeRepository {
         if (this.isTree(parsed)) return parsed;
       }
     } catch { /* Storage may be disabled. Demo still runs. */ }
-    return structuredClone(DEMO);
+    return structuredClone(MAIN_SAMPLE_TREE);
   }
 
   async save(tree: FamilyTree): Promise<void> {
