@@ -12,6 +12,9 @@ export interface Person {
   /** Explicit 1-based sibling birth order, only used when known. */
   readonly birthOrder?: number;
   readonly birthDate?: string;
+  readonly deathDate?: string;
+  readonly birthPlace?: string;
+  readonly residence?: string;
   readonly occupation?: string;
   readonly notes?: string;
   readonly claimed: boolean;
