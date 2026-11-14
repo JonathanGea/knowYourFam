@@ -73,43 +73,56 @@
       <section class="tree-panel" aria-label="Family Tree">
         <div class="tree-toolbar">
           <div class="mode-switch" role="group" aria-label="Mode pohon">
-            <button type="button" [class.selected]="store.mode() === 'focus'" (click)="store.setMode('focus')">⌖ <span>Focus Person</span></button>
-            <button type="button" [class.selected]="store.mode() === 'overview'" (click)="store.setMode('overview')">☷ <span>Full Overview</span></button>
+            <button type="button" [class.selected]="store.mode() === 'focus'" (click)="setMode('focus')">⌖ <span>Focus Person</span></button>
+            <button type="button" [class.selected]="store.mode() === 'overview'" (click)="setMode('overview')">☷ <span>Full Overview</span></button>
           </div>
           <div class="toolbar-actions">
             <span class="focus-caption">Fokus: <strong>{{ store.focusPerson()?.name ?? '—' }}</strong></span>
             <span class="toolbar-separator"></span>
-            <button type="button" class="tool-square" title="Perkecil" aria-label="Perkecil" (click)="store.changeZoom(-0.1)">−</button>
+            <button type="button" class="tool-square" title="Perkecil" aria-label="Perkecil" (click)="zoomBy(-0.1)">−</button>
             <span class="zoom-text">{{ (store.zoom() * 100).toFixed(0) }}%</span>
-            <button type="button" class="tool-square" title="Perbesar" aria-label="Perbesar" (click)="store.changeZoom(0.1)">＋</button>
-            <button type="button" class="tool-reset" (click)="store.resetZoom()" title="Reset zoom">Reset</button>
+            <button type="button" class="tool-square" title="Perbesar" aria-label="Perbesar" (click)="zoomBy(0.1)">＋</button>
+            <button type="button" class="tool-reset" (click)="fitCanvas()" title="Pas seluruh kanvas">Pas</button>
           </div>
         </div>
 
-        <div class="canvas-window" (wheel)="onWheel($event)">
+        <div #canvasWindow class="canvas-window" (wheel)="onWheel($event)"
+          (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)"
+          (pointerup)="onPointerUp($event)" (pointercancel)="onPointerUp($event)"
+          (lostpointercapture)="onPointerUp($event)">
           <div class="canvas-grid" aria-hidden="true"></div>
-          <div class="canvas-content-size" [style.width.px]="layout().width * store.zoom()" [style.height.px]="layout().height * store.zoom()">
-            <div class="canvas-scene" [style.width.px]="layout().width" [style.height.px]="layout().height" [style.transform]="'scale(' + store.zoom() + ')'">
-              <svg class="connection-layer" [attr.width]="layout().width" [attr.height]="layout().height" [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height" aria-hidden="true">
-                @for (edge of layout().edges; track edge.id) {
-                  <path [attr.d]="edge.path" [class.partner-link]="edge.kind === 'partner'" [class.unconfirmed-link]="edge.unconfirmed"/>
-                }
-              </svg>
-              @for (node of layout().nodes; track node.person.id) {
-                <button type="button" class="person-node" [class.focus-person]="node.person.id === store.focusPersonId()" [class.selected-person]="node.person.id === store.selectedPersonId()"
-                  [style.left.px]="node.x" [style.top.px]="node.y" (click)="selectPerson(node.person.id)"
-                  [attr.aria-label]="'Pilih ' + node.person.name">
-                  @if (node.person.id === store.focusPersonId()) { <span class="node-focus-flag">FOKUS</span> }
-                  <span class="node-avatar" [class.female]="node.person.gender === 'female'">{{ initials(node.person.name) }}</span>
-                  <span class="node-name">{{ node.person.name }}</span>
-                  <span class="node-caption">{{ node.person.birthDate ? 'Lahir ' + birthYear(node.person) : 'Data belum lengkap' }}</span>
-                  <span class="node-claim" [class.claimed]="node.person.claimed">{{ node.person.claimed ? '● Terhubung' : '○ Belum klaim' }}</span>
-                </button>
+          <div class="canvas-scene" [style.width.px]="layout().width" [style.height.px]="layout().height"
+            [style.transform]="'translate(' + panX() + 'px, ' + panY() + 'px) scale(' + store.zoom() + ')'">
+            @for (tier of tiers(); track tier) {
+              <div class="generation-lane" [style.top.px]="tier * 181" [style.height.px]="181"></div>
+              <div class="generation-label" [style.top.px]="tier * 181 + 43">GENERASI {{ tier + 1 }}</div>
+            }
+            <svg class="connection-layer" [attr.width]="layout().width" [attr.height]="layout().height"
+              [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height" aria-hidden="true">
+              @for (edge of layout().edges; track edge.id) {
+                <path [attr.d]="edge.path" [class.partner-link]="edge.kind === 'partner'"
+                  [class.sibling-link]="edge.kind === 'sibling'" [class.unconfirmed-link]="edge.unconfirmed"/>
               }
-            </div>
+            </svg>
+            @for (node of layout().nodes; track node.person.id) {
+              <button type="button" class="person-node"
+                [class.focus-person]="node.person.id === store.focusPersonId()"
+                [class.selected-person]="node.person.id === store.selectedPersonId()"
+                [style.left.px]="node.x" [style.top.px]="node.y"
+                (click)="selectPerson(node.person.id)" [attr.aria-label]="'Pilih ' + node.person.name">
+                @if (node.person.id === store.focusPersonId()) { <span class="node-focus-flag">FOKUS</span> }
+                <span class="node-avatar" [class.female]="node.person.gender === 'female'">{{ initials(node.person.name) }}</span>
+                <span class="node-name">{{ node.person.name }}</span>
+                <span class="node-caption">{{ node.person.birthDate ? 'Lahir ' + birthYear(node.person) : 'Data belum lengkap' }}</span>
+                <span class="node-claim" [class.claimed]="node.person.claimed">{{ node.person.claimed ? '● Terhubung' : '○ Belum klaim' }}</span>
+              </button>
+            }
           </div>
-          <div class="canvas-hint">Geser untuk menjelajah · Ctrl + scroll untuk zoom</div>
+          <div class="canvas-hint">Geser untuk pindah · Cubit atau scroll untuk zoom · Pas untuk reset</div>
         </div>
+        @if (canvasWarning()) {
+          <div class="canvas-warning" role="status">{{ canvasWarning() }}</div>
+        }
 
         <div class="tree-footer">
           <div class="legend"><span class="legend-focus"></span> Fokus <span class="legend-line"></span> Hubungan <span class="legend-dashed"></span> Belum dikonfirmasi</div>
@@ -157,26 +170,20 @@
           <section class="profile-section">
             <div class="section-title"><span>Jelajahi cabang</span></div>
             <div class="branch-actions">
-              @if (store.branchPeople('family', person.id).length) {
-                <button type="button" (click)="store.toggleBranch('family', person.id)">
-                  <span><b>＋</b> Pasangan & anak</span>
-                  <small>{{ store.isBranchOpen('family', person.id) ? 'Tutup / muat lagi' : '+' + store.hiddenBranchCount('family', person.id) }}</small>
+              @for (branch of store.branchOptions(person.id); track branch.key) {
+                <button type="button" (click)="toggleBranch(branch.key, person.id)">
+                  <span><b>{{ branch.kind === 'up' ? '↑' : branch.kind === 'side' ? '↔' : '↓' }}</b> {{ branch.title }}</span>
+                  <small>{{ branch.open ? (branch.hidden ? '+' + branch.hidden + ' lagi' : '− Tutup') : '+' + branch.hidden }}</small>
                 </button>
-                @if (store.isBranchOpen('family', person.id) && store.hiddenBranchCount('family', person.id) > 0) {
-                  <button type="button" class="collapse-link" (click)="store.collapseBranch('family', person.id)">Tutup cabang pasangan & anak</button>
+                @if (branch.open && branch.hidden > 0) {
+                  <button type="button" class="collapse-link"
+                    (click)="collapseBranch(branch.key, person.id)">Tutup cabang {{ branch.title }}</button>
                 }
-              }
-              @if (store.branchPeople('origin', person.id).length) {
-                <button type="button" (click)="store.toggleBranch('origin', person.id)">
-                  <span><b>＋</b> Orang tua & saudara</span>
-                  <small>{{ store.isBranchOpen('origin', person.id) ? 'Tutup / muat lagi' : '+' + store.hiddenBranchCount('origin', person.id) }}</small>
-                </button>
-                @if (store.isBranchOpen('origin', person.id) && store.hiddenBranchCount('origin', person.id) > 0) {
-                  <button type="button" class="collapse-link" (click)="store.collapseBranch('origin', person.id)">Tutup cabang orang tua & saudara</button>
-                }
+              } @empty {
+                <p class="helper-text">Belum ada cabang tambahan untuk anggota ini.</p>
               }
             </div>
-            <p class="helper-text">Buka cabang satu unit keluarga per aksi. Mengubah fokus menutup ekspansi lama.</p>
+            <p class="helper-text">Arah: ↑ leluhur, ↔ saudara, ↓ anak, dan ↓ anak bersama pasangan. Setiap cabang bisa dibuka atau ditutup secara mandiri.</p>
           </section>
         }
         <div class="inspector-bottom">
