@@ -113,6 +113,10 @@
                 <path [attr.d]="edge.path" [class.partner-link]="edge.kind === 'partner'"
                   [class.sibling-link]="edge.kind === 'sibling'" [class.unconfirmed-link]="edge.unconfirmed"/>
               }
+              @for (dot of layout().dots; track dot.id) {
+                <circle [attr.cx]="dot.x" [attr.cy]="dot.y" [attr.r]="dot.radius"
+                  [class.partner-dot]="dot.kind === 'partner'" [class.parent-dot]="dot.kind === 'parent'"/>
+              }
             </svg>
             @for (node of layout().nodes; track node.person.id) {
               <button type="button" class="person-node"
