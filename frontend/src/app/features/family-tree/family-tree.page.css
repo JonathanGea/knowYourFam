@@ -192,3 +192,47 @@
   .breadcrumb { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; } }
+
+
+/* Canvas parity with main/index.html, isolated from UI typography. */
+.canvas-window {
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+.canvas-window:active { cursor: grabbing; }
+.canvas-scene { transform-origin: top left; will-change: transform; }
+.person-node { width: 185px; height: 113px; z-index: 3; cursor: pointer; }
+.connection-layer { z-index: 2; }
+.connection-layer path { stroke: #83ab91; stroke-width: 2; fill: none; }
+.connection-layer path.partner-link { stroke: #c88e85; stroke-width: 2.5; }
+.connection-layer path.sibling-link { stroke: #8ca4bd; stroke-width: 1.8; stroke-dasharray: 5 5; }
+.connection-layer path.unconfirmed-link { stroke-dasharray: 5 6; }
+.canvas-hint { position: absolute; left: 15px; bottom: 10px; z-index: 4; }
+.generation-lane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  border-top: 1px solid #e8eee5;
+  background: linear-gradient(180deg, rgb(241 247 237 / 32%), transparent 35%);
+}
+.generation-lane:nth-child(even) { background: linear-gradient(180deg, rgb(246 249 244 / 38%), transparent 35%); }
+.generation-label {
+  position: absolute;
+  left: 19px;
+  pointer-events: none;
+  color: #9eb49f;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.3px;
+}
+.canvas-warning {
+  padding: 10px 15px;
+  color: #8e5b38;
+  background: #fff8ed;
+  border-top: 1px solid #f3e6d5;
+  font-size: 11px;
+  line-height: 1.5;
+}
