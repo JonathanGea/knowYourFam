@@ -44,6 +44,7 @@ export class FamilyTreePage implements AfterViewInit {
   readonly formError = signal('');
   readonly canvasWarning = computed(() => this.layout().warnings[0] ?? '');
   readonly quickPersonId = signal<string | null>(null);
+  readonly fullscreen = signal(false);
   readonly quickPerson = computed(() => this.quickPersonId() ? this.store.findPerson(this.quickPersonId()!) : undefined);
   readonly viewportSize = signal({ width: 1, height: 1 });
   readonly branchControls = computed(() => {
@@ -126,6 +127,23 @@ export class FamilyTreePage implements AfterViewInit {
 
   @HostListener('window:resize')
   onResize(): void { if (this.fitted) this.fitCanvas(); }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.fullscreen()) this.toggleFullscreen();
+    this.quickPersonId.set(null);
+  }
+
+  toggleFullscreen(): void {
+    this.quickPersonId.set(null);
+    this.fullscreen.update(value => !value);
+    requestAnimationFrame(()=>this.fitCanvas());
+  }
+
+  viewPersonDetails(): void {
+    this.quickPersonId.set(null);
+    document.getElementById('person-inspector')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
 
   initials(name: string): string {
     return name.trim().split(/\s+/).slice(0, 2)
