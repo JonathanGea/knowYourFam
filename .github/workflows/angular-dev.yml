@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "24"
       - name: Canvas engine parity smoke tests (no npm dependencies)
-        run: node --experimental-strip-types --test scripts/canvas-parity.test.mjs
+        run: node --experimental-strip-types --test scripts/*.test.mjs
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Build application
