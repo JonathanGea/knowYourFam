@@ -39,7 +39,7 @@ export class FamilyTreeStore {
     try {
       const tree = await this.repository.load();
       this.tree.set(tree);
-      const first = tree.people.find(person => person.id === 'p7')?.id ?? tree.people.find(person => person.id === 'rudi')?.id ?? tree.people[0]?.id ?? '';
+      const first = tree.people.find(person => person.claimed)?.id ?? tree.people.find(person => person.id === 'p7')?.id ?? tree.people.find(person => person.id === 'rudi')?.id ?? tree.people[0]?.id ?? '';
       this.focusPersonId.set(first);
       this.selectedPersonId.set(first);
     } catch {
@@ -357,7 +357,7 @@ export class FamilyTreeStore {
     try { await this.repository.save(next); }
     catch(error) { this.tree.set(previous); throw error; }
     this.focusHistory.set([]);
-    const first=next.people.find(p=>p.id==='p7')?.id ?? next.people.find(p=>p.claimed)?.id ??
+    const first=next.people.find(p=>p.claimed)?.id ?? next.people.find(p=>p.id==='p7')?.id ??
       next.people[0]?.id ?? '';
     if (first) this.setFocus(first,true);
     else {
