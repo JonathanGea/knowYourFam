@@ -39,7 +39,7 @@ export class FamilyTreeStore {
     try {
       const tree = await this.repository.load();
       this.tree.set(tree);
-      const first = tree.people.find(person => person.id === 'rudi')?.id ?? tree.people[0]?.id ?? '';
+      const first = tree.people.find(person => person.id === 'p7') ?? tree.people.find(person => person.id === 'rudi')?.id ?? tree.people[0]?.id ?? '';
       this.focusPersonId.set(first);
       this.selectedPersonId.set(first);
     } catch {
