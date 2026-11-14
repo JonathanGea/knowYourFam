@@ -57,7 +57,7 @@ export class FamilyTreePage {
     this.addDialogOpen.set(true);
   }
 
-  submitPerson(event: Event): void {
+  async submitPerson(event: Event): Promise<void> {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
@@ -66,7 +66,7 @@ export class FamilyTreePage {
     const relationTo = String(formData.get('relationTo') ?? 'none') as
       'none' | 'parent' | 'child' | 'partner';
     try {
-      this.store.addPerson({
+      await this.store.addPerson({
         name,
         gender,
         relationTo,
