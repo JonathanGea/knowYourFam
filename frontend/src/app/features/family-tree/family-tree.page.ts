@@ -2,6 +2,7 @@ import {
   AfterViewInit, Component, computed, effect, ElementRef, HostListener,
   inject, signal, ViewChild
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
