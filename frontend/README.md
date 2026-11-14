@@ -31,17 +31,19 @@ npm run check
 ## What works in this frontend foundation
 
 - Responsive, mobile-friendly single-page Family Tree workspace.
-- Demo family members, typed parent/partner relationships, and derived siblings.
+- Identical **fictional 31-person sample** from `main/index.html`, typed parent/partner relationships and derived siblings (separate v2 localStorage key).
 - Focus Person following current `main` rules (parents, grandparents, parental siblings, focal siblings, partners and children); spouse-origin branches are expandable separately.
-- Full Overview; source-migrated family-group layout and orthogonal family buses; four directional expansion types (`up/side/down/pair`), independent collapse and 12-person manual paging; anchored pan, zoom and mobile pinch.
-- Create Person with an optional new parent/child/partner relationship (demo only; relation marked `unconfirmed`).
+- Full Overview including Overview Lineage Spine V2 for 6+ generations; source-migrated family-group layout and orthogonal family buses; four directional on-canvas expansion buttons (`up/side/down/pair`), independent collapse and 12-person manual paging; anchored pan, zoom, mobile pinch, Fit All and fullscreen.
+- Basic quick panel on node click (siblings, branch actions, focus, add), focus back history and reset branches.
+- Read-only `/developer` page with all 15 developer chapters transcribed from the latest `main`.
+- Create Person with optional new parent/child/partner relationship (demo only; relation marked `unconfirmed`).
 - Browser-local demo data persists in localStorage and can be exported as JSON.
 
 ## Source-parity canvas implementation
 
 The main-branch `index.html` has a mature 33k-character layout engine. Rather than rebuilding its geometry from scratch, the Angular canvas now reuses that core algorithm inside isolated modules. The extracted code is temporarily marked `// @ts-nocheck`; the public `LayoutNode` / `LayoutEdge` interfaces stay typed.
 
-Read `docs/CANVAS-MAIN-ANGULAR-MIGRATION.md` for source hash, layout rules, current parity coverage, and known gaps.
+Read `docs/CANVAS-MAIN-ANGULAR-MIGRATION.md` for source hash, layout rules, current parity coverage, and known gaps. Source-faithful developer documentation is in `docs/DEVELOPER-CANVAS-MAIN-REFERENCE.md` and accessible via `/developer`.
 
 Run canvas regression checks without an npm install:
 
@@ -56,7 +58,7 @@ For full Angular build, install dependencies and run `npm run build`. The GitHub
 - Supabase project/database connection, production migrations, Auth and RLS.
 - Person invitation/claim, permission enforcement, contribution proposals, approval workflow, audit history.
 - Production verification of graph layout on large/multi-partner families, virtualized large graphs, complete mobile gesture QA, and full UI parity with the legacy prototype.
-- Real simultaneous collaboration, API authorization and a deployment preview.
+- Real simultaneous collaboration, API authorization, the legacy rich profile editor, import/export parity and interactive tutorial.
 
 **Do not use the demo write operations as a backend authorization model.** Final permissions are in `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`. The current UI is an offline prototype to facilitate the upcoming vertical slices.
 
@@ -80,6 +82,11 @@ src/app/
     family-tree.page.ts             # UI controller
     family-tree.page.html           # UI template
     family-tree.page.css            # Responsive styling
+  features/developer/
+    developer.page.ts               # Read-only reference page
+    developer-reference.data.ts     # Source snapshot of 15 chapters
+  infrastructure/
+    main-sample.data.ts             # Fictional dataset from main
 ```
 
 When ready, implement a Supabase adapter **behind the same repository interface** (and extend async APIs as necessary), then replace it later with an HTTP adapter for Spring Boot / Node. Do not import `supabase-js` in UI or domain layers. Authentication identity must remain distinct from Person identity.
