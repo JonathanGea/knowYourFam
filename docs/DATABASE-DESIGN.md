@@ -34,7 +34,7 @@ The original draft contains eight tables in `V1__family_tree_core.sql`; the actu
 |---|---|
 | `users` | **Future portable core:** application user profile and stable UUID; no password hash in domain table (V1 SQL currently draft) |
 | `family_trees` | Tree workspace, owned by a user |
-| `tree_members` | Owner/editor/viewer membership; `self_person_id` belongs here |
+| `tree_members` | Owner/Editor/Contributor/Viewer membership; `self_person_id` belongs here; see definitive policy document |
 | `persons` | Person profile; exactly one active profile per represented individual **within that tree** is a product goal |
 | `parent_child_relations` | Directional parent → child and parent type |
 | `partner_relations` | Undirected, explicitly stated partnership; never inferred from a child |
@@ -112,7 +112,7 @@ A count of hidden relatives should be calculated by the query layer (not stored 
 | `GET /api/trees/{treeId}/branches?personId=...&kind=origin&limit=12` | One branch expansion page |
 | `PUT /api/trees/{treeId}/view-state` | Save optional per-user view preferences |
 
-For MVP, single-owner editing is sufficient; `tree_members` prepares for future invitations. Authorization and collision checks run in the backend, not only in the frontend.
+For collaborative MVP, `tree_members` supports four roles. Permission rules, proposals, Person Claim, and deletion are defined in `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`. The original V1 SQL still has a three-role CHECK and is a draft; update it before deployment. Authorization and collision checks run in the database function/server boundary, not only in the frontend.
 
 ## Concurrent edits, integrity and performance
 
@@ -144,4 +144,4 @@ For MVP, single-owner editing is sufficient; `tree_members` prepares for future 
 
 ## Deliberately not included in v1
 
-Cross-tree canonical person merging, guardianship mandates, claims/evidence verification, full consent/privacy workflows, family governance, revision conflicts, historical relationship events and biographies. These should become later bounded-context additions, not prerequisites for a usable family tree.
+Cross-tree canonical person merging, guardianship mandates, legal identity/evidence verification, full consent/privacy workflows, family governance, complex disputes, historical relationship events and biographies remain deferred. **Basic Person invitation/claim, Contributor role, proposal review, and minimal audit are now MVP scope** under `docs/ADR-002-PERSON-CLAIM-REGISTRATION.md` and `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`.
