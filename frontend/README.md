@@ -35,7 +35,7 @@ npm run check
 - Focus Person following current `main` rules (parents, grandparents, parental siblings, focal siblings, partners and children); spouse-origin branches are expandable separately.
 - Full Overview including Overview Lineage Spine V2 for 6+ generations; source-migrated family-group layout and orthogonal family buses; four directional on-canvas expansion buttons (`up/side/down/pair`), independent collapse and 12-person manual paging; anchored pan, zoom, mobile pinch, Fit All and fullscreen.
 - Basic quick panel on node click (siblings, branch actions, focus, add), focus back history and reset branches.
-- Read-only `/developer` page with all 15 developer chapters transcribed from the latest `main`; **available only in development**. The temporary `Developer Docs · DEV ONLY` header button and route are excluded from the production router using Angular environment file replacement.
+- Read-only `/developer` page with all 15 developer chapters transcribed from `main`. The **temporary `Developer Docs · TEMP` header link** and `/developer` route are available in both development and production. **Remove them manually** when no longer needed; there is no environment toggle or automatic hiding.
 - Create Person with optional new parent/child/partner relationship (demo only; relation marked `unconfirmed`).
 - Browser-local demo data persists in localStorage and can be exported as JSON.
 
