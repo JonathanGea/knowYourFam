@@ -49,7 +49,7 @@ A provider-agnostic data contract could contain `getFocusedFamily(treeId, person
 ## Transactions and permissions
 
 - Multi-table operations (especially parent-child edits, duplicate prevention, tree membership) require transactional database functions or a secure server boundary; never pretend multiple unrelated browser requests are atomic.
-- On Supabase MVP, enforce per-tree authorization in RLS and grants, backed by tests for authenticated owner/editor/viewer and unauthorized users.
+- On Supabase MVP, enforce per-tree authorization in RLS and grants, backed by tests for authenticated Owner/Editor/Contributor/Viewer and unauthorized users, including Person-specific and proposal permissions.
 - On an own backend, enforce the same logical tree membership rules in the service (possibly retaining database RLS as defense in depth).
 - Never expose a `service_role` key to the frontend.
 - SQL functions handling writes should explicitly check the authenticated app user and use least privilege; do not use unrestricted `SECURITY DEFINER` as a shortcut.
@@ -69,7 +69,7 @@ No custom Java/Spring Boot/Node server for now; no production hosting promise, m
 
 - Core domain DDL applies on plain PostgreSQL without Supabase `auth` dependency.
 - `auth_identities` can map a Supabase subject and a future local subject to the same stable app-user UUID.
-- Access rules deny users who are not tree members; writes require editor/owner rights.
+- Access rules deny users who are not tree members; write permissions are role- and impact-scoped (Owner, Editor, Contributor, Viewer) as specified by `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`. Never use Family Tree kinship distance to grant edit permission.
 - Relationships cannot link persons across trees, cannot loop parenthood, and can be soft deleted without deleting profiles.
 - Angular domain/application imports contain **no** Supabase SDK dependencies; swapping the data adapter doesn't change feature component signatures.
 - Migrations, test results, and eventual data-transfer plan remain in GitHub.
