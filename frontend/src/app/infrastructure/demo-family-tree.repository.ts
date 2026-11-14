@@ -47,7 +47,9 @@ const DEMO: FamilyTree = {
     { id: 'r19', kind: 'parent', fromId: 'lina', toId: 'arka', status: 'confirmed' },
     { id: 'r20', kind: 'partner', fromId: 'andi', toId: 'maya', status: 'unconfirmed' },
     { id: 'r21', kind: 'parent', fromId: 'andi', toId: 'naya', status: 'unconfirmed' },
-    { id: 'r22', kind: 'parent', fromId: 'maya', toId: 'naya', status: 'unconfirmed' }
+    { id: 'r22', kind: 'parent', fromId: 'maya', toId: 'naya', status: 'unconfirmed' },
+    { id: 'r23', kind: 'parent', fromId: 'tono', toId: 'andi', status: 'confirmed' },
+    { id: 'r24', kind: 'parent', fromId: 'siti', toId: 'andi', status: 'confirmed' }
   ]
 };
 
