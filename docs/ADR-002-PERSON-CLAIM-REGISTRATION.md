@@ -23,7 +23,7 @@ A family-tree editor may create a Person for a real relative before that relativ
 4. Rudi signs up using an email or phone OTP, or signs in if already registered. Authentication is handled through an interchangeable auth adapter.
 5. User explicitly confirms "This is me" and sends a claim request.
 6. Owner/editor with claim-approval permission reviews the request and approves it. An approver must not be the requester; initially only tree owner can approve.
-7. In one transaction, the system links the verified application user to existing Person `P_RUDI`, establishes membership `viewer`, marks the claim approved and invitation consumed, and writes an audit event.
+7. In one transaction, the system links the verified application user to existing Person `P_RUDI`, establishes membership `viewer`, marks the claim approved and writes an audit event. The invitation token was already redeemed and reserved for this requester when the request was submitted.
 8. Rudi sees his existing data and family relationships. **No INSERT into persons occurs during claim approval.**
 
 ## User flow
@@ -44,7 +44,7 @@ flowchart TD
     K --> L[Show existing profile and family graph]
 ```
 
-For the MVP, approval is mandatory even when the invite arrived at a verified phone/email address. Future policies may enable owner-approved contact-bound auto-claim only after proper threat review.
+At request submission, atomically redeem the invitation and record `redeemed_by_user_id`; do not consume on preview/GET. For the MVP, approval is mandatory even when the invite arrived at a verified phone/email address. Future policies may enable owner-approved contact-bound auto-claim only after proper threat review.
 
 ## Database design (portable PostgreSQL core)
 
@@ -66,11 +66,11 @@ Add:
 | person_id | uuid | Target existing Person, same tree |
 | token_hash | text unique | SHA-256 of high-entropy bearer token; raw token never stored |
 | created_by_user_id | uuid FK | Inviting owner/editor |
-| intended_contact_hash | text nullable | Optional normalized verified email/phone binding, not raw PII |
+| intended_contact_mac | text nullable | Optional server-side keyed HMAC of normalized verified email/phone; do not use unsalted SHA-256 for guessable contact data |
 | contact_kind | text nullable | email / phone |
 | expires_at | timestamptz | Link expiry (suggest 48h–7d configurable) |
-| consumed_at | timestamptz nullable | Used once after approved claim |
-| revoked_at | timestamptz nullable | Revoked by owner |
+| redeemed_at | timestamptz nullable | Set atomically on first accepted claim submission, not on GET preview or later approval |
+| redeemed_by_user_id | uuid nullable FK | Account that first submitted the claim; blocks reuse while review is pending |\n| revoked_at | timestamptz nullable | Revoked by owner |
 | created_at | timestamptz | Audit timestamp |
 
 Enforce composite foreign key `(tree_id, person_id) -> persons(tree_id, id)`. Index `(tree_id, person_id)` for active invites, token_hash unique, and expiration queries. Token generated with secure random bytes (e.g., 32 bytes); transmit through HTTPS; do not log/query-analytics its raw value.
@@ -143,12 +143,12 @@ Applications expose an `IdentityLinkRepository` / `PersonClaimService` in their 
 ## Security / authorization
 
 1. **Do not auto-claim from an invite link.** A copied/forwarded link is insufficient. Require authenticated, verified contact and explicit owner approval.
-2. Issue short-lived, unpredictable, **single-use** bearer links. Store only token hashes. Support revoke and regenerate; old links no longer work. Rate-limit link previews, requests, approvals and invitation generation.
+2. Issue short-lived, unpredictable, **single-use** bearer links. Store only token hashes. Make link redemption (claim submission) single-use; a GET preview or link-scanning bot must not redeem it. Support revoke and regenerate; old links no longer work. Rate-limit link previews, requests, approvals and invitation generation.
 3. Optionally bind invite to verified recipient email/phone (compare normalized verified contact from trusted auth provider; client-provided metadata is not reliable). OTP proves contact control, not identity.
 4. Pre-auth link screens should not leak full name, parent names, relatives, gender, or other data. After login expose only minimal claim context necessary, never the entire tree until authorized.
 5. Protect the invite and claim tables behind a privileged operation boundary (backend service / audited server function or narrowly scoped RPC). Do not let ordinary authenticated clients issue unrestricted UPDATE or SELECT against them.
 6. Require **tree owner** authorization for issuance and approval in MVP; deny self-approval. Re-check owner permissions inside the approval transaction.
-7. During approval, lock the invitation, request, relevant membership and target Person/claim slot; check invite nonexpired/unrevoked/unconsumed, claimant identity, tree consistency, Person unclaimed, valid status, and membership invariants. Update in **one database transaction**; rejection leaves other profiles untouched.
+7. During approval, lock the invitation, request, relevant membership and target Person/claim slot; check invitation was previously redeemed by the exact requester and remains valid for that pending request, claimant identity, tree consistency, Person unclaimed, valid status, and membership invariants. Update in **one database transaction**; rejection leaves other profiles untouched.
 8. Handle simultaneous claim approvals as a conflict: only one account wins the unique `(tree_id,self_person_id)` constraint, with a clear error to the other requester.
 9. Set RLS and minimal GRANTs for all exposed tables. Never send Supabase secret/service-role keys to the browser. Keep privileged functions in a private schema or trusted server, deny unintended public EXECUTE, and audit invoker/definer decisions.
 10. No raw invite tokens/OTP in database logs, analytics, referrals, error reports or application telemetry. Recommend `Referrer-Policy: no-referrer`, minimal third-party scripts on claim route, and stripping token from browser URL after secure intake.
@@ -188,7 +188,7 @@ Applications expose an `IdentityLinkRepository` / `PersonClaimService` in their 
 - Invited Person exists before registration; after approved claim there is **exactly one** Person row and identical relationship rows.
 - Valid login with no invite cannot claim somebody else's Person.
 - Forwarded link cannot auto-claim; a requester remains pending until approved.
-- Expired/revoked/reused token fails; a replacement token does not reactivate the previous one.
+- Expired/revoked/reused token fails on new claim submissions; browser preview never consumes the token; a replacement token does not reactivate the previous one.
 - Two users attempting the same Person cannot both win.
 - Same account can belong to two family trees and link to different Person rows.
 - A user who is not a tree member cannot query private person/relative rows.
