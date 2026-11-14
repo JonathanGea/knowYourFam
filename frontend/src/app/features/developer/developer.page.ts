@@ -10,7 +10,7 @@ import { MAIN_DEVELOPER_BLOB, MAIN_DEVELOPER_SECTIONS } from './developer-refere
     <main class="dev-page">
       <header class="hero">
         <a routerLink="/" class="back-link">← Kembali ke Family Tree</a>
-        <div class="kicker">KNOWYOURFAM · IMPLEMENTATION REFERENCE / MVP</div>
+        <div class="kicker">KNOWYOURFAM · DEVELOPMENT ONLY · IMPLEMENTATION REFERENCE</div>
         <h1>Developer Guide <span>Family Tree Canvas</span></h1>
         <p>15 bagian dokumentasi developer yang diambil dari halaman dokumentasi
           di <code>main/index.html</code>. Bersumber dari kode canvas HTML/JavaScript asli.</p>
