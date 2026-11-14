@@ -32,16 +32,30 @@ npm run check
 
 - Responsive, mobile-friendly single-page Family Tree workspace.
 - Demo family members, typed parent/partner relationships, and derived siblings.
-- Focus Person with parents, siblings, partners, partner origins, and children.
-- Full Overview, person selection, origin/family branch expansion (12 at a time), collapse, basic layout with connector paths.
+- Focus Person following current `main` rules (parents, grandparents, parental siblings, focal siblings, partners and children); spouse-origin branches are expandable separately.
+- Full Overview; source-migrated family-group layout and orthogonal family buses; four directional expansion types (`up/side/down/pair`), independent collapse and 12-person manual paging; anchored pan, zoom and mobile pinch.
 - Create Person with an optional new parent/child/partner relationship (demo only; relation marked `unconfirmed`).
 - Browser-local demo data persists in localStorage and can be exported as JSON.
+
+## Source-parity canvas implementation
+
+The main-branch `index.html` has a mature 33k-character layout engine. Rather than rebuilding its geometry from scratch, the Angular canvas now reuses that core algorithm inside isolated modules. The extracted code is temporarily marked `// @ts-nocheck`; the public `LayoutNode` / `LayoutEdge` interfaces stay typed.
+
+Read `docs/CANVAS-MAIN-ANGULAR-MIGRATION.md` for source hash, layout rules, current parity coverage, and known gaps.
+
+Run canvas regression checks without an npm install:
+
+```bash
+node --experimental-strip-types --test scripts/canvas-parity.test.mjs
+```
+
+For full Angular build, install dependencies and run `npm run build`. The GitHub Action performs both the canvas smoke tests and build.
 
 ## Not implemented (deliberately)
 
 - Supabase project/database connection, production migrations, Auth and RLS.
 - Person invitation/claim, permission enforcement, contribution proposals, approval workflow, audit history.
-- Production graph layout, advanced partner/ancestor placement, virtualized large graphs, mobile pinch/pan polish.
+- Production verification of graph layout on large/multi-partner families, virtualized large graphs, complete mobile gesture QA, and full UI parity with the legacy prototype.
 - Real simultaneous collaboration, API authorization and a deployment preview.
 
 **Do not use the demo write operations as a backend authorization model.** Final permissions are in `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`. The current UI is an offline prototype to facilitate the upcoming vertical slices.
@@ -58,7 +72,11 @@ src/app/
   infrastructure/
     demo-family-tree.repository.ts  # Only adapter currently active
   features/family-tree/
-    family-layout.ts                # Read model / geometry
+    family-layout.ts                # Typed canvas facade
+    main-layout-engine.ts           # Direct geometry port from main
+    main-connector-engine.ts        # Parent buses / corridor SVG port from main
+  scripts/
+    canvas-parity.test.mjs          # Node-only layout regression tests
     family-tree.page.ts             # UI controller
     family-tree.page.html           # UI template
     family-tree.page.css            # Responsive styling
