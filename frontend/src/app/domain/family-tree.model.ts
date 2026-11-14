@@ -17,6 +17,8 @@ export interface Person {
   readonly residence?: string;
   readonly occupation?: string;
   readonly notes?: string;
+  readonly photo?: string;
+  readonly deletedAt?: string;
   readonly claimed: boolean;
 }
 
@@ -27,6 +29,7 @@ export interface FamilyRelationship {
   readonly fromId: string;
   readonly toId: string;
   readonly status: RelationStatus;
+  readonly deletedAt?: string;
 }
 
 export interface FamilyTree {
@@ -41,7 +44,7 @@ export interface PersonDraft {
   readonly gender: Gender;
   readonly birthDate?: string;
   readonly birthOrder?: number;
-  readonly relationTo: 'none' | 'parent' | 'child' | 'partner';
+  readonly relationTo: 'none' | 'parent' | 'child' | 'partner' | 'sibling';
   readonly targetId?: string;
 }
 

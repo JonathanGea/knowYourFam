@@ -6,6 +6,10 @@ import { FamilyTreePage } from './features/family-tree/family-tree.page';
 
 const routes: Routes = [
   { path: '', component: FamilyTreePage },
+  { path: 'members', loadComponent: () => import('./features/reference/reference.page').then(m => m.ReferencePage), data: { view: 'members' } },
+  { path: 'guide', loadComponent: () => import('./features/reference/reference.page').then(m => m.ReferencePage), data: { view: 'guide' } },
+  { path: 'guide/:id', loadComponent: () => import('./features/reference/reference.page').then(m => m.ReferencePage), data: { view: 'guide' } },
+  { path: 'rules', loadComponent: () => import('./features/reference/reference.page').then(m => m.ReferencePage), data: { view: 'rules' } },
   { path: 'developer', loadComponent: () => import('./features/developer/developer.page').then(m => m.DeveloperPage) },
   { path: '**', redirectTo: '' }
 ];

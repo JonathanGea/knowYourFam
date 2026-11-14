@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FamilyTree } from '../domain/family-tree.model';
 import { FamilyTreeRepository } from '../domain/family-tree.repository';
-import { MAIN_SAMPLE_TREE } from './main-sample.data';
+import { MAIN_REFERENCE_TREE } from './main-reference.data';
 
 const KEY = 'knowyourfam.angular.main-parity.v2';
 
@@ -16,12 +16,12 @@ export class DemoFamilyTreeRepository implements FamilyTreeRepository {
         if (this.isTree(parsed)) return parsed;
       }
     } catch { /* Storage may be disabled. Demo still runs. */ }
-    return structuredClone(MAIN_SAMPLE_TREE);
+    return structuredClone(MAIN_REFERENCE_TREE);
   }
 
   async save(tree: FamilyTree): Promise<void> {
     try { localStorage.setItem(KEY, JSON.stringify(tree)); }
-    catch { /* Demo changes still persist within this page. */ }
+    catch { throw new Error('Penyimpanan browser penuh atau diblokir. Ekspor JSON sebagai cadangan.'); }
   }
 
   private isTree(data: unknown): data is FamilyTree {

@@ -1,0 +1,70 @@
+<div class="reference-app">
+  <header class="ref-topbar">
+    <a routerLink="/" class="brand"><span>♧</span> Know <b>Your</b> Fam</a>
+    <nav aria-label="Navigasi halaman">
+      <a routerLink="/">Pohon keluarga</a>
+      <a routerLink="/members">Semua anggota</a>
+      <a routerLink="/guide">Panduan Pengguna</a>
+      <a routerLink="/rules">Aturan Family Tree</a>
+      <a routerLink="/developer">Dokumen Developer</a>
+    </nav>
+  </header>
+  <main class="ref-body">
+    <a routerLink="/" class="back-link">← Kembali ke Pohon Keluarga</a>
+    @if (view === 'members') {
+      <p class="eyebrow">ANGGOTA KELUARGA</p>
+      <h1>Semua anggota</h1>
+      <p class="lede">{{ store.people().length }} anggota dari {{ store.tree().name }}. Pilih nama untuk menjadikannya fokus di kanvas.</p>
+      <div class="member-grid">
+        @for (person of store.filteredPeople(); track person.id) {
+          <a class="member" [routerLink]="['/']" [queryParams]="{person:person.id}">
+            <span class="initials">{{ person.name.slice(0,2).toUpperCase() }}</span>
+            <span><strong>{{ person.name }}</strong><small>{{ person.birthDate ? person.birthDate.slice(0,4) : 'Tahun belum diisi' }}</small></span>
+            <span class="arrow">↗</span>
+          </a>
+        }
+      </div>
+    }
+    @if (view === 'guide') {
+      <p class="eyebrow">PANDUAN PENGGUNA</p>
+      <h1>Pelajari KnowYourFam</h1>
+      <p class="lede">Panduan ini mengikuti 14 artikel dan 6 kategori dari branch main.</p>
+      @if (articleId()) {
+        @if (article; as detail) {
+          <div class="reading">
+            <a routerLink="/guide" class="back-link">← Semua topik</a>
+            <p class="eyebrow">{{ getGroupTitle(detail.group) }}</p>
+            <h2>{{ detail.title }}</h2>
+            <p>{{ detail.summary }}</p>
+            <h3>Langkah penggunaan</h3>
+            <ol>@for (step of detail.steps; track step) { <li>{{ step }}</li> }</ol>
+            <div class="result"><strong>Hasil yang diharapkan:</strong> {{ detail.result }}</div>
+            <a [routerLink]="['/']" [queryParams]="{tutorial:detail.module}" class="run">▶ Coba di Kanvas</a>
+          </div>
+        } @else { <p>Artikel tidak ditemukan.</p> }
+      } @else {
+        @for (group of groups; track group.id) {
+          <section class="guide-group">
+            <h2><span>{{ group.icon }}</span> {{ group.title }}</h2>
+            <p>{{ group.description }}</p>
+            <div class="article-grid">
+              @for (article of articlesFor(group.id); track article.id) {
+                <a [routerLink]="['/guide',article.id]" class="article">
+                  <strong>{{ article.title }}</strong><small>{{ article.summary }}</small>
+                  <span>Pelajari →</span>
+                </a>
+              }
+            </div>
+          </section>
+        }
+      }
+    }
+    @if (view === 'rules') {
+      <div class="source-note">
+        <strong>Referensi aturan dari main</strong>
+        <span>Halaman ini mengacu pada aturan prototype HTML. Permission kolaboratif yang sesungguhnya wajib ditegakkan di backend sesuai dokumen permission MVP; demo Angular belum memiliki autentikasi.</span>
+      </div>
+      <div class="rules-content" [innerHTML]="rulesHtml"></div>
+    }
+  </main>
+</div>

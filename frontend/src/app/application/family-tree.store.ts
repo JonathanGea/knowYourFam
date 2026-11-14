@@ -1,6 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { FamilyTreeRepository, FAMILY_TREE_REPOSITORY } from '../domain/family-tree.repository';
 import { BranchKind, FamilyRelationship, FamilyTree, Person, PersonDraft, RelationKind } from '../domain/family-tree.model';
+import { MAIN_SAMPLE_TREE } from '../infrastructure/main-sample.data';
+import { addRelation, archivePerson, createPerson, editPerson, linkChildToCouple as linkCouple,
+  renameFamilyTree, unlinkRelation, PersonDetails } from './family-graph';
 
 export const BRANCH_PAGE_SIZE = 12;
 type BranchOption = { key: string; kind: BranchKind; title: string; count: number; open: boolean; hidden: number };
@@ -21,9 +24,14 @@ export class FamilyTreeStore {
   /** Every default-open direction can be independently collapsed. */
   readonly collapsedBranches = signal<ReadonlySet<string>>(new Set());
   readonly focusHistory = signal<readonly string[]>([]);
+  readonly tutorialActive = signal(false);
+  private tutorialOriginal: { tree: FamilyTree; focus: string; selected: string; mode: 'focus'|'overview' } | null = null;
 
-  readonly people = computed(() => this.tree().people);
-  readonly relationships = computed(() => this.tree().relationships);
+  readonly people = computed(() => this.tree().people.filter(person => !person.deletedAt));
+  readonly relationships = computed(() => {
+    const ids = new Set(this.people().map(person => person.id));
+    return this.tree().relationships.filter(r => !r.deletedAt && ids.has(r.fromId) && ids.has(r.toId));
+  });
   readonly selectedPerson = computed(() => this.findPerson(this.selectedPersonId()));
   readonly focusPerson = computed(() => this.findPerson(this.focusPersonId()));
   readonly filteredPeople = computed(() => {
@@ -314,44 +322,97 @@ export class FamilyTreeStore {
   changeZoom(delta: number): void { this.setZoom(this.zoom() + delta); }
   resetZoom(): void { this.setZoom(1); }
 
-  /** Demo-only CRUD. Authorization is not enforced until the real backend is integrated. */
-  async addPerson(draft: PersonDraft): Promise<Person> {
-    const name = draft.name.trim().slice(0, 150);
-    if (!name) throw new Error('Nama wajib diisi');
-    if (draft.relationTo !== 'none' && (!draft.targetId || !this.findPerson(draft.targetId))) {
-      throw new Error('Person tujuan tidak ditemukan');
-    }
-    const birthDate = draft.birthDate?.trim() || undefined;
-    if (birthDate && !/^\\d{4}-\\d{2}-\\d{2}$/.test(birthDate)) throw new Error('Tanggal lahir tidak valid');
-    const birthOrder = draft.birthOrder;
-    if (birthOrder !== undefined && (!Number.isInteger(birthOrder) || birthOrder < 1 || birthOrder > 999)) {
-      throw new Error('Urutan lahir harus 1–999');
-    }
-    const id = globalThis.crypto.randomUUID();
-    const person: Person = { id, name, gender: draft.gender, birthDate, birthOrder, claimed: false };
-    const links: FamilyRelationship[] = [];
-    if (draft.relationTo !== 'none' && draft.targetId) {
-      const relation: Record<Exclude<PersonDraft['relationTo'], 'none'>, {
-        kind: RelationKind; fromId: string; toId: string
-      }> = {
-        parent: { kind: 'parent', fromId: id, toId: draft.targetId },
-        child: { kind: 'parent', fromId: draft.targetId, toId: id },
-        partner: { kind: 'partner', fromId: draft.targetId, toId: id }
-      };
-      const r = relation[draft.relationTo];
-      links.push({ id: globalThis.crypto.randomUUID(), ...r, status: 'unconfirmed' });
-    }
-    const oldTree = this.tree();
-    const updated: FamilyTree = {
-      ...oldTree, people: [...oldTree.people, person], relationships: [...oldTree.relationships, ...links]
+  /**
+   * Offline demo mutations. These deliberately DO NOT implement the collaborative
+   * permission policy; production writes must use an authenticated backend.
+   */
+  private async persist(next: FamilyTree): Promise<void> {
+    // Tutorial mutations must NEVER reach the user's browser storage.
+    if (!this.tutorialActive()) await this.repository.save(next);
+    this.tree.set(next);
+  }
+
+  startTutorialTree(): void {
+    if (this.tutorialActive()) return;
+    this.tutorialOriginal = {
+      tree:this.tree(),focus:this.focusPersonId(),selected:this.selectedPersonId(),mode:this.mode()
     };
-    this.tree.set(updated);
-    try { await this.repository.save(updated); }
-    catch (error) { this.tree.set(oldTree); throw error; }
-    this.setFocus(id);
+    this.tutorialActive.set(true);
+    this.tree.set(structuredClone(MAIN_SAMPLE_TREE));
+    const first = MAIN_SAMPLE_TREE.people.find(p => p.claimed)?.id ?? MAIN_SAMPLE_TREE.people[0]?.id ?? '';
+    this.focusPersonId.set(first);
+    this.selectedPersonId.set(first);
+    this.mode.set('focus');
+    this.focusHistory.set([]);
+    this.resetBranches();
+  }
+
+  endTutorialTree(): void {
+    const original = this.tutorialOriginal;
+    if (!original) return;
+    this.tree.set(original.tree);
+    this.focusPersonId.set(original.focus);
+    this.selectedPersonId.set(original.selected);
+    this.mode.set(original.mode);
+    this.tutorialActive.set(false);
+    this.tutorialOriginal = null;
+    this.focusHistory.set([]);
+    this.resetBranches();
+  }
+
+  async addPerson(draft: PersonDraft, details?: Partial<Person>): Promise<Person> {
+    const {tree, person} = createPerson(this.tree(), draft, details);
+    await this.persist(tree);
+    this.setFocus(person.id);
     return person;
   }
+
+  async updatePerson(id: string, details: PersonDetails): Promise<void> {
+    await this.persist(editPerson(this.tree(), id, details));
+  }
+
+  async linkExisting(source: string, target: string, relation: 'parent'|'child'|'partner'|'sibling'): Promise<void> {
+    const kind: RelationKind = relation === 'child' || relation === 'parent' ? 'parent' : relation;
+    const from = relation === 'child' ? source : target;
+    const to = relation === 'child' ? target : source;
+    await this.persist(addRelation(this.tree(), from, to, kind));
+  }
+
+  async linkChildToCouple(parentA: string, parentB: string, childId: string): Promise<void> {
+    await this.persist(linkCouple(this.tree(), parentA, parentB, childId));
+  }
+
+  async unlinkRelationship(relationId: string): Promise<void> {
+    await this.persist(unlinkRelation(this.tree(), relationId));
+  }
+
+  async deletePersonDemo(personId: string): Promise<number> {
+    const { tree, affectedRelationships } = archivePerson(this.tree(), personId);
+    await this.persist(tree);
+    if (this.focusPersonId() === personId) {
+      this.focusHistory.set([]);
+      const first = this.people()[0]?.id ?? '';
+      this.focusPersonId.set(first);
+      this.selectedPersonId.set(first);
+      this.resetBranches();
+    } else if (this.selectedPersonId() === personId) {
+      this.selectedPersonId.set(this.focusPersonId());
+    }
+    return affectedRelationships;
+  }
+
+  async renameTree(name: string): Promise<void> {
+    await this.persist(renameFamilyTree(this.tree(), name));
+  }
+
+  /** One direct edge only. Inferred sibling links have no edge to delete. */
+  directRelationship(from: string, to: string, kind: RelationKind): FamilyRelationship | undefined {
+    return this.relationships().find(r => r.kind === kind &&
+      (r.fromId === from && r.toId === to || kind !== 'parent' && r.fromId === to && r.toId === from));
+  }
+
   async importDemoTree(next: FamilyTree): Promise<void> {
+    if (this.tutorialActive()) throw new Error('Tutup tutorial sebelum mengimpor data.');
     const previous=this.tree();
     this.tree.set(next);
     try { await this.repository.save(next); }
@@ -365,6 +426,26 @@ export class FamilyTreeStore {
       this.selectedPersonId.set('');
       this.resetBranches();
     }
+  }
+
+  exportLegacyJson(): string {
+    const tree=this.tree();
+    const active=this.people();
+    const relationships=this.relationships();
+    return JSON.stringify({
+      version:1, treeName:tree.name, isDemo:this.tutorialActive(),
+      people:active.map(person => ({
+        id:person.id,name:person.name,gender:person.gender,
+        birth:person.birthDate ?? '',death:person.deathDate ?? '',
+        birthOrder:person.birthOrder,photo:person.photo ?? '',
+        nickname:person.nickname ?? '',birthPlace:person.birthPlace ?? '',
+        residence:person.residence ?? '',occupation:person.occupation ?? '',
+        notes:person.notes ?? '',self:person.claimed
+      })),
+      parent:relationships.filter(r=>r.kind==='parent').map(r=>[r.fromId,r.toId]),
+      partner:relationships.filter(r=>r.kind==='partner').map(r=>[r.fromId,r.toId]),
+      sibling:relationships.filter(r=>r.kind==='sibling').map(r=>[r.fromId,r.toId])
+    }, null, 2);
   }
 
   exportJson(): string { return JSON.stringify(this.tree(), null, 2); }

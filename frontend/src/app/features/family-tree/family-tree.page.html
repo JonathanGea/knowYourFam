@@ -1,8 +1,8 @@
 <div class="app-shell">
   <header class="topbar">
     <div class="brand">
-      <span class="brand-symbol" aria-hidden="true">✳</span>
-      <span class="brand-text">know<span>your</span>fam<span class="brand-dot">.</span></span>
+      <span class="brand-symbol" aria-hidden="true">♧</span>
+      <span class="brand-text">Know <span>Your</span> Fam</span>
     </div>
     <span class="brand-divider" aria-hidden="true"></span>
     <span class="product-label">Family workspace <span class="mvp-chip">MVP</span></span>
@@ -19,13 +19,22 @@
     <button type="button" class="header-button" (click)="importFile.click()" title="Impor JSON dari branch main">
       <span aria-hidden="true">⇧</span> <span class="desktop-only">Impor JSON</span>
     </button>
-    <button type="button" class="header-button" (click)="downloadJson()" title="Ekspor data demo">
+    <button type="button" class="header-button" (click)="downloadLegacyJson()" title="Ekspor JSON kompatibel dengan prototype main">↓ <span class="desktop-only">Ekspor ke main</span></button>
+    <button type="button" class="header-button" (click)="downloadJson()" title="Ekspor cadangan lengkap Angular">
       <span aria-hidden="true">⇩</span> <span class="desktop-only">Ekspor JSON</span>
     </button>
   </header>
 
-  <div class="workspace">
+  <div class="workspace" [class.has-inspector]="detailsOpen()">
     <aside class="members-panel" [class.mobile-visible]="mobileListOpen()">
+      <nav class="main-nav" aria-label="Menu utama">
+        <span class="eyebrow">MENU UTAMA</span>
+        <a routerLink="/" class="nav-item active">♧ <span>Pohon keluarga</span></a>
+        <a routerLink="/members" class="nav-item">☷ <span>Semua anggota</span></a>
+        <a routerLink="/guide" class="nav-item">◉ <span>Panduan Pengguna</span></a>
+        <a routerLink="/rules" class="nav-item">▤ <span>Aturan Family Tree</span></a>
+        <a routerLink="/developer" class="nav-item">⌘ <span>Dokumentasi Developer</span></a>
+      </nav>
       <div class="members-top">
         <div class="eyebrow">RUANG KELUARGA</div>
         <div class="workspace-title">
@@ -53,7 +62,10 @@
       <div class="members-scroll">
         @for (person of store.filteredPeople(); track person.id) {
           <button type="button" class="member-row" [class.active]="store.selectedPersonId() === person.id" (click)="selectPerson(person.id)">
-            <span class="mini-avatar" [class.female]="person.gender === 'female'">{{ initials(person.name) }}</span>
+            <span class="mini-avatar" [class.female]="person.gender === 'female'">
+              @if (person.photo) { <img class="avatar-photo" [src]="person.photo" alt=""> }
+              @else { {{ initials(person.name) }} }
+            </span>
             <span class="member-copy"><strong>{{ person.name }}</strong><small>{{ person.claimed ? 'Akun terhubung' : 'Belum klaim profil' }}</small></span>
             @if (person.id === store.focusPersonId()) { <span class="focus-marker" title="Person fokus">●</span> }
             @else { <span class="member-arrow" aria-hidden="true">›</span> }
@@ -73,12 +85,17 @@
       <div class="main-intro">
         <div>
           <div class="breadcrumb">Keluarga <span>›</span> {{ store.tree().name }} <span>›</span> Pohon keluarga</div>
-          <h2>Pohon keluarga <span class="title-leaf" aria-hidden="true">❧</span></h2>
-          <p>Jelajahi hubungan dan kisah yang menghubungkan setiap generasi.</p>
+          <h2>Pohon Keluarga <span class="title-leaf" aria-hidden="true">❧</span></h2>
+          <p>{{ store.tree().name }} · {{ layout().generationCount }} generasi yang saling terhubung</p>
         </div>
-        <button type="button" class="mobile-members-button" (click)="mobileListOpen.set(!mobileListOpen())">
-          {{ mobileListOpen() ? 'Tutup daftar' : '☷ Daftar anggota' }}
-        </button>
+        <div class="intro-actions">
+          <button type="button" class="intro-soft" (click)="dialog.set('rename')">✎ Nama pohon</button>
+          <button type="button" class="intro-soft" (click)="openLink()">♧ Hubungkan</button>
+          <button type="button" class="intro-primary" (click)="openAdd()">＋ Tambah anggota</button>
+          <button type="button" class="mobile-members-button" (click)="mobileListOpen.set(!mobileListOpen())">
+            {{ mobileListOpen() ? 'Tutup daftar' : '☷ Anggota' }}
+          </button>
+        </div>
       </div>
 
       <section class="tree-panel" [class.is-fullscreen]="fullscreen()" aria-label="Family Tree">
@@ -107,6 +124,13 @@
           (pointerup)="onPointerUp($event)" (pointercancel)="onPointerUp($event)"
           (lostpointercapture)="onPointerUp($event)" (click)="onCanvasBackground($event)">
           <div class="canvas-grid" aria-hidden="true"></div>
+          @if (store.people().length === 0) {
+            <div class="canvas-empty">
+              <h3>Mulai dari dirimu</h3>
+              <p>Tambahkan satu anggota terlebih dahulu, lalu hubungkan orang tua, pasangan, atau anak.</p>
+              <button type="button" (click)="openAdd('none')">＋ Tambah profil pertama</button>
+            </div>
+          }
           <div class="canvas-scene" [style.width.px]="layout().width" [style.height.px]="layout().height"
             [style.transform]="'translate(' + panX() + 'px, ' + panY() + 'px) scale(' + store.zoom() + ')'">
             @for (tier of tiers(); track tier) {
@@ -132,7 +156,10 @@
                 (click)="selectPerson(node.person.id)" [attr.data-person-id]="node.person.id"
                 [attr.aria-label]="'Buka aksi cepat untuk ' + node.person.name">
                 @if (node.person.id === store.focusPersonId()) { <span class="node-focus-flag">FOKUS</span> }
-                <span class="node-avatar" [class.female]="node.person.gender === 'female'">{{ initials(node.person.name) }}</span>
+                <span class="node-avatar" [class.female]="node.person.gender === 'female'">
+                  @if (node.person.photo) { <img class="avatar-photo" [src]="node.person.photo" alt=""> }
+                  @else { {{ initials(node.person.name) }} }
+                </span>
                 <span class="node-name">{{ node.person.name }}</span>
                 <span class="node-caption">{{ node.person.birthDate ? 'Lahir ' + birthYear(node.person) : 'Data belum lengkap' }}</span>
                 <span class="node-claim" [class.claimed]="node.person.claimed">{{ node.person.claimed ? '● Terhubung' : '○ Belum klaim' }}</span>
@@ -154,7 +181,10 @@
               role="dialog" [attr.aria-label]="'Aksi cepat ' + qp.name"
               (click)="$event.stopPropagation()">
               <div class="quick-head">
-                <span class="mini-avatar" [class.female]="qp.gender === 'female'">{{ initials(qp.name) }}</span>
+                <span class="mini-avatar" [class.female]="qp.gender === 'female'">
+                  @if (qp.photo) { <img class="avatar-photo" [src]="qp.photo" alt=""> }
+                  @else { {{ initials(qp.name) }} }
+                </span>
                 <div><strong>{{ qp.name }}</strong><small>{{ birthYear(qp) }}</small></div>
                 <button type="button" class="quick-close" title="Tutup aksi" aria-label="Tutup aksi" (click)="quickPersonId.set(null)">×</button>
               </div>
@@ -187,7 +217,14 @@
                   [disabled]="qp.id === store.focusPersonId() && store.mode() === 'focus'">⌖ Jadikan fokus</button>
                 <button type="button" (click)="viewPersonDetails()">☷ Detail profil</button>
               </div>
-              <button type="button" class="quick-add" (click)="store.select(qp.id); openAdd(); quickPersonId.set(null)">＋ Tambah keluarga</button>
+              <div class="quick-management">
+                <button type="button" (click)="openEdit(qp.id)">✎ Edit</button>
+                <button type="button" (click)="openLink(qp.id)">↔ Hubungkan</button>
+                @if (store.relationsFor(qp.id).partners.length) {
+                  <button type="button" (click)="openPairChild(qp.id)">♡ Anak pasangan</button>
+                }
+              </div>
+              <button type="button" class="quick-add" (click)="store.select(qp.id); openAdd('child',qp.id)">＋ Tambah keluarga</button>
             </div>
           }
           <div class="canvas-hint">Geser untuk pindah · Cubit atau scroll untuk zoom · Pas untuk reset</div>
@@ -208,14 +245,18 @@
       </div>
     </main>
 
+    @if (detailsOpen()) {
     <aside id="person-inspector" class="inspector">
       @if (store.selectedPerson(); as person) {
         <div class="inspector-heading">
           <span class="eyebrow">PROFIL ANGGOTA</span>
-          <span class="inspect-dots" aria-hidden="true">···</span>
+          <button type="button" class="inspector-close" aria-label="Tutup detail profil" (click)="detailsOpen.set(false)">×</button>
         </div>
         <div class="profile-main">
-          <div class="large-avatar" [class.female]="person.gender === 'female'">{{ initials(person.name) }}</div>
+          <div class="large-avatar" [class.female]="person.gender === 'female'">
+            @if (person.photo) { <img class="avatar-photo" [src]="person.photo" alt=""> }
+            @else { {{ initials(person.name) }} }
+          </div>
           <h3>{{ person.name }}</h3>
           <p>{{ person.occupation || 'Anggota keluarga' }}</p>
           <span class="status-tag" [class.claimed]="person.claimed">{{ person.claimed ? '● Akun terhubung' : '○ Belum diklaim' }}</span>
@@ -231,11 +272,53 @@
         </section>
         <div class="inspector-divider"></div>
         <section class="profile-section">
-          <div class="section-title"><span>Hubungan keluarga</span></div>
-          <div class="relationship-item"><span>Orang tua</span><strong>{{ relationTitle(person.id, 'parents') }}</strong></div>
-          <div class="relationship-item"><span>Pasangan</span><strong>{{ relationTitle(person.id, 'partners') }}</strong></div>
-          <div class="relationship-item"><span>Anak</span><strong>{{ relationTitle(person.id, 'children') }}</strong></div>
-          <div class="relationship-item"><span>Saudara</span><strong>{{ relationTitle(person.id, 'siblings') }}</strong></div>
+          <div class="section-title"><span>Hubungan keluarga</span>
+            <button type="button" class="relation-add" (click)="openLink(person.id)">＋ Hubungkan</button>
+          </div>
+          <div class="relationship-item">
+            <span>Orang tua ({{ store.relationsFor(person.id).parents.length }})</span>
+            @for (id of store.relationsFor(person.id).parents; track id) {
+              <div class="relation-line">
+                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
+                @if (store.directRelationship(id,person.id,'parent'); as edge) {
+                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
+                }
+              </div>
+            }
+          </div>
+          <div class="relationship-item">
+            <span>Pasangan ({{ store.relationsFor(person.id).partners.length }})</span>
+            @for (id of store.relationsFor(person.id).partners; track id) {
+              <div class="relation-line">
+                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
+                @if (store.directRelationship(person.id,id,'partner'); as edge) {
+                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
+                }
+              </div>
+            }
+          </div>
+          <div class="relationship-item">
+            <span>Anak ({{ store.relationsFor(person.id).children.length }})</span>
+            @for (id of store.relationsFor(person.id).children; track id) {
+              <div class="relation-line">
+                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
+                @if (store.directRelationship(person.id,id,'parent'); as edge) {
+                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
+                }
+              </div>
+            }
+          </div>
+          <div class="relationship-item">
+            <span>Saudara ({{ store.relationsFor(person.id).siblings.length }})</span>
+            @for (id of store.relationsFor(person.id).siblings; track id) {
+              <div class="relation-line">
+                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
+                @if (store.directRelationship(person.id,id,'sibling'); as edge) {
+                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
+                } @else { <small>Otomatis</small> }
+              </div>
+            }
+          </div>
         </section>
         @if (store.mode() === 'focus') {
           <div class="inspector-divider"></div>
@@ -259,44 +342,152 @@
           </section>
         }
         <div class="inspector-bottom">
-          <button type="button" (click)="openAdd()">＋ Tambah kerabat</button>
+          <button type="button" (click)="openAdd('child',person.id)">＋ Tambah kerabat</button>
+          <button type="button" (click)="openEdit(person.id)">✎ Edit biodata</button>
+          <button type="button" (click)="openLink(person.id)">↔ Hubungkan Person lama</button>
+          @if (store.relationsFor(person.id).partners.length) {
+            <button type="button" (click)="openPairChild(person.id)">♡ Hubungkan anak ke pasangan</button>
+          }
+          <button type="button" class="delete-button" (click)="openDelete(person.id)">Hapus Person (demo)</button>
         </div>
       } @else {
         <div class="empty-profile">Pilih kartu Person untuk melihat profilnya.</div>
       }
     </aside>
+    }
   </div>
 </div>
 
-@if (addDialogOpen()) {
-  <div class="modal-backdrop" (click)="addDialogOpen.set(false)">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="add-title" (click)="$event.stopPropagation()">
+@if (tutorial(); as tour) {
+  <div class="tutorial-panel" role="status">
+    <div class="tour-head"><strong>◉ Tutorial {{ tour.module }}</strong><button type="button" (click)="stopTutorial()" aria-label="Tutup tutorial">×</button></div>
+    <small class="tour-sandbox-note">Pohon latihan terpisah · perubahan tidak disimpan</small>
+    <div class="tour-progress">Langkah {{ tour.index + 1 }} / {{ tutorialSteps().length }}</div>
+    <p>{{ tutorialSteps()[tour.index] }}</p>
+    <button type="button" (click)="nextTutorial()">{{ tour.index + 1 < tutorialSteps().length ? 'Lanjut →' : 'Selesai ✓' }}</button>
+  </div>
+}
+@if (dialog(); as mode) {
+  <div class="modal-backdrop" (click)="dialog.set(null)">
+    <div class="modal-card extended-modal" role="dialog" aria-modal="true" aria-labelledby="family-dialog-title" (click)="$event.stopPropagation()">
       <div class="modal-head">
-        <div><span class="eyebrow">DATA DEMO</span><h2 id="add-title">Tambah anggota keluarga</h2></div>
-        <button type="button" class="modal-close" aria-label="Tutup" (click)="addDialogOpen.set(false)">×</button>
-      </div>
-      <p class="modal-description">Profil baru disimpan di browser. Hubungan baru berstatus belum dikonfirmasi. Pada tahap backend, aturan permission akan diperiksa server.</p>
-      <form (submit)="submitPerson($event)">
-        <label>Nama lengkap <input name="name" required maxlength="150" placeholder="Contoh: Arka Surya"></label>
-        <label>Jenis kelamin
-          <select name="gender"><option value="unknown">Belum diketahui</option><option value="male">Laki-laki</option><option value="female">Perempuan</option><option value="other">Lainnya</option></select>
-        </label>
-        <label>Tanggal lahir (opsional) <input name="birthDate" type="date"></label>
-        <label>Urutan lahir dalam saudara (opsional) <input name="birthOrder" type="number" min="1" max="999" placeholder="Contoh: 1 untuk anak pertama"></label>
-        <label>Hubungan ke {{ store.selectedPerson()?.name ?? 'Person terpilih' }}
-          <select name="relationTo">
-            <option value="child">Anak dari Person terpilih</option>
-            <option value="parent">Orang tua Person terpilih</option>
-            <option value="partner">Pasangan Person terpilih</option>
-            <option value="none">Tanpa hubungan</option>
-          </select>
-        </label>
-        @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
-        <div class="modal-actions">
-          <button type="button" class="cancel-button" (click)="addDialogOpen.set(false)">Batal</button>
-          <button type="submit" class="save-button">＋ Simpan Person</button>
+        <div><span class="eyebrow">FAMILY TREE · DEMO LOKAL</span>
+          <h2 id="family-dialog-title">{{ mode === 'add' ? 'Tambah Anggota' : mode === 'edit' ? 'Edit Biodata' :
+            mode === 'link' ? 'Hubungkan Anggota' : mode === 'pair-child' ? 'Anak Bersama Pasangan' :
+            mode === 'rename' ? 'Nama Pohon' : 'Hapus Anggota' }}</h2>
         </div>
-      </form>
+        <button type="button" class="modal-close" aria-label="Tutup" (click)="dialog.set(null)">×</button>
+      </div>
+      <p class="modal-description">Aksi ini hanya mengubah data demo di browser. Permission Owner/Editor/Contributor belum ditegakkan oleh backend.</p>
+
+      @if (mode === 'add' || mode === 'edit') {
+        <form (submit)="submitPerson($event)">
+          <div class="photo-field">
+            @if (photoData()) { <img [src]="photoData()" alt="Pratinjau foto Person"> }
+            @else { <div class="photo-placeholder">♙</div> }
+            <label>Foto (opsional, maksimal 8 MB)
+              <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onPhotoSelected($event)">
+            </label>
+            @if (photoData()) { <button type="button" class="cancel-button" (click)="photoData.set('')">Hapus foto</button> }
+          </div>
+          <label>Nama lengkap <input name="name" required maxlength="150" [value]="editingPerson()?.name ?? ''" placeholder="Nama lengkap"></label>
+          <label>Nama panggilan <input name="nickname" maxlength="100" [value]="editingPerson()?.nickname ?? ''"></label>
+          <label>Jenis kelamin
+            <select name="gender">
+              <option value="unknown" [selected]="!editingPerson() || editingPerson()?.gender === 'unknown'">Belum diketahui</option>
+              <option value="male" [selected]="editingPerson()?.gender === 'male'">Laki-laki</option>
+              <option value="female" [selected]="editingPerson()?.gender === 'female'">Perempuan</option>
+              <option value="other" [selected]="editingPerson()?.gender === 'other'">Lainnya</option>
+            </select>
+          </label>
+          <div class="form-grid">
+            <label>Tanggal lahir <input name="birthDate" type="date" [value]="editingPerson()?.birthDate ?? ''"></label>
+            <label>Tanggal wafat <input name="deathDate" type="date" [value]="editingPerson()?.deathDate ?? ''"></label>
+          </div>
+          <label>Urutan lahir sesama saudara <input name="birthOrder" type="number" min="1" max="999" [value]="editingPerson()?.birthOrder ?? ''" placeholder="1 = anak pertama"></label>
+          <div class="form-grid">
+            <label>Tempat lahir <input name="birthPlace" maxlength="100" [value]="editingPerson()?.birthPlace ?? ''"></label>
+            <label>Domisili <input name="residence" maxlength="100" [value]="editingPerson()?.residence ?? ''"></label>
+          </div>
+          <label>Pekerjaan <input name="occupation" maxlength="100" [value]="editingPerson()?.occupation ?? ''"></label>
+          <label>Catatan <textarea name="notes" rows="3" maxlength="500">{{ editingPerson()?.notes ?? '' }}</textarea></label>
+          @if (mode === 'add') {
+            <label>Hubungan ke {{ store.findPerson(dialogTargetId())?.name ?? 'anggota terpilih' }}
+              <select name="relationTo">
+                <option value="child" [selected]="dialogRelation() === 'child'">Anak dari anggota terpilih</option>
+                <option value="parent" [selected]="dialogRelation() === 'parent'">Orang tua dari anggota terpilih</option>
+                <option value="partner" [selected]="dialogRelation() === 'partner'">Pasangan dari anggota terpilih</option>
+                <option value="sibling" [selected]="dialogRelation() === 'sibling'">Saudara dari anggota terpilih</option>
+                <option value="none" [selected]="dialogRelation() === 'none'">Tanpa hubungan</option>
+              </select>
+            </label>
+          }
+          @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+          <div class="modal-actions">
+            <button type="button" class="cancel-button" (click)="dialog.set(null)">Batal</button>
+            <button type="submit" class="save-button">Simpan biodata</button>
+          </div>
+        </form>
+      }
+      @if (mode === 'link' || mode === 'pair-child') {
+        <form (submit)="submitLink($event)">
+          <p class="context-text">Anggota: <strong>{{ store.findPerson(dialogPersonId())?.name }}</strong></p>
+          @if (mode === 'link') {
+            <label>Jenis hubungan
+              <select name="type">
+                <option value="child">Person tersebut adalah orang tua dari...</option>
+                <option value="parent">Person tersebut adalah anak dari...</option>
+                <option value="partner">Pasangan</option>
+                <option value="sibling">Saudara</option>
+              </select>
+            </label>
+            <label>Hubungkan dengan Person yang sudah ada
+              <select name="targetId" required>
+                <option value="">Pilih anggota</option>
+                @for (person of store.people(); track person.id) {
+                  @if (person.id !== dialogPersonId()) { <option [value]="person.id">{{ person.name }}</option> }
+                }
+              </select>
+            </label>
+          } @else {
+            <label>Pasangan yang sudah tercatat
+              <select name="partnerId" required>
+                <option value="">Pilih pasangan</option>
+                @for (id of store.relationsFor(dialogPersonId()).partners; track id) {
+                  <option [value]="id">{{ store.findPerson(id)?.name }}</option>
+                }
+              </select>
+            </label>
+            <label>Hubungkan anak bersama
+              <select name="childId" required>
+                <option value="">Pilih anak</option>
+                @for (person of store.people(); track person.id) {
+                  @if (person.id !== dialogPersonId()) { <option [value]="person.id">{{ person.name }}</option> }
+                }
+              </select>
+            </label>
+            <p class="helper-text">Kedua hubungan orang tua–anak ditambahkan bersama secara atomik. Pasangan tidak dibuat otomatis.</p>
+          }
+          @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+          <div class="modal-actions">
+            <button type="button" class="cancel-button" (click)="dialog.set(null)">Batal</button>
+            <button type="submit" class="save-button">Hubungkan</button>
+          </div>
+        </form>
+      }
+      @if (mode === 'rename') {
+        <form (submit)="submitTreeName($event)">
+          <label>Nama pohon keluarga <input name="name" required maxlength="120" [value]="store.tree().name"></label>
+          @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+          <div class="modal-actions"><button type="button" class="cancel-button" (click)="dialog.set(null)">Batal</button><button type="submit" class="save-button">Simpan nama</button></div>
+        </form>
+      }
+      @if (mode === 'delete') {
+        <p>Arsipkan <strong>{{ store.findPerson(dialogPersonId())?.name }}</strong> beserta hubungan langsungnya? Data dipertahankan sebagai soft-delete dalam JSON demo.</p>
+        <p class="form-error">Untuk data kolaboratif nyata, penghapusan harus melewati persetujuan sesuai dokumen permission MVP.</p>
+        @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+        <div class="modal-actions"><button type="button" class="cancel-button" (click)="dialog.set(null)">Batal</button><button type="button" class="save-button danger" (click)="submitDelete()">Arsipkan Person</button></div>
+      }
     </div>
   </div>
 }

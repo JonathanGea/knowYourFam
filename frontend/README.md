@@ -48,40 +48,42 @@ npm run check
 ## What works in this frontend foundation
 
 - Responsive, mobile-friendly single-page Family Tree workspace.
-- Identical **fictional 31-person sample** from `main/index.html`, typed parent/partner relationships and derived siblings (separate v2 localStorage key).
+- **The same 124-person `githubSeed` from `main/index.html`** on a fresh browser; existing Angular localStorage data takes precedence (the prior fictional 31-person sample is reserved for isolated tutorials).
 - Focus Person following current `main` rules (parents, grandparents, parental siblings, focal siblings, partners and children); spouse-origin branches are expandable separately.
 - Full Overview including Overview Lineage Spine V2 for 6+ generations; source-migrated family-group layout and orthogonal family buses; four directional on-canvas expansion buttons (`up/side/down/pair`), independent collapse and 12-person manual paging; anchored pan, zoom, mobile pinch, Fit All and fullscreen.
-- Basic quick panel on node click (siblings, branch actions, focus, add), focus back history and reset branches.
+- Quick panel on node click (siblings, branch actions, focus, add/edit/link), focus back history, reset branches and contextual detail drawer.
 - Read-only `/developer` page with all 15 developer chapters transcribed from `main`. The **temporary `Developer Docs · TEMP` header link** and `/developer` route are available in both development and production. **Remove them manually** when no longer needed; there is no environment toggle or automatic hiding.
-- Create Person with optional new parent/child/partner relationship (demo only; relation marked `unconfirmed`).
+- Demo CRUD: create/edit Person with complete biodata, nickname, birth/death, sibling order, compressed photo; create Parent/Child/Partner/Sibling, link two existing Persons, connect a child to both recorded partners, unlink a direct edge and soft-archive a Person (demo only; new relations marked `unconfirmed`).
+- Main reference routes: `/members`, `/rules`, `/guide` (14 articles/6 categories), `/developer` (15 chapters). Tutorial uses an isolated disposable 31-person practice tree: no changes to saved family data.
+- Both Angular JSON backup and main-compatible JSON export are available.
 - Browser-local demo data persists in localStorage and can be exported as JSON.
 
 ## Source-parity canvas implementation
 
 The main-branch `index.html` has a mature 33k-character layout engine. Rather than rebuilding its geometry from scratch, the Angular canvas now reuses that core algorithm inside isolated modules. The extracted code is temporarily marked `// @ts-nocheck`; the public `LayoutNode` / `LayoutEdge` interfaces stay typed.
 
-Read `docs/CANVAS-MAIN-ANGULAR-MIGRATION.md` for source hash, layout rules, current parity coverage, and known gaps. Source-faithful developer documentation is in `docs/DEVELOPER-CANVAS-MAIN-REFERENCE.md` and accessible via `/developer`.
+Read `docs/MAIN-ANGULAR-PARITY.md` for source-to-Angular feature mapping, verification and remaining gaps; see `docs/CANVAS-MAIN-ANGULAR-MIGRATION.md` for geometry details. Source-faithful developer documentation is in `docs/DEVELOPER-CANVAS-MAIN-REFERENCE.md` and accessible via `/developer`.
 
 Run canvas regression checks without an npm install:
 
 ```bash
-node --experimental-strip-types --test scripts/canvas-parity.test.mjs
+npm run test:canvas
 ```
 
 For full Angular build, install dependencies and run `npm run build`. The GitHub Action performs both the canvas smoke tests and build.
 
 ## Compare with current main tree
 
-The Angular **initial demo** uses the 31 fictional people in the `sample` constant in `main/index.html`. The actual main page may open `githubSeed` or locally saved family data instead. To compare behavior on the **same data**, export JSON from main and import it using Angular's **Impor JSON** button. This replaces the local Angular demo after confirmation, with no remote upload. Both legacy arrays and Angular relationship rows are supported.
+The Angular **fresh-install default** now uses the 124-person `githubSeed` in `main/index.html`. The actual main page may open `githubSeed` or locally saved family data instead. To compare behavior on the **same data**, export JSON from main and import it using Angular's **Impor JSON** button. This replaces the local Angular demo after confirmation, with no remote upload. Both legacy arrays and Angular relationship rows are supported.
 
-The importer rejects missing people, duplicate identities, cycles, and invalid dates; it is demo-only and is **not** a permission system. The original Angular v1 localStorage key remains untouched but is not loaded by default.
+The importer rejects missing people, duplicate identities, cycles, and invalid dates, and preserves safe compressed profile photos; it is demo-only and is **not** a permission system. The original Angular v1 localStorage key remains untouched. The Angular v2 storage key is preserved; it is **not overwritten** when the default seed changes. If a browser still shows the older sample, export its data first and use Import JSON to switch trees safely.
 
 ## Not implemented (deliberately)
 
 - Supabase project/database connection, production migrations, Auth and RLS.
 - Person invitation/claim, permission enforcement, contribution proposals, approval workflow, audit history.
 - Production verification of graph layout on large/multi-partner families, virtualized large graphs, complete mobile gesture QA, and full UI parity with the legacy prototype.
-- Real simultaneous collaboration, API authorization, the legacy rich profile editor, import/export parity and interactive tutorial.
+- Real simultaneous collaboration, API authorization, precise visual/UI regression parity, all original tutorial workflow automation (the isolated Angular tutorial currently guides manual actions), local undo/revision history.
 
 **Do not use the demo write operations as a backend authorization model.** Final permissions are in `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`. The current UI is an offline prototype to facilitate the upcoming vertical slices.
 

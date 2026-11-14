@@ -1,8 +1,8 @@
 import {
   AfterViewInit, Component, computed, effect, ElementRef, HostListener,
-  inject, signal, ViewChild
+  inject, OnDestroy, signal, ViewChild
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
@@ -31,8 +31,29 @@ interface PinchGesture {
   templateUrl: './family-tree.page.html',
   styleUrl: './family-tree.page.css'
 })
-export class FamilyTreePage implements AfterViewInit {
+export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly store = inject(FamilyTreeStore);
+  private readonly route = inject(ActivatedRoute);
+  private queryApplied = false;
+  readonly dialog = signal<'add'|'edit'|'link'|'pair-child'|'delete'|'rename'|null>(null);
+  readonly dialogPersonId = signal('');
+  readonly dialogTargetId = signal('');
+  readonly dialogRelation = signal<'none'|'parent'|'child'|'partner'|'sibling'>('child');
+  readonly photoData = signal('');
+  readonly tutorial = signal<{ module: string; index: number } | null>(null);
+  readonly tutorialSteps = computed(() => {
+    const name = this.tutorial()?.module ?? '';
+    const examples: Record<string, readonly string[]> = {
+      kartu: ['Ketuk satu kartu Person di kanvas.', 'Buka panel aksi cepat dan lihat kerabatnya.', 'Gunakan Jadikan fokus untuk menjelajahi anggota tersebut.'],
+      hubungan: ['Pilih anggota keluarga sebagai titik hubungan.', 'Gunakan Tambah anggota untuk membuat Person baru, atau Hubungkan untuk memilih Person lama.', 'Periksa perubahan relasi yang langsung muncul di kanvas.'],
+      saudara: ['Fokus pada satu Person dan buka daftar saudaranya.', 'Urutan saudara mengikuti birthOrder, kemudian tanggal lahir jika tersedia.', 'Urutan lahir dapat diedit dari profil.'],
+      cabang: ['Gunakan tombol ↑ untuk membuka orang tua.', 'Gunakan ↔ untuk saudara, ↓ untuk anak, atau tombol pasangan untuk anak bersama.', 'Tutup cabang tanpa menutup bagian keluarga lain.'],
+      kanvas: ['Geser area kosong untuk memindahkan kanvas.', 'Gunakan tombol + / − atau pinch untuk memperbesar dan memperkecil.', 'Tekan Pas untuk menyesuaikan seluruh pohon.'],
+      data: ['Data demo hanya disimpan di browser ini.', 'Gunakan Ekspor JSON untuk membuat cadangan.', 'Impor JSON dari main untuk membandingkan pohon yang identik.']
+    };
+    return examples[name] ?? examples['kanvas'];
+  });
+  readonly editingPerson = computed(() => this.store.findPerson(this.dialogPersonId()));
   readonly layout = computed(() => createFamilyLayout(
     this.store.visiblePeople(),
     this.store.visibleRelationships(),
@@ -42,12 +63,12 @@ export class FamilyTreePage implements AfterViewInit {
   readonly tiers = computed(() => Array.from({length: this.layout().generationCount}, (_unused, i) => i));
   readonly panX = signal(0);
   readonly panY = signal(0);
-  readonly addDialogOpen = signal(false);
   readonly mobileListOpen = signal(false);
   readonly formError = signal('');
   readonly canvasWarning = computed(() => this.layout().warnings[0] ?? '');
   readonly quickPersonId = signal<string | null>(null);
   readonly fullscreen = signal(false);
+  readonly detailsOpen = signal(false);
   readonly quickPerson = computed(() => this.quickPersonId() ? this.store.findPerson(this.quickPersonId()!) : undefined);
   readonly viewportSize = signal({ width: 1, height: 1 });
   readonly branchControls = computed(() => {
@@ -121,11 +142,22 @@ export class FamilyTreePage implements AfterViewInit {
     effect(() => {
       const ready = !this.store.loading() && this.layout().nodes.length > 0;
       if (ready && !this.fitted) requestAnimationFrame(() => this.fitCanvas());
+      if (ready && !this.queryApplied) {
+        this.queryApplied = true;
+        const id = this.route.snapshot.queryParamMap.get('person');
+        if (id && this.store.findPerson(id)) this.store.setFocus(id);
+        const tutorialName = this.route.snapshot.queryParamMap.get('tutorial');
+        if (tutorialName) this.startTutorial(tutorialName);
+      }
     });
   }
 
   ngAfterViewInit(): void {
     requestAnimationFrame(() => { if (!this.store.loading()) this.fitCanvas(); });
+  }
+
+  ngOnDestroy(): void {
+    if (this.store.tutorialActive()) this.store.endTutorialTree();
   }
 
   @HostListener('window:resize')
@@ -135,6 +167,8 @@ export class FamilyTreePage implements AfterViewInit {
   onEscape(): void {
     if (this.fullscreen()) this.toggleFullscreen();
     this.quickPersonId.set(null);
+    if (this.detailsOpen()) this.detailsOpen.set(false);
+    if (this.tutorial()) this.stopTutorial();
   }
 
   toggleFullscreen(): void {
@@ -145,7 +179,137 @@ export class FamilyTreePage implements AfterViewInit {
 
   viewPersonDetails(): void {
     this.quickPersonId.set(null);
-    document.getElementById('person-inspector')?.scrollIntoView({behavior:'smooth',block:'start'});
+    this.detailsOpen.set(true);
+    requestAnimationFrame(()=>document.getElementById('person-inspector')?.scrollIntoView({behavior:'smooth',block:'start'}));
+  }
+
+  startTutorial(module: string): void {
+    this.store.startTutorialTree();
+    this.tutorial.set({module,index:0});
+    requestAnimationFrame(()=>this.fitCanvas());
+  }
+
+  stopTutorial(): void {
+    this.tutorial.set(null);
+    this.store.endTutorialTree();
+    requestAnimationFrame(()=>this.fitCanvas());
+  }
+
+  nextTutorial(): void {
+    const current=this.tutorial();
+    if (!current) return;
+    if (current.index+1>=this.tutorialSteps().length) this.stopTutorial();
+    else this.tutorial.set({...current,index:current.index+1});
+  }
+
+  openAdd(relation: 'none'|'parent'|'child'|'partner'|'sibling'='child', targetId?:string): void {
+    this.formError.set('');
+    this.quickPersonId.set(null);
+    this.dialogPersonId.set('');
+    this.dialogTargetId.set(targetId ?? this.store.selectedPersonId());
+    this.dialogRelation.set(relation);
+    this.photoData.set('');
+    this.dialog.set('add');
+  }
+
+  openEdit(id?:string): void {
+    const person=this.store.findPerson(id ?? this.store.selectedPersonId());
+    if (!person) return;
+    this.formError.set('');
+    this.dialogPersonId.set(person.id);
+    this.photoData.set(person.photo ?? '');
+    this.quickPersonId.set(null);
+    this.dialog.set('edit');
+  }
+
+  openLink(id?:string): void {
+    this.dialogPersonId.set(id ?? this.store.selectedPersonId());
+    this.formError.set('');
+    this.quickPersonId.set(null);
+    this.dialog.set('link');
+  }
+
+  openPairChild(id?:string): void {
+    this.dialogPersonId.set(id ?? this.store.selectedPersonId());
+    this.formError.set('');
+    this.quickPersonId.set(null);
+    this.dialog.set('pair-child');
+  }
+
+  openDelete(id?:string): void {
+    this.dialogPersonId.set(id ?? this.store.selectedPersonId());
+    this.formError.set('');
+    this.dialog.set('delete');
+  }
+
+  async unlinkRelationship(edgeId: string): Promise<void> {
+    const edge=this.store.relationships().find(r=>r.id===edgeId);
+    if (!edge) return;
+    const a=this.store.findPerson(edge.fromId)?.name ?? 'Person A';
+    const b=this.store.findPerson(edge.toId)?.name ?? 'Person B';
+    if (!window.confirm('Putus hubungan '+a+' dan '+b+'? Profil kedua Person tetap tersimpan. (Hanya mode demo)')) return;
+    try { await this.store.unlinkRelationship(edgeId); }
+    catch (error) { window.alert(error instanceof Error ? error.message : 'Gagal menghapus hubungan.'); }
+  }
+
+  async submitLink(event: Event): Promise<void> {
+    event.preventDefault();
+    const data=new FormData(event.target as HTMLFormElement);
+    const source=this.dialogPersonId();
+    try {
+      if (this.dialog()==='pair-child') {
+        await this.store.linkChildToCouple(source,String(data.get('partnerId')??''),String(data.get('childId')??''));
+      } else {
+        await this.store.linkExisting(source,String(data.get('targetId')??''),
+          String(data.get('type')??'child') as 'parent'|'child'|'partner'|'sibling');
+      }
+      this.dialog.set(null);
+    } catch(error) { this.formError.set(error instanceof Error ? error.message : 'Gagal menghubungkan anggota.'); }
+  }
+
+  async submitDelete(): Promise<void> {
+    try {
+      await this.store.deletePersonDemo(this.dialogPersonId());
+      this.dialog.set(null);
+      this.quickPersonId.set(null);
+      requestAnimationFrame(()=>this.fitCanvas());
+    } catch(error) { this.formError.set(error instanceof Error ? error.message : 'Gagal menghapus Person.'); }
+  }
+
+  async submitTreeName(event: Event): Promise<void> {
+    event.preventDefault();
+    const name=String(new FormData(event.target as HTMLFormElement).get('name')??'');
+    try { await this.store.renameTree(name); this.dialog.set(null); }
+    catch(error) { this.formError.set(error instanceof Error ? error.message : 'Gagal mengganti nama pohon.'); }
+  }
+
+  onPhotoSelected(event: Event): void {
+    const file=(event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    if (!['image/png','image/jpeg','image/webp'].includes(file.type) || file.size > 8_000_000) {
+      this.formError.set('Foto harus PNG/JPEG/WebP, maksimal 8 MB.');
+      return;
+    }
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{
+      try {
+        const max=256,scale=Math.min(1,max/Math.max(img.width,img.height));
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.max(1,Math.round(img.width*scale));
+        canvas.height=Math.max(1,Math.round(img.height*scale));
+        const ctx=canvas.getContext('2d');
+        if (!ctx) throw new Error('Canvas tidak tersedia.');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        const encoded=canvas.toDataURL('image/jpeg',.72);
+        if (encoded.length>250000) throw new Error('Foto hasil kompresi terlalu besar.');
+        this.photoData.set(encoded);
+        this.formError.set('');
+      } catch (error) {
+        this.formError.set(error instanceof Error ? error.message : 'Tidak dapat membaca foto.');
+      } finally { URL.revokeObjectURL(url); }
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);this.formError.set('Foto tidak dapat dibaca.');};
+    img.src=url;
   }
 
   initials(name: string): string {
@@ -340,26 +504,38 @@ export class FamilyTreePage implements AfterViewInit {
     requestAnimationFrame(()=>this.fitCanvas());
   }
 
-  openAdd(): void { this.formError.set(''); this.addDialogOpen.set(true); }
-
   async submitPerson(event: Event): Promise<void> {
     event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const name = String(formData.get('name') ?? '');
-    const gender = String(formData.get('gender') ?? 'unknown') as Gender;
-    const relationTo = String(formData.get('relationTo') ?? 'none') as PersonDraftRelation;
-    const birthDate = String(formData.get('birthDate') ?? '');
-    const birthOrderRaw = String(formData.get('birthOrder') ?? '');
+    const form=event.target as HTMLFormElement,data=new FormData(form);
+    const name=String(data.get('name')??'');
+    const gender=String(data.get('gender')??'unknown') as Gender;
+    const relationTo=String(data.get('relationTo')??'none') as PersonDraftRelation;
+    const birthOrderInput=String(data.get('birthOrder')??'').trim();
+    const details={
+      name,gender,birthDate:String(data.get('birthDate')??''),
+      deathDate:String(data.get('deathDate')??''),
+      birthOrder:birthOrderInput ? Number(birthOrderInput):undefined,
+      nickname:String(data.get('nickname')??''),
+      birthPlace:String(data.get('birthPlace')??''),
+      residence:String(data.get('residence')??''),
+      occupation:String(data.get('occupation')??''),
+      notes:String(data.get('notes')??''),
+      photo:this.photoData()
+    };
     try {
-      await this.store.addPerson({ name, gender, relationTo, birthDate,
-        birthOrder: birthOrderRaw ? Number(birthOrderRaw) : undefined,
-        targetId: this.store.selectedPersonId() });
-      this.addDialogOpen.set(false);
+      if (this.dialog()==='edit') {
+        await this.store.updatePerson(this.dialogPersonId(),details);
+      } else {
+        const {birthDate,birthOrder}=details;
+        await this.store.addPerson({name,gender,birthDate,birthOrder,relationTo,
+          targetId:this.dialogTargetId()},details);
+      }
+      this.dialog.set(null);
+      this.formError.set('');
       form.reset();
-      requestAnimationFrame(() => this.fitCanvas());
-    } catch (error: unknown) {
-      this.formError.set(error instanceof Error ? error.message : 'Gagal menyimpan orang baru.');
+      requestAnimationFrame(()=>this.fitCanvas());
+    } catch(error) {
+      this.formError.set(error instanceof Error ? error.message : 'Gagal menyimpan data Person.');
     }
   }
 
@@ -381,12 +557,22 @@ export class FamilyTreePage implements AfterViewInit {
     }
   }
 
+  downloadLegacyJson(): void {
+    if (this.store.relationships().some(r => r.status !== 'confirmed') &&
+      !window.confirm('Format JSON main tidak memiliki status konfirmasi hubungan. Tetap ekspor untuk main?')) return;
+    this.downloadData(this.store.exportLegacyJson(),'knowyourfam-main-compatible.json');
+  }
+
   downloadJson(): void {
-    const blob = new Blob([this.store.exportJson()], {type:'application/json'});
+    this.downloadData(this.store.exportJson(),'knowyourfam-angular-backup.json');
+  }
+
+  private downloadData(json: string, filename: string): void {
+    const blob = new Blob([json], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const link=document.createElement('a');
-    link.href=url;link.download='knowyourfam-demo.json';link.click();
+    link.href=url;link.download=filename;link.click();
     URL.revokeObjectURL(url);
   }
 }
-type PersonDraftRelation = 'none' | 'parent' | 'child' | 'partner';
+type PersonDraftRelation = 'none' | 'parent' | 'child' | 'partner' | 'sibling';

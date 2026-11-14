@@ -109,11 +109,20 @@ function parsePerson(value: unknown,index: number): Person {
     ...(stringField(value,'occupation')?{occupation:stringField(value,'occupation')}:{}),
     ...(stringField(value,'residence')?{residence:stringField(value,'residence')}:{}),
     ...(stringField(value,'birthPlace')?{birthPlace:stringField(value,'birthPlace')}:{}),
-    ...(stringField(value,'notes')?{notes:stringField(value,'notes')}: {})
+    ...(stringField(value,'notes')?{notes:stringField(value,'notes')}: {}),
+    ...(stringField(value,'photo')?{photo:validatePhoto(stringField(value,'photo'))}: {}),
+    ...(stringField(value,'deletedAt')?{deletedAt:stringField(value,'deletedAt')}: {})
   };
 }
 function validDate(s: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
   const d=new Date(s+'T12:00:00Z');
   return !Number.isNaN(d.valueOf()) && d.toISOString().slice(0,10)===s;
+}
+
+function validatePhoto(value: string): string {
+  if (!/^data:image\/(png|jpeg|webp);base64,/.test(value) || value.length>250000) {
+    throw new Error('Foto JSON tidak valid atau melebihi 250 KB.');
+  }
+  return value;
 }
