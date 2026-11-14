@@ -1,0 +1,221 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-symbol" aria-hidden="true">✳</span>
+      <span class="brand-text">know<span>your</span>fam<span class="brand-dot">.</span></span>
+    </div>
+    <span class="brand-divider" aria-hidden="true"></span>
+    <span class="product-label">Family workspace <span class="mvp-chip">MVP</span></span>
+    <div class="topbar-spacer"></div>
+    <span class="demo-pill"><span class="demo-dot"></span> Data demo lokal</span>
+    <button type="button" class="header-button" (click)="downloadJson()" title="Ekspor data demo">
+      <span aria-hidden="true">⇩</span> <span class="desktop-only">Ekspor JSON</span>
+    </button>
+  </header>
+
+  <div class="workspace">
+    <aside class="members-panel" [class.mobile-visible]="mobileListOpen()">
+      <div class="members-top">
+        <div class="eyebrow">RUANG KELUARGA</div>
+        <div class="workspace-title">
+          <div>
+            <h1>{{ store.tree().name }}</h1>
+            <p>Tempat cerita keluarga terhubung.</p>
+          </div>
+          <span class="tree-mark" aria-hidden="true">⌘</span>
+        </div>
+        <div class="metrics">
+          <div><strong>{{ store.people().length }}</strong><span>Anggota</span></div>
+          <div><strong>{{ store.relationships().length }}</strong><span>Relasi</span></div>
+          <div><strong>{{ store.people().length - store.people().filter(p => p.claimed).length }}</strong><span>Belum klaim</span></div>
+        </div>
+      </div>
+
+      <div class="members-list-header">
+        <div class="section-title"><span>Anggota keluarga</span><span class="count-bubble">{{ store.people().length }}</span></div>
+        <label class="searchbox">
+          <span aria-hidden="true">⌕</span>
+          <input aria-label="Cari anggota keluarga" placeholder="Cari nama anggota..." [value]="store.searchTerm()" (input)="store.setSearch($any($event.target).value)">
+        </label>
+      </div>
+
+      <div class="members-scroll">
+        @for (person of store.filteredPeople(); track person.id) {
+          <button type="button" class="member-row" [class.active]="store.selectedPersonId() === person.id" (click)="selectPerson(person.id)">
+            <span class="mini-avatar" [class.female]="person.gender === 'female'">{{ initials(person.name) }}</span>
+            <span class="member-copy"><strong>{{ person.name }}</strong><small>{{ person.claimed ? 'Akun terhubung' : 'Belum klaim profil' }}</small></span>
+            @if (person.id === store.focusPersonId()) { <span class="focus-marker" title="Person fokus">●</span> }
+            @else { <span class="member-arrow" aria-hidden="true">›</span> }
+          </button>
+        } @empty {
+          <div class="empty-search">Tidak ada anggota dengan nama tersebut.</div>
+        }
+      </div>
+
+      <div class="sidebar-foot">
+        <button type="button" class="primary-add" (click)="openAdd()"><span aria-hidden="true">＋</span> Tambah anggota</button>
+        <p>Perubahan dalam demo ini tersimpan hanya di browser perangkatmu.</p>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <div class="main-intro">
+        <div>
+          <div class="breadcrumb">Keluarga <span>›</span> {{ store.tree().name }} <span>›</span> Pohon keluarga</div>
+          <h2>Pohon keluarga <span class="title-leaf" aria-hidden="true">❧</span></h2>
+          <p>Jelajahi hubungan dan kisah yang menghubungkan setiap generasi.</p>
+        </div>
+        <button type="button" class="mobile-members-button" (click)="mobileListOpen.set(!mobileListOpen())">
+          {{ mobileListOpen() ? 'Tutup daftar' : '☷ Daftar anggota' }}
+        </button>
+      </div>
+
+      <section class="tree-panel" aria-label="Family Tree">
+        <div class="tree-toolbar">
+          <div class="mode-switch" role="group" aria-label="Mode pohon">
+            <button type="button" [class.selected]="store.mode() === 'focus'" (click)="store.setMode('focus')">⌖ <span>Focus Person</span></button>
+            <button type="button" [class.selected]="store.mode() === 'overview'" (click)="store.setMode('overview')">☷ <span>Full Overview</span></button>
+          </div>
+          <div class="toolbar-actions">
+            <span class="focus-caption">Fokus: <strong>{{ store.focusPerson()?.name ?? '—' }}</strong></span>
+            <span class="toolbar-separator"></span>
+            <button type="button" class="tool-square" title="Perkecil" aria-label="Perkecil" (click)="store.changeZoom(-0.1)">−</button>
+            <span class="zoom-text">{{ (store.zoom() * 100).toFixed(0) }}%</span>
+            <button type="button" class="tool-square" title="Perbesar" aria-label="Perbesar" (click)="store.changeZoom(0.1)">＋</button>
+            <button type="button" class="tool-reset" (click)="store.resetZoom()" title="Reset zoom">Reset</button>
+          </div>
+        </div>
+
+        <div class="canvas-window" (wheel)="onWheel($event)">
+          <div class="canvas-grid" aria-hidden="true"></div>
+          <div class="canvas-content-size" [style.width.px]="layout().width * store.zoom()" [style.height.px]="layout().height * store.zoom()">
+            <div class="canvas-scene" [style.width.px]="layout().width" [style.height.px]="layout().height" [style.transform]="'scale(' + store.zoom() + ')'">
+              <svg class="connection-layer" [attr.width]="layout().width" [attr.height]="layout().height" [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height" aria-hidden="true">
+                @for (edge of layout().edges; track edge.id) {
+                  <path [attr.d]="edge.path" [class.partner-link]="edge.kind === 'partner'" [class.unconfirmed-link]="edge.unconfirmed"/>
+                }
+              </svg>
+              @for (node of layout().nodes; track node.person.id) {
+                <button type="button" class="person-node" [class.focus-person]="node.person.id === store.focusPersonId()" [class.selected-person]="node.person.id === store.selectedPersonId()"
+                  [style.left.px]="node.x" [style.top.px]="node.y" (click)="selectPerson(node.person.id)"
+                  [attr.aria-label]="'Pilih ' + node.person.name">
+                  @if (node.person.id === store.focusPersonId()) { <span class="node-focus-flag">FOKUS</span> }
+                  <span class="node-avatar" [class.female]="node.person.gender === 'female'">{{ initials(node.person.name) }}</span>
+                  <span class="node-name">{{ node.person.name }}</span>
+                  <span class="node-caption">{{ node.person.birthDate ? 'Lahir ' + birthYear(node.person) : 'Data belum lengkap' }}</span>
+                  <span class="node-claim" [class.claimed]="node.person.claimed">{{ node.person.claimed ? '● Terhubung' : '○ Belum klaim' }}</span>
+                </button>
+              }
+            </div>
+          </div>
+          <div class="canvas-hint">Geser untuk menjelajah · Ctrl + scroll untuk zoom</div>
+        </div>
+
+        <div class="tree-footer">
+          <div class="legend"><span class="legend-focus"></span> Fokus <span class="legend-line"></span> Hubungan <span class="legend-dashed"></span> Belum dikonfirmasi</div>
+          <span>{{ store.visiblePeople().length }} dari {{ store.people().length }} anggota ditampilkan</span>
+        </div>
+      </section>
+
+      <div class="main-disclaimer">
+        <span class="info-icon">i</span>
+        <div><strong>Mode demo — bukan data tersinkron.</strong> Permission, undangan klaim Person dan database PostgreSQL akan dihubungkan pada tahap berikutnya. Tidak ada pengguna yang diotorisasi oleh frontend demo ini.</div>
+      </div>
+    </main>
+
+    <aside class="inspector">
+      @if (store.selectedPerson(); as person) {
+        <div class="inspector-heading">
+          <span class="eyebrow">PROFIL ANGGOTA</span>
+          <span class="inspect-dots" aria-hidden="true">···</span>
+        </div>
+        <div class="profile-main">
+          <div class="large-avatar" [class.female]="person.gender === 'female'">{{ initials(person.name) }}</div>
+          <h3>{{ person.name }}</h3>
+          <p>{{ person.occupation || 'Anggota keluarga' }}</p>
+          <span class="status-tag" [class.claimed]="person.claimed">{{ person.claimed ? '● Akun terhubung' : '○ Belum diklaim' }}</span>
+        </div>
+        <button type="button" class="focus-button" [disabled]="person.id === store.focusPersonId() && store.mode() === 'focus'" (click)="setFocus(person.id)">
+          ⌖ {{ person.id === store.focusPersonId() && store.mode() === 'focus' ? 'Sedang difokuskan' : 'Jadikan fokus' }}
+        </button>
+        <div class="inspector-divider"></div>
+        <section class="profile-section">
+          <div class="section-title"><span>Informasi pribadi</span><span class="muted-text">Demo</span></div>
+          <div class="info-line"><span>Tahun lahir</span><strong>{{ birthYear(person) }}</strong></div>
+          <div class="info-line"><span>Status profil</span><strong>{{ person.claimed ? 'Sudah klaim' : 'Belum klaim' }}</strong></div>
+        </section>
+        <div class="inspector-divider"></div>
+        <section class="profile-section">
+          <div class="section-title"><span>Hubungan keluarga</span></div>
+          <div class="relationship-item"><span>Orang tua</span><strong>{{ relationTitle(person.id, 'parents') }}</strong></div>
+          <div class="relationship-item"><span>Pasangan</span><strong>{{ relationTitle(person.id, 'partners') }}</strong></div>
+          <div class="relationship-item"><span>Anak</span><strong>{{ relationTitle(person.id, 'children') }}</strong></div>
+          <div class="relationship-item"><span>Saudara</span><strong>{{ relationTitle(person.id, 'siblings') }}</strong></div>
+        </section>
+        @if (store.mode() === 'focus') {
+          <div class="inspector-divider"></div>
+          <section class="profile-section">
+            <div class="section-title"><span>Jelajahi cabang</span></div>
+            <div class="branch-actions">
+              @if (store.branchPeople('family', person.id).length) {
+                <button type="button" (click)="store.toggleBranch('family', person.id)">
+                  <span><b>＋</b> Pasangan & anak</span>
+                  <small>{{ store.isBranchOpen('family', person.id) ? 'Tutup / muat lagi' : '+' + store.hiddenBranchCount('family', person.id) }}</small>
+                </button>
+                @if (store.isBranchOpen('family', person.id) && store.hiddenBranchCount('family', person.id) > 0) {
+                  <button type="button" class="collapse-link" (click)="store.collapseBranch('family', person.id)">Tutup cabang pasangan & anak</button>
+                }
+              }
+              @if (store.branchPeople('origin', person.id).length) {
+                <button type="button" (click)="store.toggleBranch('origin', person.id)">
+                  <span><b>＋</b> Orang tua & saudara</span>
+                  <small>{{ store.isBranchOpen('origin', person.id) ? 'Tutup / muat lagi' : '+' + store.hiddenBranchCount('origin', person.id) }}</small>
+                </button>
+                @if (store.isBranchOpen('origin', person.id) && store.hiddenBranchCount('origin', person.id) > 0) {
+                  <button type="button" class="collapse-link" (click)="store.collapseBranch('origin', person.id)">Tutup cabang orang tua & saudara</button>
+                }
+              }
+            </div>
+            <p class="helper-text">Buka cabang satu unit keluarga per aksi. Mengubah fokus menutup ekspansi lama.</p>
+          </section>
+        }
+        <div class="inspector-bottom">
+          <button type="button" (click)="openAdd()">＋ Tambah kerabat</button>
+        </div>
+      } @else {
+        <div class="empty-profile">Pilih kartu Person untuk melihat profilnya.</div>
+      }
+    </aside>
+  </div>
+</div>
+
+@if (addDialogOpen()) {
+  <div class="modal-backdrop" (click)="addDialogOpen.set(false)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="add-title" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div><span class="eyebrow">DATA DEMO</span><h2 id="add-title">Tambah anggota keluarga</h2></div>
+        <button type="button" class="modal-close" aria-label="Tutup" (click)="addDialogOpen.set(false)">×</button>
+      </div>
+      <p class="modal-description">Profil baru disimpan di browser. Hubungan baru berstatus belum dikonfirmasi. Pada tahap backend, aturan permission akan diperiksa server.</p>
+      <form (submit)="submitPerson($event)">
+        <label>Nama lengkap <input name="name" required maxlength="150" placeholder="Contoh: Arka Surya"></label>
+        <label>Jenis kelamin
+          <select name="gender"><option value="unknown">Belum diketahui</option><option value="male">Laki-laki</option><option value="female">Perempuan</option><option value="other">Lainnya</option></select>
+        </label>
+        <label>Hubungan ke {{ store.selectedPerson()?.name ?? 'Person terpilih' }}
+          <select name="relationTo">
+            <option value="child">Anak dari Person terpilih</option>
+            <option value="parent">Orang tua Person terpilih</option>
+            <option value="partner">Pasangan Person terpilih</option>
+            <option value="none">Tanpa hubungan</option>
+          </select>
+        </label>
+        @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+        <div class="modal-actions">
+          <button type="button" class="cancel-button" (click)="addDialogOpen.set(false)">Batal</button>
+          <button type="submit" class="save-button">＋ Simpan Person</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
