@@ -198,8 +198,12 @@ export class FamilyTreePage implements AfterViewInit {
     const name = String(formData.get('name') ?? '');
     const gender = String(formData.get('gender') ?? 'unknown') as Gender;
     const relationTo = String(formData.get('relationTo') ?? 'none') as PersonDraftRelation;
+    const birthDate = String(formData.get('birthDate') ?? '');
+    const birthOrderRaw = String(formData.get('birthOrder') ?? '');
     try {
-      await this.store.addPerson({name,gender,relationTo,targetId:this.store.selectedPersonId()});
+      await this.store.addPerson({ name, gender, relationTo, birthDate,
+        birthOrder: birthOrderRaw ? Number(birthOrderRaw) : undefined,
+        targetId: this.store.selectedPersonId() });
       this.addDialogOpen.set(false);
       form.reset();
       requestAnimationFrame(() => this.fitCanvas());
