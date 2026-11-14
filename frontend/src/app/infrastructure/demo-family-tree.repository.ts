@@ -55,7 +55,7 @@ const DEMO: FamilyTree = {
 
 @Injectable()
 export class DemoFamilyTreeRepository implements FamilyTreeRepository {
-  load(): FamilyTree {
+  async load(): Promise<FamilyTree> {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
@@ -66,7 +66,7 @@ export class DemoFamilyTreeRepository implements FamilyTreeRepository {
     return structuredClone(DEMO);
   }
 
-  save(tree: FamilyTree): void {
+  async save(tree: FamilyTree): Promise<void> {
     try { localStorage.setItem(KEY, JSON.stringify(tree)); }
     catch { /* Demo changes still persist within this page. */ }
   }
