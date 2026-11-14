@@ -16,13 +16,26 @@ export interface CanvasPath {
   readonly unconfirmed: boolean;
 }
 
-export function createMainCanvasPaths(input: {
+export interface CanvasDot {
+  readonly id: string;
+  readonly x: number;
+  readonly y: number;
+  readonly radius: number;
+  readonly kind: 'partner' | 'parent';
+}
+export interface CanvasRouting {
+  readonly paths: readonly CanvasPath[];
+  readonly dots: readonly CanvasDot[];
+}
+export type CanvasRoutingInput = {
   allPeople: readonly Person[];
   allRelationships: readonly FamilyRelationship[];
   visiblePeople: readonly Person[];
   visibleRelationships: readonly FamilyRelationship[];
   positions: readonly LegacyLayoutPosition[];
-}): readonly CanvasPath[] {
+};
+
+export function createMainCanvasRouting(input: CanvasRoutingInput): CanvasRouting {
   const pairs = (kind: string, source: readonly FamilyRelationship[]) =>
     source.filter(r => r.kind === kind).map(r => [r.fromId, r.toId]);
   const data = { parent: pairs('parent',input.allRelationships),
@@ -271,5 +284,24 @@ export function createMainCanvasPaths(input: {
       : false;
     paths.push({id:'canvas-path-'+i,kind,d,unconfirmed:provisional});
   }
-  return paths;
+  const dots: CanvasDot[] = [];
+  const circles = [...lines.matchAll(/<circle\\b([^>]+)\\/>/g)];
+  for (let i=0;i<circles.length;i++) {
+    const attributes=circles[i][1];
+    const get=(name: string): number => {
+      const matched=new RegExp('\\\\b'+name+'="([^"]*)"').exec(attributes);
+      return matched?Number(matched[1]):Number.NaN;
+    };
+    const x=get('cx'),y=get('cy'),radius=get('r');
+    if (![x,y,radius].every(Number.isFinite) || radius <= 0 || radius > 16) continue;
+    dots.push({
+      id:'canvas-dot-'+i,x,y,radius,
+      kind:attributes.includes('stroke="#c88e85"')?'partner':'parent'
+    });
+  }
+  return {paths,dots};
+}
+
+export function createMainCanvasPaths(input: CanvasRoutingInput): readonly CanvasPath[] {
+  return createMainCanvasRouting(input).paths;
 }
