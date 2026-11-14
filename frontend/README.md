@@ -53,6 +53,12 @@ node --experimental-strip-types --test scripts/canvas-parity.test.mjs
 
 For full Angular build, install dependencies and run `npm run build`. The GitHub Action performs both the canvas smoke tests and build.
 
+## Compare with current main tree
+
+The Angular **initial demo** uses the 31 fictional people in the `sample` constant in `main/index.html`. The actual main page may open `githubSeed` or locally saved family data instead. To compare behavior on the **same data**, export JSON from main and import it using Angular's **Impor JSON** button. This replaces the local Angular demo after confirmation, with no remote upload. Both legacy arrays and Angular relationship rows are supported.
+
+The importer rejects missing people, duplicate identities, cycles, and invalid dates; it is demo-only and is **not** a permission system. The original Angular v1 localStorage key remains untouched but is not loaded by default.
+
 ## Not implemented (deliberately)
 
 - Supabase project/database connection, production migrations, Auth and RLS.
