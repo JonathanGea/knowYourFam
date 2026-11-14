@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { computeMainCanvasLayout, CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT } from '../src/app/features/family-tree/main-layout-engine.ts';
-import { createMainCanvasPaths } from '../src/app/features/family-tree/main-connector-engine.ts';
+import { createMainCanvasPaths, createMainCanvasRouting } from '../src/app/features/family-tree/main-connector-engine.ts';
 import { MAIN_SAMPLE_TREE } from '../src/app/infrastructure/main-sample.data.ts';
 import { MAIN_DEVELOPER_SECTIONS } from '../src/app/features/developer/developer-reference.data.ts';
 
@@ -109,6 +109,9 @@ test('Fictional source dataset has exactly 31 unique Persons and canvas nodes', 
   const paths=createMainCanvasPaths({...input,positions:result.positions});
   assert.ok(paths.some(p=>p.kind==='parent'));
   assert.ok(paths.some(p=>p.kind==='partner'));
+  const routing=createMainCanvasRouting({...input,positions:result.positions});
+  assert.ok(routing.dots.some(dot=>dot.kind==='parent'));
+  assert.ok(routing.dots.some(dot=>dot.kind==='partner'));
 });
 
 test('Ten-generation overview preserves family units, no overlaps, depth and spine', () => {
