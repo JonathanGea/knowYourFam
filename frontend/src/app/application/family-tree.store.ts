@@ -20,6 +20,7 @@ export class FamilyTreeStore {
   readonly expandedBranches = signal<Readonly<Record<string, number>>>({});
   /** Every default-open direction can be independently collapsed. */
   readonly collapsedBranches = signal<ReadonlySet<string>>(new Set());
+  readonly focusHistory = signal<readonly string[]>([]);
 
   readonly people = computed(() => this.tree().people);
   readonly relationships = computed(() => this.tree().relationships);
@@ -88,6 +89,13 @@ export class FamilyTreeStore {
       'down:' + encodeURIComponent(personId), ...this.pairKeys(personId)];
   }
 
+  private branchKeyPersonIds(key: string): string[] {
+    const colon = key.indexOf(':');
+    if (colon < 0) return [];
+    return key.startsWith('pair:') ? key.slice(colon + 1).split('|').map(decodeURIComponent)
+      : [decodeURIComponent(key.slice(colon + 1))];
+  }
+
   branchMembers(key: string): string[] {
     const colon = key.indexOf(':');
     if (colon < 0) return [];
@@ -153,8 +161,20 @@ export class FamilyTreeStore {
     reveal('side:' + encodeURIComponent(focus));
     reveal('down:' + encodeURIComponent(focus));
     for (const key of this.pairKeys(focus)) reveal(key);
-    for (const [key, page] of Object.entries(this.expandedBranches())) {
-      if (!closed.has(key)) this.branchMembers(key).slice(0, page).forEach(add);
+    // An expanded branch opens only if its owner(s) are currently reachable.
+    // Nested expansions are traversed in iterations, without leaking hidden
+    // relatives when an ancestor branch is collapsed.
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const [key, page] of Object.entries(this.expandedBranches())) {
+        if (closed.has(key)) continue;
+        const endpoints = this.branchKeyPersonIds(key);
+        if (!endpoints.length || !endpoints.every(id => ids.has(id))) continue;
+        for (const personId of this.branchMembers(key).slice(0, page)) {
+          if (!ids.has(personId)) { ids.add(personId); changed = true; }
+        }
+      }
     }
     return ids;
   });
@@ -213,22 +233,83 @@ export class FamilyTreeStore {
     this.collapsedBranches.set(closed);
     const expanded = { ...this.expandedBranches() };
     delete expanded[key];
+
+    // Same principle as main.closeDirectionalBranch(): remove descendants
+    // whose owners are no longer reachable from the default focused graph
+    // or any other still-reachable manually expanded branch.
+    const retained = new Set<string>();
+    const initial = this.focusBaseMembers(closed);
+    for (const id of initial) retained.add(id);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const [branch, limit] of Object.entries(expanded)) {
+        const endpoints = this.branchKeyPersonIds(branch);
+        if (!endpoints.length || !endpoints.every(id => retained.has(id))) continue;
+        for (const id of this.branchMembers(branch).slice(0, limit)) {
+          if (!retained.has(id)) { retained.add(id); changed = true; }
+        }
+      }
+    }
+    for (const branch of Object.keys(expanded)) {
+      if (!this.branchKeyPersonIds(branch).every(id => retained.has(id))) delete expanded[branch];
+    }
     this.expandedBranches.set(expanded);
   }
 
-  setFocus(id: string): void {
+  private focusBaseMembers(closed: ReadonlySet<string>): Set<string> {
+    const ids = new Set<string>();
+    const id = this.focusPersonId();
+    const add = (p: string) => { if (this.findPerson(p)) ids.add(p); };
+    add(id);
+    const rel = this.relationsFor(id);
+    rel.partners.forEach(add);
+    const defaults = this.defaultBranchKeys();
+    const reveal = (key: string) => {
+      if (!closed.has(key) && defaults.has(key)) this.branchMembers(key).forEach(add);
+    };
+    const up = 'up:' + encodeURIComponent(id);
+    reveal(up);
+    if (!closed.has(up)) {
+      for (const p of rel.parents) {
+        reveal('up:' + encodeURIComponent(p));
+        reveal('side:' + encodeURIComponent(p));
+      }
+    }
+    reveal('side:' + encodeURIComponent(id));
+    reveal('down:' + encodeURIComponent(id));
+    this.pairKeys(id).forEach(reveal);
+    return ids;
+  }
+
+  resetBranches(): void {
+    this.expandedBranches.set({});
+    this.collapsedBranches.set(new Set());
+  }
+
+  goBackFocus(): string | null {
+    const history = this.focusHistory();
+    if (!history.length) return null;
+    const previous = history[history.length - 1];
+    this.focusHistory.set(history.slice(0, -1));
+    this.setFocus(previous, true);
+    return previous;
+  }
+
+  setFocus(id: string, fromHistory = false): void {
     if (!this.findPerson(id)) return;
+    const previous = this.focusPersonId();
+    if (!fromHistory && previous && previous !== id) this.focusHistory.update(h => [...h, previous]);
     this.focusPersonId.set(id);
     this.selectedPersonId.set(id);
     this.mode.set('focus');
-    this.expandedBranches.set({});
-    this.collapsedBranches.set(new Set());
+    this.resetBranches();
   }
   select(id: string): void { if (this.findPerson(id)) this.selectedPersonId.set(id); }
   setMode(mode: 'focus' | 'overview'): void { this.mode.set(mode); }
   setSearch(term: string): void { this.searchTerm.set(term); }
   setZoom(value: number): void {
-    this.zoom.set(Math.min(2, Math.max(0.12, Math.round(value * 1000) / 1000)));
+    this.zoom.set(Math.min(2.5, Math.max(0.004, Math.round(value * 100000) / 100000)));
   }
   changeZoom(delta: number): void { this.setZoom(this.zoom() + delta); }
   resetZoom(): void { this.setZoom(1); }
