@@ -23,7 +23,7 @@ try {
           <style>${original}\n${component}\n${workspace}</style>
         </head>
         <body>
-          <div class="app main-parity-ui">
+          <div class="app main-parity-ui family-explorer-page">
             <section class="canvas-shell explorer-modal-open">
               <section class="explorer-stage explorer-open" style="height:600px;flex:0 0 600px">
                 <div class="viewport"><div class="scene">Family Tree Canvas</div></div>

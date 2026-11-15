@@ -24,7 +24,7 @@ test('original tree canvas tokens and shape semantics stay intact',()=>{
 });
 
 test('Angular Family Explorer hierarchy is header, rail, optional explorer, canvas',()=>{
-  const order=['class="app main-parity-ui"','class="header workspace-global-header"',
+  const order=['class="app main-parity-ui family-explorer-page"','class="header workspace-global-header"',
     'class="body"','class="workspace-navigation-rail"',
     'class="workspace-explorer-panel"','class="main"',
     'class="canvas-shell"','class="canvas-top workspace-canvas-toolbar"',

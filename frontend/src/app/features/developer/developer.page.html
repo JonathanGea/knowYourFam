@@ -28,14 +28,14 @@
           <header class="dev-hero">
             <div class="dev-overline">KNOWYOURFAM · IMPLEMENTATION REFERENCE / MVP</div>
             <h2>Developer Guide <span>Family Tree Canvas</span></h2>
-            <p>Dokumentasi teknis yang diturunkan dari implementasi <code>main/index.html</code>.
-              Fokus: Person → card → layout → SVG connections → camera → interaction → persistence.
-              Tombol dokumentasi ini bersifat sementara dan dihapus secara manual nanti.</p>
+            <p>Dokumentasi teknis HTML main sebagai referensi historis, serta kontrak terbaru Angular Family Explorer Workspace.
+              Fokus: Person → family graph → layout → SVG connections → camera → interaction → Supabase.
+              Tombol dokumentasi ini tetap tersedia secara manual selama pengembangan.</p>
             <div class="dev-meta">
               <span>HTML + Vanilla JavaScript</span>
               <span>DOM absolute + SVG</span>
-              <span>Focus / Overview</span>
-              <span>Angular parity</span>
+              <span>One Family Explorer Canvas</span>
+              <span>Angular + Supabase</span>
             </div>
             <div class="dev-hero-actions">
               <a class="btn primary" routerLink="/">♧ Buka kanvas</a>
@@ -48,6 +48,33 @@
             }
           </nav>
           <div class="dev-grid">
+            <article class="dev-panel dev-wide" id="dev-angular-explorer">
+              <div class="dev-panel-head">
+                <span class="dev-panel-number">NEW</span>
+                <div><h3>Angular Family Explorer Workspace v1.0</h3>
+                  <p>Kontrak aktif untuk halaman pohon pada branch Angular.</p></div>
+                <span class="dev-status">ANGULAR</span>
+              </div>
+              <div class="dev-panel-body">
+                <p><strong>Layout:</strong> global header ringkas → navigation rail → Explorer Panel kontekstual
+                (pencarian, cabang, riwayat, pengaturan) → family canvas → Person Inspector responsif.</p>
+                <p><strong>Navigasi:</strong> tampilan awal menunjukkan keluarga terdekat; peta seluruh keluarga
+                adalah tindakan sekunder, bukan tab mode utama. Ketuk kartu membuka Person Identity Card
+                tanpa mengubah kamera. Tindakan “Jelajahi keluarganya” baru mengganti pusat eksplorasi.</p>
+                <p><strong>Cabang:</strong> ekspansi menghormati Stable Anchor. Pergantian keluarga asal
+                mempertahankan cabang yang sudah dibuka. Cabang yang di-pin dilindungi dari
+                peringkasan otomatis. Peringkasan otomatis konservatif hanya dipertimbangkan
+                pada diagram fokus yang sangat besar, dengan opsi Urungkan.</p>
+                <p><strong>Source:</strong> <code>frontend/src/app/features/family-tree/family-tree.page.*</code>,
+                <code>frontend/src/family-explorer-workspace.css</code>, serta
+                <code>frontend/src/app/application/family-tree.store.ts</code>.
+                Spesifikasi dan acceptance criteria ada di
+                <code>docs/FAMILY-EXPLORER-WORKSPACE.md</code>.</p>
+                <p><strong>Catatan:</strong> bagian-bagian MAIN SOURCE di bawah menjelaskan implementasi
+                HTML lama; detail mode Focus/Overview dan sidebar permanen tidak lagi menjadi kontrak
+                UI Angular terbaru.</p>
+              </div>
+            </article>
             @for (chapter of chapters; track chapter.id; let index=$index) {
               <article class="dev-panel" [id]="chapter.id" [class.dev-wide]="index===0">
                 <div class="dev-panel-head">
