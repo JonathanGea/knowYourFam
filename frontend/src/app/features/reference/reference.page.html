@@ -1,36 +1,29 @@
-<div class="app main-parity-ui">
-  <header class="header">
-    <a class="brand" routerLink="/" style="text-decoration:none;color:inherit">
-      <span class="logo">♧</span>Know <b>Your</b> Fam
+<div class="app main-parity-ui family-workspace-page family-reference-page">
+  <header class="header family-page-header">
+    <a class="brand family-page-brand" routerLink="/" aria-label="KnowYourFam — Pohon Keluarga">
+      <span class="logo" aria-hidden="true">♧</span><span>Know <b>Your</b> Fam</span>
     </a>
-    <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
-    <div class="header-right">
-      <span class="save-indicator">Supabase • Database aktif</span>
-      <a class="btn" routerLink="/">♧ Buka pohon</a>
+    <a routerLink="/" class="family-page-tree-name" [title]="store.tree().name">
+      <span>Keluarga</span><strong>{{ store.tree().name }}</strong>
+    </a>
+    <div class="header-right family-page-header-actions">
+      <a routerLink="/" class="family-page-return">◎ <span>Jelajahi pohon</span></a>
+      <a routerLink="/account" class="family-page-account" aria-label="Akun" title="Akun">♙</a>
     </div>
   </header>
-  <div class="body">
-    <aside class="side" aria-label="Navigasi KnowYourFam">
-      <div class="side-title">Menu utama</div>
-      <a class="nav" routerLink="/">♧ &nbsp;Pohon keluarga</a>
-      <a class="nav" routerLink="/members" [class.active]="view==='members'">☷ &nbsp;Semua anggota</a>
-      <a class="nav" routerLink="/guide" [class.active]="view==='guide'">◉ &nbsp;Panduan Pengguna</a>
-      <a class="nav" routerLink="/rules" [class.active]="view==='rules'">▤ &nbsp;Aturan Family Tree</a>
-      <a class="nav" routerLink="/developer">⌘ &nbsp;Dokumentasi Developer</a>
-      <div class="side-separator"></div>
-      <div class="side-title">Pohon aktif</div>
-      <div class="family-chip"><div class="family-icon">♧</div><div><strong>{{ store.tree().name }}</strong><small>Family Tree</small></div></div>
-      <div class="side-title" style="margin-top:15px">Anggota</div>
-      <div class="person-links">
-        @for (person of store.people(); track person.id) {
-          <a class="person-link" [routerLink]="['/person',person.id]">
-            <span class="person-photo small">{{ person.name.slice(0,2).toUpperCase() }}</span><span>{{ person.name }}</span>
-          </a>
-        }
-      </div>
-    </aside>
 
-    <main class="main">
+  <div class="body">
+    <nav class="family-page-rail" aria-label="Navigasi utama">
+      <a routerLink="/" class="family-page-rail-link" title="Pohon keluarga"><span aria-hidden="true">♧</span><small>Pohon</small></a>
+      <a routerLink="/members" class="family-page-rail-link" [class.is-active]="view==='members'" [attr.aria-current]="view==='members' ? 'page' : null" title="Semua anggota"><span aria-hidden="true">☷</span><small>Anggota</small></a>
+      <a routerLink="/guide" class="family-page-rail-link" [class.is-active]="view==='guide'" [attr.aria-current]="view==='guide' ? 'page' : null" title="Panduan pengguna"><span aria-hidden="true">ⓘ</span><small>Panduan</small></a>
+      <a routerLink="/rules" class="family-page-rail-link" [class.is-active]="view==='rules'" [attr.aria-current]="view==='rules' ? 'page' : null" title="Aturan Family Tree"><span aria-hidden="true">▤</span><small>Aturan</small></a>
+      <div class="family-page-rail-spacer"></div>
+      <a routerLink="/developer" class="family-page-rail-link" title="Dokumentasi Developer"><span aria-hidden="true">⌘</span><small>Dev</small></a>
+      <a routerLink="/account" class="family-page-rail-link" title="Pengaturan akun"><span aria-hidden="true">♙</span><small>Akun</small></a>
+    </nav>
+
+    <main class="main family-page-main">
       <div class="heading">
         <div>
           <div class="eyebrow">Ruang keluarga</div>
@@ -43,11 +36,13 @@
           <a class="btn" routerLink="/">← Kembali ke pohon</a>
         </div>
       </div>
+      @if (view==='members') {
       <div class="stats">
         <div class="stat">♙ <strong>{{ store.people().length }}</strong> anggota</div>
         <div class="stat">♧ <strong>Family Tree</strong></div>
         <div class="stat">♢ <strong>{{ store.relationships().length }}</strong> hubungan</div>
       </div>
+      }
 
       @if (view==='members') {
         <section class="member-list active" aria-label="Semua anggota">
@@ -156,7 +151,7 @@
                 </details>
                 <details>
                   <summary>Mengapa beberapa anggota tidak terlihat?</summary>
-                  <p>Fokus Orang hanya menampilkan cabang terdekat. Expand ↑ ↔ ↓ untuk membuka satu arah, atau pilih Seluruh Pohon.</p>
+                  <p>Pohon menampilkan keluarga terdekat lebih dahulu. Buka cabang ↑ ↔ ↓ sesuai kebutuhan atau pilih Peta keluarga untuk melihat struktur keseluruhan.</p>
                 </details>
                 <details>
                   <summary>Apakah data keluarga tersinkron antardevice?</summary>
@@ -179,10 +174,11 @@
       }
     </main>
   </div>
-  <nav class="mobile-nav" aria-label="Menu bawah">
+  <nav class="mobile-nav family-page-mobile-navigation" aria-label="Menu bawah">
     <a routerLink="/" ><span>♧</span>Pohon</a>
-    <a routerLink="/members" [class.active]="view==='members'"><span>☷</span>Anggota</a>
-    <a routerLink="/guide" [class.active]="view==='guide'"><span>◉</span>Panduan</a>
-    <a routerLink="/rules" [class.active]="view==='rules'"><span>▤</span>Aturan</a>
+    <a routerLink="/members" ><span>☷</span>Anggota</a>
+    <a routerLink="/guide" ><span>ⓘ</span>Panduan</a>
+    <a routerLink="/rules" ><span>▤</span>Aturan</a>
   </nav>
+
 </div>
