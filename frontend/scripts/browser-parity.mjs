@@ -177,8 +177,22 @@ try{
        await angular.mouse.move(x,y+deltaY,{steps:6});
        await angular.mouse.up();
      };
+     await angular.evaluate(()=>{
+       window.__kyfGestureTrace=[];
+       const record=(event)=>{
+         window.__kyfGestureTrace.push({
+           event:event.type,target:event.target?.className,
+           x:event.clientX,y:event.clientY,
+           open:!!document.querySelector('.drawer.open'),
+           expanded:!!document.querySelector('.drawer.expanded')
+         });
+       };
+       for(const type of ['pointerdown','pointermove','pointerup','lostpointercapture','click'])
+         document.addEventListener(type,record,true);
+     });
      await swipeAngular(-80);
      if(!(await angular.locator('.drawer.expanded').count())){
+       console.error('Real swipe pointer trace:',await angular.evaluate(()=>window.__kyfGestureTrace));
        console.error('Angular real swipe state:',
          await angular.evaluate(()=>({
            open:!!document.querySelector('.drawer.open'),
