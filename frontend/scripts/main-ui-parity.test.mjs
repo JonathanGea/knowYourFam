@@ -58,8 +58,8 @@ test('main-shaped SVG connectors retain safe-card mask and source edge semantics
 
 test('source Focus/Overview toolbar, branch toggles, help and quick actions present',()=>{
   for(const key of ['Fokus Orang','Seluruh Pohon','Reset cabang',
-   'Kembali','branchControls()','class="branch-toggle"','class="relationship-explorer"',
-   'quickDirections(qp.id)','class="tree-help-button"','class="tree-help-panel"',
+   'Kembali','branchControls()','class="branch-toggle"','class="relationship-explorer person-preview"',
+   'kinshipPreview().label','class="tree-help-button"','class="tree-help-panel"',
    'toggleFullscreen()','fitCanvasFromToolbar()']){
     assert.ok(html.includes(key),'Behavior control missing: '+key);
   }

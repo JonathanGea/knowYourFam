@@ -1,64 +1,55 @@
-# KnowYourFam — Relationship Explorer (MVP)
+# KnowYourFam — Person Preview & hubungan terhadap pengguna login
 
-## Purpose
+## Tujuan
 
-Clicking a Person in the family tree opens a relationship-focused inspector.
-The inspector answers who the person is and which actual relatives are recorded
-without duplicating the full profile page. It does not mutate Supabase data.
+Person Preview muncul ketika kartu Person diklik, dengan tiga informasi inti:
+foto/nama/tahun lahir-wafat, panggilan terhadap akun yang sedang login,
+dan alasan/jalur hubungan yang benar-benar tercatat. Popup ini **bukan**
+daftar Keluarga Terdekat, bukan kontrol Cabang Pohon, dan bukan halaman profil.
 
-## Interaction invariants
+## Susunan popup
 
-1. **Selected Person** (inspected) is distinct from **Focus Person** (tree root).
-   Clicking an inspector relative changes only selection, with the same Focus Person.
-2. **Visible Persons** are a canvas projection, not the complete family graph.
-   The four relationship groups must read `FamilyTreeStore.relationsFor(id)` and
-   use actual Person names even if those nodes are hidden.
-3. Clicking a visible relative moves the canvas to that node. For a hidden
-   relative the inspector tries to expand its reachable branch. If the branch
-   cannot be reached from the current focus, it offers an explicit change of
-   focus. Never change focus silently.
-4. The history arrow navigates inspected persons, not focus history.
-5. Branch controls display **hidden** members only; no misleading "+0" badges.
-   "Belum tercatat" describes missing data, not the existence of real people.
-6. Relationship lists show three entries initially, with per-group expansion.
-   Birth order is compared when both ranks are recorded; dates are compared
-   when both are known. Otherwise preserve input order, without inventing ages.
-7. Clicking empty canvas space closes the inspector. Drag/pinch/zoom do not
-   silently change focus. The inspector has accessible close/back controls.
+- Header: foto, nama penuh, tahun lahir/wafat, badge 'Paman Anda'/'Ini Anda'.
+- Body: hubungan dengan Anda, alasan relasi, jalur singkat bila tersedia.
+- Footer: Lihat profil lengkap sebagai tombol utama.
+  Di bawah: Fokus pohon (sekunder) dan Tambah hubungan (sekunder).
+- Tablet/mobile: dialog tengah dengan overlay, scroll internal, tinggi maksimum 82dvh.
+  Desktop: inspector di kanan kanvas.
 
-## Layout and breakpoints
+## Identitas akun ↔ Person
 
-- **Desktop >=901px:** inspector is a dedicated right-hand CSS Grid column;
-  the canvas occupies the left column and re-centers the inspected node and
-  partner cluster without covering tree cards. The inspector deliberately
-  avoids legacy Quick Panel position classes.
-- **Tablet and mobile** (CSS width <=1100px or coarse touch pointer, including
-  tablet desktop-site mode): a centered, accessible modal popup with a dimmed
-  backdrop, internal scroll area, and sticky footer. No bottom sheet or
-  side overlay. Clicking outside or pressing Escape closes the popup.
-- **Mobile <=650px:** narrower centered popup with a 72dvh maximum height,
-  so users retain spatial context around the modal.
-- Respect `prefers-reduced-motion`, the browser safe area, keyboard focus
-  visibility and text wrapping for long family names.
+- Authentication: Supabase Auth `auth.getUser()`.
+- Explicit association: `public.person_account_links` with one-to-one unique
+  `auth_user_id` ↔ `person_id`, RLS self-only and own-tree claim policy.
+- Existing `persons_guard()` remains unchanged: direct updates of
+  `persons.claimed_by` continue to be disallowed. The account link is stored
+  in its own protected table, not forged into Person identity fields.
+- `SupabaseFamilyTreeRepository.load()` reads the signed-in account's
+  mapping and attaches `Person.claimedBy` in memory.
+- `FamilyTreePage.viewerPerson` resolves by account ID only;
+  **never** from `focusPersonId`, card selection, or substring matching names.
+- `PersonIdentityService` supports explicit self-linking and unlinking for
+  an owner-created Person under owner-only tree policy.
+- At this stage, the existing demo tree owner is linked to
+  `User / Diri Sendiri (G1)` in the database. Do not put a specific account
+  UUID, password, or person database UUID into the source code.
 
-## Developer entry points
+## Automatic relation resolver
 
-- `frontend/src/app/features/family-tree/family-tree.page.ts` — inspector
-  UI state, history, reveal logic and viewport navigation.
-- `frontend/src/app/features/family-tree/family-tree.page.html` — relationship
-  groups, action controls and centered popup.
-- `frontend/src/main-parity.css` — global styles kept outside the Angular
-  component size budget.
-- `frontend/src/app/application/family-tree.store.ts` — existing graph,
-  focus and branch APIs, unchanged.
-- `frontend/scripts/relationship-explorer.test.mjs` — regression checks.
+`frontend/src/app/application/relationship-kinship.ts` is pure TypeScript
+using the currently authorised Person and Relationship graph. It supports
+self, parent, child, partner, older/younger sibling, grandparents, uncle/aunt,
+cousin, nephew/niece, in-laws, and ancestor/descendant generations.
 
-The original Main/Angular parity tests are retained for shared canvas
-geometry and onboarding interactions.
+Do not infer older/younger when order/birth date evidence is unavailable.
+Exclude disputed edges. Unknown paths display 'Hubungan belum dapat ditentukan'.
+Multiple conflicting nearest paths show 'Kerabat Anda' rather than guessing.
+Result is a **family-data inference**, not independent fact verification.
+No derived kinship labels are persisted in PostgreSQL.
 
-## Layout regression
+## Validation
 
-The GitHub Actions Playwright stage executes `scripts/browser-explorer-layout.mjs`
-using the actual CSS and asserts canvas/panel bounding rectangles at 1440px,
-1024px, 768px and 390px. This catches inadvertent left docking,
-canvas overlap and sheet placement without requiring user account access.
+- `frontend/scripts/relationship-kinship.test.mjs` tests resolver scenarios.
+- `frontend/scripts/relationship-explorer.test.mjs` checks popup and identity linkage.
+- Angular production build checks TypeScript/template.
+- Browser geometry test ensures desktop dock and centered tablet/mobile dialogs.

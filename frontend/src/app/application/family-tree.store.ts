@@ -65,6 +65,17 @@ export class FamilyTreeStore {
 
   findPerson(id: string): Person | undefined { return this.people().find(p => p.id === id); }
 
+  /** Reflect a confirmed claim without resetting canvas position or tree focus. */
+  reflectPersonClaim(personId: string, claimedBy: string | null): void {
+    this.tree.update(tree => ({
+      ...tree,
+      people: tree.people.map(person => person.id !== personId ? person : ({
+        ...person, claimed: !!claimedBy, claimedBy: claimedBy ?? undefined
+      }))
+    }));
+  }
+
+
   relationsFor(id: string): { parents: string[]; children: string[]; partners: string[]; siblings: string[] } {
     const rows = this.relationships();
     const parents = rows.filter(r => r.kind === 'parent' && r.toId === id).map(r => r.fromId);

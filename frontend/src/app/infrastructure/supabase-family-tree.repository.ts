@@ -69,22 +69,32 @@ export class SupabaseFamilyTreeRepository implements FamilyTreeRepository {
       tree = created.data as TreeRow;
     }
 
-    const [people, edges] = await Promise.all([
+    const [people, edges, links] = await Promise.all([
       db.from('persons').select(
         'id,client_id,display_name,sex,nickname,sibling_order,birth_date,death_date,birth_place,residence,occupation,notes,photo_path,claimed_by,deleted_at'
       ).eq('tree_id', tree.id),
       db.from('relationships').select(
         'id,client_id,kind,person_a_id,person_b_id,status,deleted_at'
-      ).eq('tree_id', tree.id)
+      ).eq('tree_id', tree.id),
+      db.from('person_account_links').select('auth_user_id,person_id')
+        .eq('auth_user_id',userId)
     ]);
     assertOk(people.error);
     assertOk(edges.error);
+    assertOk(links.error);
     const persons = (people.data ?? []) as PersonRow[];
     const byDbId = new Map(persons.map(p => [p.id, p.client_id]));
+    const linksByPerson = new Map(((links.data ?? []) as {
+      person_id:string; auth_user_id:string
+    }[]).map(link => [link.person_id,link.auth_user_id]));
     return {
       id: tree.client_id,
       name: tree.title,
-      people: persons.map(fromDb),
+      people: persons.map(row => ({
+        ...fromDb(row),
+        claimed: !!(linksByPerson.get(row.id) || row.claimed_by),
+        claimedBy: linksByPerson.get(row.id) ?? row.claimed_by ?? undefined
+      })),
       relationships: ((edges.data ?? []) as RelationshipRow[]).flatMap((r): FamilyRelationship[] => {
         const fromId = byDbId.get(r.person_a_id), toId = byDbId.get(r.person_b_id);
         if (!fromId || !toId) return [];

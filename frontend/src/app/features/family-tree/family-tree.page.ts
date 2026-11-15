@@ -11,6 +11,8 @@ import type { TutorialStep } from './tutorial-content.data';
 import type { FamilyTree } from '../../domain/family-tree.model';
 import { parseDemoTreeJson } from '../../infrastructure/demo-import';
 import { SupabaseConnectionService } from '../../infrastructure/supabase-connection.service';
+import { PersonIdentityService } from '../../application/person-identity.service';
+import { resolveKinship } from '../../application/relationship-kinship';
 import { LearningProgressService, LearningState } from '../../infrastructure/learning-progress.service';
 
 interface TutorialSession {
@@ -42,6 +44,10 @@ interface PinchGesture {
 export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly store = inject(FamilyTreeStore);
   readonly cloud = inject(SupabaseConnectionService);
+  private readonly identity = inject(PersonIdentityService);
+  readonly viewerUserId = signal<string|null>(null);
+  readonly personClaimBusy = signal(false);
+  readonly personClaimError = signal('');
   private readonly learningProgress = inject(LearningProgressService);
   readonly learningError = this.learningProgress.error;
   private readonly route = inject(ActivatedRoute);
@@ -126,49 +132,20 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly labelBoost = computed(() => Math.min(1.5, Math.max(1, 0.73 / this.store.zoom())));
   readonly mobileMenuOpen = signal(false);
   readonly explorerHistory = signal<readonly string[]>([]);
-  readonly explorerExpandedGroups = signal<ReadonlySet<string>>(new Set());
   readonly explorerUnavailableTarget = signal<string | null>(null);
   readonly explorerBranchError = signal(false);
-  /** Narrow browser or touch device: use an in-place centered popup. */
+  /** Tablet and touch browsers use centered popup rather than inspector dock. */
   isExplorerPopup():boolean {
     return window.matchMedia('(max-width: 1100px), (any-pointer: coarse)').matches;
   }
   readonly quickPerson = computed(() => this.quickPersonId() ? this.store.findPerson(this.quickPersonId()!) : undefined);
-  readonly explorerKinshipSummary = computed(() => {
-    const current = this.quickPerson();
-    if (!current) return '';
-    const relationships = this.store.relationsFor(current.id);
-    const parentNames = relationships.parents
-      .map(id => this.store.findPerson(id)?.name).filter((name): name is string => !!name);
-    if (parentNames.length > 1) return 'Anak dari ' + parentNames.length + ' orang tua tercatat';
-    if (parentNames.length === 1) return 'Anak dari ' + parentNames[0];
-    const partner = relationships.partners.map(id => this.store.findPerson(id)?.name).find(Boolean);
-    if (partner) return 'Pasangan dari ' + partner;
-    return 'Hubungan orang tua belum tercatat';
+  readonly viewerPerson = computed(() => {
+    const uid = this.viewerUserId();
+    return uid ? this.store.people().find(person => person.claimedBy === uid) : undefined;
   });
-  readonly explorerGroups = computed(() => {
-    const current = this.quickPerson();
-    if (!current) return [];
-    const rel = this.store.relationsFor(current.id);
-    const configs = [
-      { kind:'parents', label:'Orang tua', ids:rel.parents },
-      { kind:'siblings', label:'Saudara', ids:rel.siblings },
-      { kind:'partners', label:'Pasangan', ids:rel.partners },
-      { kind:'children', label:'Anak', ids:rel.children }
-    ] as const;
-    return configs.map(group => ({
-      kind:group.kind,
-      label:group.label,
-      people:group.ids
-        .map(id => this.store.findPerson(id))
-        .filter((p): p is Person => !!p)
-        .sort((a,b) => this.compareBirthOrder(a,b))
-    }));
-  });
-  readonly explorerMissingGroups = computed(() =>
-    this.explorerGroups().filter(group => group.people.length === 0)
-      .map(group => group.label.toLowerCase())
-  );
+  readonly kinshipPreview = computed(() => resolveKinship(
+    this.store.people(), this.store.relationships(), this.viewerPerson()?.id ?? null, this.quickPersonId()
+  ));
   readonly viewportSize = signal({ width: 1, height: 1 });
   readonly branchControls = computed(() => {
     if (this.store.mode() !== 'focus') return [];
@@ -224,6 +201,8 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   private suppressClickUntil = 0;
 
   constructor() {
+    void this.cloud.userId().then(id => this.viewerUserId.set(id))
+      .catch(() => this.viewerUserId.set(null));
     void this.learningProgress.load().catch(() => { /* Error is visible in learningError. */ });
     effect(() => this.onboardingDismissed.set(this.learning().dismissed));
     effect(() => {
@@ -628,21 +607,33 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
 
-  /** A missing birth-order value must never imply a definite sibling rank. */
-  private compareBirthOrder(a: Person, b: Person): number {
-    const rank = (p:Person) => Number.isInteger(p.birthOrder) && (p.birthOrder ?? 0) > 0
-      ? p.birthOrder : undefined;
-    const ao=rank(a), bo=rank(b);
-    if (ao !== undefined && bo !== undefined && ao !== bo) return ao - bo;
-    if (a.birthDate && b.birthDate && a.birthDate !== b.birthDate)
-      return a.birthDate.localeCompare(b.birthDate);
-    return 0; // Preserve source order when dates and rank cannot resolve it.
+  async claimThisAsMe():Promise<void>{
+    const person = this.quickPerson();
+    if(!person || this.viewerPerson() || this.personClaimBusy() || this.store.tutorialActive())return;
+    if(!window.confirm('Apakah '+person.name+' benar-benar profil Anda? Tautkan akun login dengan profil ini?'))return;
+    this.personClaimBusy.set(true);
+    this.personClaimError.set('');
+    try {
+      const uid = await this.identity.claimSelf(this.store.tree().id, person.id);
+      this.viewerUserId.set(uid);
+      this.store.reflectPersonClaim(person.id,uid);
+    } catch(error) {
+      this.personClaimError.set(error instanceof Error ? error.message : 'Gagal menautkan profil.');
+    } finally { this.personClaimBusy.set(false); }
   }
 
-  toggleExplorerGroup(kind:string):void {
-    const next=new Set(this.explorerExpandedGroups());
-    if(next.has(kind))next.delete(kind); else next.add(kind);
-    this.explorerExpandedGroups.set(next);
+  async unlinkMyPerson():Promise<void>{
+    const person = this.quickPerson();
+    if(!person || person.id!==this.viewerPerson()?.id || this.personClaimBusy() || this.store.tutorialActive())return;
+    if(!window.confirm('Putuskan tautan akun dengan '+person.name+'? Data silsilah tidak dihapus.'))return;
+    this.personClaimBusy.set(true);
+    this.personClaimError.set('');
+    try {
+      await this.identity.unlinkSelf(this.store.tree().id,person.id);
+      this.store.reflectPersonClaim(person.id,null);
+    } catch(error) {
+      this.personClaimError.set(error instanceof Error ? error.message : 'Gagal memutus tautan profil.');
+    } finally { this.personClaimBusy.set(false); }
   }
 
   closeExplorer():void {
@@ -659,7 +650,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.explorerHistory.set([]);
     this.explorerUnavailableTarget.set(null);
     this.explorerBranchError.set(false);
-    this.explorerExpandedGroups.set(new Set());
+    this.personClaimError.set('');
   }
 
   private centerExplorerPerson(id:string):void {
@@ -715,9 +706,9 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   private activateExplorerPerson(id:string):void {
     this.store.select(id);
     this.quickPersonId.set(id);
-    this.explorerExpandedGroups.set(new Set());
     this.explorerUnavailableTarget.set(null);
     this.explorerBranchError.set(false);
+    this.personClaimError.set('');
     this.helpOpen.set(false);
     requestAnimationFrame(()=>this.centerExplorerPerson(id));
   }

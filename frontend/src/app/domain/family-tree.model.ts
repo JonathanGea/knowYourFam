@@ -20,6 +20,8 @@ export interface Person {
   readonly photo?: string;
   readonly deletedAt?: string;
   readonly claimed: boolean;
+  /** Supabase auth.users ID linked to this Person. */
+  readonly claimedBy?: string;
 }
 
 export interface FamilyRelationship {

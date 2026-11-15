@@ -362,19 +362,13 @@
           @if (quickPerson(); as qp) {
             <div class="relationship-explorer-backdrop" aria-hidden="true"
               (click)="closeExplorer()"></div>
-            <aside #explorerPanel class="relationship-explorer" tabindex="-1"
+            <aside #explorerPanel class="relationship-explorer person-preview" tabindex="-1"
               role="dialog" [attr.aria-modal]="isExplorerPopup() ? 'true' : null"
-              [attr.aria-label]="'Jelajahi hubungan '+qp.name"
+              [attr.aria-label]="'Pratinjau profil '+qp.name"
               (click)="$event.stopPropagation()">
               <div class="explorer-header">
-                <div class="explorer-header-title">
-                  <span>♧ JELAJAHI KELUARGA</span>
-                  @if (explorerHistory().length) {
-                    <button type="button" class="explorer-back"
-                      (click)="backExplorerPerson()" aria-label="Kembali ke anggota sebelumnya">← Kembali</button>
-                  }
-                </div>
-                <button type="button" class="explorer-close" aria-label="Tutup penjelajah keluarga"
+                <div class="explorer-header-title"><span>PROFIL ANGGOTA</span></div>
+                <button type="button" class="explorer-close" aria-label="Tutup pratinjau profil"
                   (click)="closeExplorer()">✕</button>
               </div>
               <div class="explorer-person">
@@ -385,89 +379,50 @@
                 </span>
                 <div class="explorer-person-text">
                   <h2>{{ qp.name }}</h2>
-                  <p>{{ explorerKinshipSummary() }}</p>
                   <small>{{ yearsOf(qp) }}</small>
+                  <span class="preview-kinship-badge">{{ kinshipPreview().label }}</span>
                 </div>
               </div>
               <div class="explorer-main-content">
-                @if (explorerBranchError()) {
-                  <div class="explorer-notice" role="status">
-                    <strong>Cabang belum dapat dibuka dari tampilan ini.</strong>
-                    <p>Anda dapat menjadikan {{ qp.name }} fokus untuk menjelajahi cabang tersebut.</p>
-                    <button type="button" class="explorer-notice-action" (click)="setFocus(qp.id)">Jadikan fokus</button>
-                    <button type="button" class="explorer-notice-dismiss" (click)="explorerBranchError.set(false)">Tutup</button>
-                  </div>
-                }
-                @if (explorerUnavailableTarget(); as targetId) {
-                  <div class="explorer-notice" role="status">
-                    <strong>{{ store.findPerson(targetId)?.name }} belum bisa ditampilkan di tampilan ini.</strong>
-                    <p>Cabangnya belum dapat dibuka dari fokus saat ini. Anda dapat menjadikannya fokus untuk melihat keluarganya.</p>
-                    <button type="button" class="explorer-notice-action" (click)="setFocus(targetId)">Jadikan fokus anggota ini</button>
-                    <button type="button" class="explorer-notice-dismiss" (click)="explorerUnavailableTarget.set(null)">Batal</button>
-                  </div>
-                }
-                <div class="explorer-section-label">KELUARGA TERDEKAT</div>
-                @for (group of explorerGroups(); track group.kind) {
-                  @if (group.people.length) {
-                  <section class="explorer-family-group" [attr.aria-label]="group.label">
-                    <div class="explorer-group-header">
-                      <strong>{{ group.label }}</strong>
-                      <span>{{ group.people.length ? group.people.length + ' tercatat' : 'Belum tercatat' }}</span>
-                    </div>
-                    <div class="explorer-people-list">
-                        @for (relative of group.people.slice(0, explorerExpandedGroups().has(group.kind) ? group.people.length : 3); track relative.id) {
-                          <button type="button" class="explorer-relative"
-                            [class.is-visible]="store.visiblePersonIds().has(relative.id)"
-                            [title]="'Lihat '+relative.name+' di pohon'"
-                            (click)="exploreRelative(relative.id)">
-                            <span class="person-photo mini" [class.female]="relative.gender==='female'"
-                              [class.male]="relative.gender==='male'">
-                              @if (relative.photo) { <img [src]="relative.photo" alt="" /> }
-                              @else { {{ initials(relative.name) }} }
-                            </span>
-                            <span class="explorer-relative-identity">
-                              <strong>{{ relative.name }}</strong>
-                              @if (!store.visiblePersonIds().has(relative.id)) { <small>Tersembunyi di pohon</small> }
-                            </span>
-                            <span class="explorer-relative-arrow" aria-hidden="true">↗</span>
-                          </button>
-                        }
-                      </div>
-                      @if (group.people.length > 3) {
-                        <button type="button" class="explorer-show-more"
-                          [attr.aria-expanded]="explorerExpandedGroups().has(group.kind)"
-                          (click)="toggleExplorerGroup(group.kind)">
-                          {{ explorerExpandedGroups().has(group.kind) ? 'Tampilkan lebih sedikit' : 'Lihat ' + (group.people.length - 3) + ' ' + group.label.toLowerCase() + ' lainnya' }}
-                        </button>
+                <div class="preview-relation">
+                  <span class="explorer-section-label">HUBUNGAN DENGAN ANDA</span>
+                  <p class="preview-relation-explanation">{{ kinshipPreview().explanation }}</p>
+                  @if (kinshipPreview().route.length > 1) {
+                    <div class="preview-relation-route" aria-label="Jalur hubungan keluarga">
+                      @for (part of kinshipPreview().route; track $index) {
+                        @if (!$first) { <span aria-hidden="true">→</span> }
+                        <span>{{ part }}</span>
                       }
-                  </section>
+                    </div>
                   }
-                }
-                @if (explorerMissingGroups().length) {
-                  <p class="explorer-empty-note">Belum tercatat: {{ explorerMissingGroups().join(', ') }}</p>
-                }
-                @if (store.mode()==='focus' && quickDirections(qp.id).length) {
-                  <section class="explorer-branches" aria-label="Cabang yang belum terlihat">
-                    <div class="explorer-section-label">CABANG POHON</div>
-                    <p class="explorer-explain">Menampilkan kerabat yang tersembunyi tanpa mengubah orang yang menjadi fokus.</p>
-                    @for (dir of quickDirections(qp.id); track dir.key) {
-                      <button type="button" class="explorer-branch-action"
-                        (click)="expandExplorerBranch(dir.key, qp.id)">
-                        <span aria-hidden="true" class="explorer-branch-symbol">{{ dir.symbol }}</span>
-                        <span><strong>{{ dir.label }}</strong><small>Tampilkan {{ dir.hidden }} anggota di pohon</small></span>
-                        <span class="explorer-branch-arrow" aria-hidden="true">＋</span>
-                      </button>
-                    }
-                  </section>
-                }
+                  @if (kinshipPreview().status==='known') {
+                    <p class="preview-data-note">Berdasarkan hubungan yang tercatat dalam silsilah.</p>
+                  }
+                  @if (kinshipPreview().status==='unlinked' && !store.tutorialActive()) {
+                    <button type="button" class="preview-claim-action"
+                      [disabled]="personClaimBusy()" (click)="claimThisAsMe()">
+                      {{ personClaimBusy() ? 'Menghubungkan akun…' : 'Ini profil saya' }}
+                    </button>
+                    <p class="preview-data-note">Pilih hanya jika Person ini benar-benar mewakili diri Anda.</p>
+                  }
+                  @if (kinshipPreview().status==='self' && !store.tutorialActive()) {
+                    <button type="button" class="preview-unlink-action" [disabled]="personClaimBusy()"
+                      (click)="unlinkMyPerson()">Ubah tautan profil saya</button>
+                  }
+                  @if (personClaimError()) {
+                    <p class="preview-claim-error" role="alert">{{ personClaimError() }}</p>
+                  }
+                </div>
               </div>
               <div class="explorer-footer">
-                <button type="button" class="explorer-focus" (click)="setFocus(qp.id)"
-                  [disabled]="qp.id===store.focusPersonId() && store.mode()==='focus'">
-                  {{ qp.id===store.focusPersonId() && store.mode()==='focus' ? '◎ Sedang menjadi fokus' : '◎ Jadikan fokus pohon' }}
+                <button type="button" class="explorer-focus preview-profile-primary" (click)="viewPersonDetails()">
+                  ☷ Lihat profil lengkap
                 </button>
                 <div class="explorer-footer-links">
-                  <button type="button" (click)="viewPersonDetails()">Lihat profil lengkap</button>
+                  <button type="button" (click)="setFocus(qp.id)"
+                    [disabled]="qp.id===store.focusPersonId() && store.mode()==='focus'">
+                    {{ qp.id===store.focusPersonId() && store.mode()==='focus' ? '◎ Sedang fokus' : '◎ Fokus pohon' }}
+                  </button>
                   <button type="button" (click)="openLink(qp.id)">＋ Tambah hubungan</button>
                 </div>
               </div>
