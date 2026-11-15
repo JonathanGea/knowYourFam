@@ -8,14 +8,14 @@ Family Tree storage or a guest/demo data repository.
 ## Stack and behavior
 
 - Angular 22 standalone components + TypeScript + Tailwind
-- Supabase Auth email magic link (required before viewing data)
+- Supabase Auth email/password login, registration, email confirmation and password reset
 - Supabase PostgreSQL for `family_trees`, `persons`, `relationships`
 - `user_learning_states` for onboarding and guided tutorial progress/snapshots
 - RLS restricts data by authenticated tree owner and memberships
 - No offline write queue or demo fallback. Network errors are visible to users.
 - A tutorial uses **temporary in-memory practice data** while active (not the real
   family); its progress is saved to PostgreSQL and the real tree is restored on exit.
-- Auth tokens are temporarily stored in `sessionStorage` to complete magic-link
+- Auth tokens are temporarily stored in `sessionStorage` to maintain the authenticated
   login and survive reloads within a tab. Family Tree data is **never** stored there.
   Closing the tab may require signing in again.
 
@@ -29,11 +29,10 @@ npm run dev
 
 In Supabase `knowyourfam`, run `database/migration/V3__user_learning_states.sql`
 (the migration is already applied to the configured cloud project). Under
-Authentication → URL Configuration, allow `http://localhost:4200/cloud`
-and your deployed `https://YOUR_DOMAIN/cloud` redirect origin. Set the Site URL
-to the deployed application URL. Open `/cloud`, enter your email and follow the
-magic link. Routes such as `/`, `/members` and `/person/:id` redirect
-unauthenticated visitors to `/cloud`.
+Authentication → URL Configuration, allow `http://localhost:4200/login`
+and your deployed `https://YOUR_DOMAIN/login` redirect origin. Set the Site URL
+to the deployed application URL. Open `/register` to register and confirm your email. Sign in at `/login` using your email and password. Use `/forgot-password` and `/reset-password` for account recovery. Routes such as `/`, `/members` and `/person/:id` redirect
+unauthenticated visitors to `/login`.
 
 On first login the API creates an empty "Keluarga Saya" tree, not fictitious
 sample Persons. Add Persons and relationships through the existing Angular
@@ -78,7 +77,7 @@ src/app/
   infrastructure/supabase-family-tree.repository.ts
   infrastructure/supabase-connection.service.ts
   infrastructure/learning-progress.service.ts
-  features/auth/cloud-login.page.ts
+  features/auth/login-login.page.ts
 ```
 
 Both tree and tutorial changes require a valid Supabase session. The browser
@@ -91,3 +90,16 @@ RPC/backend work before collaborative editing. Profile photos are currently
 limited compressed data URLs stored in the existing text column; migrate to
 private Storage for production scale. Permission/collaboration workflows are
 out of scope for the current Person-focused MVP.
+
+## Auth user experience
+
+- `/login`: email and password sign-in; after login return to the protected URL.
+- `/register`: email + password + confirmation, then follow the Supabase verification email (if confirmation is enabled).
+- `/forgot-password`: request a password reset email.
+- `/reset-password`: set a new password through the Supabase recovery link.
+- `/account`: view the current email, return to tree, and securely sign out.
+
+Allow `http://localhost:4200/login`, `http://localhost:4200/reset-password`,
+`https://YOUR_DOMAIN/login`, and `https://YOUR_DOMAIN/reset-password` in
+Supabase Authentication -> URL Configuration. Configure production Site URL.
+No password is stored in frontend localStorage, the database, or the application logs.

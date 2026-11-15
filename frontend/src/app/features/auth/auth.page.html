@@ -1,0 +1,100 @@
+<div class="auth-shell">
+  <section class="auth-story" aria-label="KnowYourFam">
+    <a routerLink="/login" class="story-brand"><span class="brand-symbol">♧</span><span>Know<span class="brand-highlight">Your</span>Fam</span></a>
+    <div class="story-content">
+      <div class="story-kicker">KEEP YOUR FAMILY CLOSE</div>
+      <h1>Setiap keluarga punya cerita yang layak dijaga.</h1>
+      <p>Bangun silsilah keluarga, hubungkan generasi, dan simpan kisah mereka dalam satu tempat yang aman.</p>
+      <div class="family-motif" aria-hidden="true">
+        <div class="motif-line motif-line-top"></div>
+        <div class="motif-pair"><div class="motif-person">👴</div><div class="motif-person">👵</div></div>
+        <div class="motif-line motif-line-bottom"></div>
+        <div class="motif-pair motif-children"><div class="motif-person">👨</div><div class="motif-person">👩</div><div class="motif-person">👧</div></div>
+      </div>
+    </div>
+    <p class="story-foot">Satu pohon. Banyak generasi. Ribuan cerita.</p>
+  </section>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <a routerLink="/login" class="mobile-brand"><span class="brand-symbol">♧</span>Know<b>Your</b>Fam</a>
+      @if (mode === 'login') {
+        <span class="eyebrow">SELAMAT DATANG KEMBALI</span>
+        <h2>Masuk ke akun</h2>
+        <p class="subtitle">Lanjutkan membangun silsilah keluarga Anda.</p>
+      } @else if (mode === 'register') {
+        <span class="eyebrow">MULAI DARI SINI</span>
+        <h2>Buat akun baru</h2>
+        <p class="subtitle">Simpan keluarga Anda dalam satu pohon yang terus berkembang.</p>
+      } @else if (mode === 'forgot-password') {
+        <span class="eyebrow">PEMULIHAN AKUN</span>
+        <h2>Lupa password?</h2>
+        <p class="subtitle">Kami akan mengirim link untuk membuat password baru.</p>
+      } @else if (mode === 'reset-password') {
+        <span class="eyebrow">PEMULIHAN AKUN</span>
+        <h2>Buat password baru</h2>
+        <p class="subtitle">Gunakan password kuat untuk melindungi data keluarga.</p>
+      } @else {
+        <span class="eyebrow">AKUN SAYA</span>
+        <h2>Pengaturan akun</h2>
+        <p class="subtitle">Kelola sesi login untuk membuka data keluarga Anda.</p>
+      }
+
+      @if (verified && mode === 'login') {
+        <div class="message success" role="status">Email telah dikonfirmasi. Silakan login.</div>
+      }
+      @if (message()) { <div class="message success" role="status">{{ message() }}</div> }
+      @if (errorMessage()) { <div class="message error" role="alert">{{ errorMessage() }}</div> }
+
+      @if (mode === 'account') {
+        <div class="account-info"><span>Email akun</span><strong>{{ accountEmail() || 'Memuat...' }}</strong></div>
+        <a class="primary-link" routerLink="/">Kembali ke Family Tree</a>
+        <button type="button" class="secondary-button" (click)="logout()" [disabled]="submitting()">
+          {{ submitting() ? 'Keluar...' : 'Keluar dari akun' }}
+        </button>
+      } @else {
+        <form (submit)="submit($event)">
+          @if (mode !== 'reset-password') {
+            <label for="auth-email">Alamat email</label>
+            <input id="auth-email" type="email" required autocomplete="email" inputmode="email"
+              placeholder="nama@email.com" [value]="email()" (input)="email.set($any($event.target).value)" />
+          }
+          @if (mode === 'login' || mode === 'register' || mode === 'reset-password') {
+            <div class="password-label">
+              <label for="auth-password">{{ mode === 'reset-password' ? 'Password baru' : 'Password' }}</label>
+              @if (mode === 'login') { <a routerLink="/forgot-password">Lupa password?</a> }
+            </div>
+            <div class="password-input">
+              <input id="auth-password" [type]="showPassword() ? 'text' : 'password'" required
+                [attr.autocomplete]="mode === 'login' ? 'current-password' : 'new-password'"
+                [attr.minlength]="mode === 'login' ? null : 8"
+                [placeholder]="mode === 'login' ? 'Masukkan password' : 'Minimal 8 karakter'"
+                [value]="password()" (input)="password.set($any($event.target).value)" />
+              <button type="button" class="reveal" (click)="showPassword.set(!showPassword())"
+                [attr.aria-label]="showPassword() ? 'Sembunyikan password' : 'Tampilkan password'">
+                {{ showPassword() ? 'Sembunyikan' : 'Lihat' }}
+              </button>
+            </div>
+          }
+          @if (mode === 'register' || mode === 'reset-password') {
+            <label for="auth-confirm">Konfirmasi password</label>
+            <input id="auth-confirm" type="password" required minlength="8" autocomplete="new-password"
+              placeholder="Ulangi password" [value]="confirmPassword()"
+              (input)="confirmPassword.set($any($event.target).value)" />
+          }
+          <button class="submit-button" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Memproses...' : mode === 'login' ? 'Masuk' :
+              mode === 'register' ? 'Daftar sekarang' : mode === 'forgot-password' ? 'Kirim link reset' : 'Simpan password baru' }}
+          </button>
+        </form>
+        <div class="auth-switch">
+          @if (mode === 'login') { Belum punya akun? <a routerLink="/register">Daftar gratis</a> }
+          @else if (mode === 'register') { Sudah punya akun? <a routerLink="/login">Masuk</a> }
+          @else { <a routerLink="/login">← Kembali ke login</a> }
+        </div>
+      }
+      <p class="privacy-note"><span aria-hidden="true">🔒</span> Data silsilah disimpan di Supabase dan dilindungi akses akun.</p>
+    </div>
+    <div class="auth-footer">© 2026 KnowYourFam · Kenali akar, jaga cerita.</div>
+  </main>
+</div>

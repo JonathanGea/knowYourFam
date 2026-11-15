@@ -6,7 +6,11 @@ import { FamilyTreePage } from './features/family-tree/family-tree.page';
 import { requireCloudAuth } from './application/require-cloud-auth.guard';
 
 const routes: Routes = [
-  { path: 'cloud', loadComponent: () => import('./features/auth/cloud-login.page').then(m => m.CloudLoginPage) },
+  { path: 'login', loadComponent: () => import('./features/auth/auth.page').then(m => m.AuthPage), data: { mode: 'login' } },
+  { path: 'register', loadComponent: () => import('./features/auth/auth.page').then(m => m.AuthPage), data: { mode: 'register' } },
+  { path: 'forgot-password', loadComponent: () => import('./features/auth/auth.page').then(m => m.AuthPage), data: { mode: 'forgot-password' } },
+  { path: 'reset-password', loadComponent: () => import('./features/auth/auth.page').then(m => m.AuthPage), data: { mode: 'reset-password' } },
+  { path: 'account', canActivate: [requireCloudAuth], loadComponent: () => import('./features/auth/auth.page').then(m => m.AuthPage), data: { mode: 'account' } },
   { path: '', component: FamilyTreePage, canActivate: [requireCloudAuth] },
   { path: 'person/:id', canActivate: [requireCloudAuth], loadComponent: () => import('./features/profile/person-profile.page').then(m => m.PersonProfilePage) },
   { path: 'members', canActivate: [requireCloudAuth], loadComponent: () => import('./features/reference/reference.page').then(m => m.ReferencePage), data: { view: 'members' } },

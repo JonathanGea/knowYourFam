@@ -4,7 +4,7 @@
     <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
     <div class="header-right">
       <span class="save-indicator">{{ store.tutorialActive() ? "Mode latihan sementara" : "Supabase • Database aktif" }}</span>
-      <a class="btn" routerLink="/cloud">☁ Akun</a>
+      <a class="btn" routerLink="/account">♧ Akun</a>
       <button type="button" id="export-btn" class="btn" (click)="downloadLegacyJson()" title="Ekspor dengan format HTML main">↓ Ekspor</button>
       <button type="button" id="top-add" class="btn primary" (click)="openAdd(store.people().length ? 'child' : 'none')">＋ Tambah anggota</button>
     </div>
