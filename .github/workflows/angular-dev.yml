@@ -42,6 +42,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Validate relationship explorer geometry on desktop, tablet and phone
         run: node scripts/browser-explorer-layout.mjs
+      - name: Verify visual design readability and canvas geometry
+        run: node scripts/browser-visual-system.mjs
       - name: Verify responsive shell geometry across authenticated pages
         run: node scripts/browser-workspace-layout.mjs
       - name: Verify private Angular routes and guest auth boundary
