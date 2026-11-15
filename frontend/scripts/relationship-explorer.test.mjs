@@ -15,7 +15,7 @@ const resolver=read('src/app/application/relationship-kinship.ts');
 
 test('person preview contains identity, viewer relationship and a reason, not family lists or branches',()=>{
   for(const text of ['PROFIL ANGGOTA','kinshipPreview().label','personOverview()?.nickname',
-    'overview.familyContext','overview.facts','Lihat profil lengkap','Fokus pohon','Tambah hubungan']){
+    'overview.familyContext','overview.facts','Lihat profil lengkap','Jelajahi keluarganya','Tambah hubungan']){
     assert.ok(template.includes(text),'Missing Person Preview feature: '+text);
   }
   assert.doesNotMatch(template,/KELUARGA TERDEKAT/);
@@ -46,7 +46,7 @@ test('logged in account is linked to Person independently of canvas focus',()=>{
   assert.match(template,/Ini profil saya/);
 });
 
-test('mobile/tablet centered popup and desktop right inspector remain intact',()=>{
+test('responsive Person Preview supports desktop inspector, tablet side sheet and phone bottom sheet',()=>{
   assert.match(template,/class="explorer-stage"/);
   assert.match(template,/class="relationship-explorer person-preview"/);
   assert.match(template,/class="relationship-explorer-backdrop"/);
@@ -56,6 +56,10 @@ test('mobile/tablet centered popup and desktop right inspector remain intact',()
   assert.match(css,/max-height:min\(82dvh,620px\)/);
   assert.match(css,/\.explorer-stage\.explorer-open \{\s*grid-template-columns:minmax\(0,1fr\) 342px/);
   assert.match(page,/isExplorerPopup\(\):boolean/);
+  const responsive=read('src/family-explorer-workspace.css');
+  assert.match(responsive,/min-width:900px/);
+  assert.match(responsive,/top:60px!important;bottom:0!important/);
+  assert.match(responsive,/bottom:0!important;left:0!important;right:0!important/);
 });
 
 test('overview derives its semantic context from kinship resolver, not names or focus person',()=>{
