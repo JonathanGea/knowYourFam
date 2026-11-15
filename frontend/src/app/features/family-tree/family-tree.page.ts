@@ -88,6 +88,33 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly panY = signal(0);
   readonly mobileListOpen = signal(false);
   readonly sidebarQuery = signal('');
+  readonly explorerOpen = signal(false);
+  readonly explorerTab = signal<'search'|'branches'|'history'|'settings'>('search');
+  readonly pinnedBranchKeys = signal<ReadonlySet<string>>(new Set());
+  readonly collapseNotice = signal<{
+    personName: string;
+    expanded: Readonly<Record<string, number>>;
+    collapsed: ReadonlySet<string>;
+  } | null>(null);
+  readonly activeOriginName = computed(() =>
+    this.store.familyOrigins().find(origin => origin.id === this.store.activeFamilyOriginId())?.name ?? 'Keluarga saya');
+  readonly branchPanelOptions = computed(() => {
+    if (this.store.mode() !== 'focus') return [];
+    const focus = this.store.focusPersonId();
+    const ids = [...new Set([focus, ...this.store.relationsFor(focus).partners,
+      ...this.store.visiblePeople().map(person => person.id)])];
+    const rows: Array<{key:string;anchorId:string;personName:string;title:string;open:boolean;hidden:number}> = [];
+    const keys = new Set<string>();
+    for (const id of ids) {
+      for (const option of this.store.branchOptions(id)) {
+        if (keys.has(option.key)) continue;
+        keys.add(option.key);
+        rows.push({key:option.key,anchorId:id,personName:this.store.findPerson(id)?.name ?? 'Anggota',
+          title:option.title,open:option.open,hidden:option.hidden});
+      }
+    }
+    return rows.sort((a,b)=>Number(this.pinnedBranchKeys().has(b.key))-Number(this.pinnedBranchKeys().has(a.key))).slice(0,36);
+  });
   readonly sidebarMatchCount = computed(() => {
     const query = this.sidebarQuery().trim().toLocaleLowerCase('id');
     if (!query) return this.store.people().length;
@@ -135,9 +162,9 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly explorerHistory = signal<readonly string[]>([]);
   readonly explorerUnavailableTarget = signal<string | null>(null);
   readonly explorerBranchError = signal(false);
-  /** Tablet and touch browsers use centered popup rather than inspector dock. */
+  /** Tablet uses a side sheet, phone a bottom sheet; both overlay the canvas. */
   isExplorerPopup():boolean {
-    return window.matchMedia('(max-width: 1100px), (any-pointer: coarse)').matches;
+    return window.matchMedia('(max-width: 1279px), (any-pointer: coarse)').matches;
   }
   readonly quickPerson = computed(() => this.quickPersonId() ? this.store.findPerson(this.quickPersonId()!) : undefined);
   readonly viewerPerson = computed(() => {
@@ -258,6 +285,75 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.closeExplorer();
     if (this.detailsOpen()) this.detailsOpen.set(false);
     if (this.tutorial()) this.stopTutorial();
+  }
+
+  openWorkspaceExplorer(tab:'search'|'branches'|'history'|'settings'): void {
+    this.explorerTab.set(tab);
+    this.explorerOpen.set(true);
+    this.mobileMenuOpen.set(false);
+    if (window.matchMedia('(max-width:1279px), (any-pointer:coarse)').matches && this.quickPersonId()) {
+      this.closeExplorer();
+    }
+  }
+  toggleWorkspaceExplorer(tab:'search'|'branches'|'history'|'settings'): void {
+    if (this.explorerOpen() && this.explorerTab()===tab) this.closeWorkspaceExplorer();
+    else this.openWorkspaceExplorer(tab);
+  }
+  closeWorkspaceExplorer(): void {
+    this.explorerOpen.set(false);
+  }
+  openSearchPerson(id:string): void {
+    this.closeWorkspaceExplorer();
+    this.activateExplorerPerson(id);
+  }
+  returnToMyPerson(): void {
+    this.closeWorkspaceExplorer();
+    const target = this.viewerPerson()?.id ?? this.store.focusPersonId();
+    if (!target) return;
+    if (!this.store.visiblePersonIds().has(target) || this.store.mode()==='overview') {
+      this.setFocus(target);
+      return;
+    }
+    this.quickPersonId.set(null);
+    this.centerExplorerPerson(target);
+  }
+  isBranchPinned(key:string): boolean {
+    return this.pinnedBranchKeys().has(key);
+  }
+  toggleBranchPin(key:string): void {
+    if (!this.store.isBranchOpen(key)) return;
+    const next = new Set(this.pinnedBranchKeys());
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    this.pinnedBranchKeys.set(next);
+  }
+  private maybeConserveLayout(anchorId:string,justOpened:string):void {
+    // Conservative safeguard: let the canvas grow first. Only exceptionally
+    // large focus views are candidates for automatic branch reduction.
+    const viewport=this.canvasWindow?.nativeElement;
+    if (!viewport || this.store.mode()!=='focus' ||
+      this.store.visiblePeople().length<85 ||
+      this.layout().width<viewport.clientWidth*7) return;
+    const focus=this.store.focusPersonId();
+    const protectedPeople=new Set([anchorId,focus,...this.store.relationsFor(focus).partners]);
+    const candidate=Object.keys(this.store.expandedBranches()).find(key=>
+      key!==justOpened && !this.pinnedBranchKeys().has(key) &&
+      ![...protectedPeople].some(id=>key.includes(encodeURIComponent(id))) &&
+      this.store.isBranchOpen(key));
+    if (!candidate) return;
+    const beforeExpanded={...this.store.expandedBranches()};
+    const beforeCollapsed=new Set(this.store.collapsedBranches());
+    const owner=candidate.startsWith('pair:') ? candidate.slice(5).split('|')[0] : candidate.split(':').slice(1).join(':');
+    const name=this.store.findPerson(decodeURIComponent(owner))?.name ?? 'keluarga';
+    this.keepAnchor(anchorId,()=>this.store.collapseBranch(candidate));
+    this.collapseNotice.set({personName:name,expanded:beforeExpanded,collapsed:beforeCollapsed});
+  }
+  undoAutoCollapse():void {
+    const notice=this.collapseNotice();
+    if (!notice) return;
+    this.store.expandedBranches.set({...notice.expanded});
+    this.store.collapsedBranches.set(new Set(notice.collapsed));
+    this.collapseNotice.set(null);
   }
 
   toggleFullscreen(): void {
@@ -778,6 +874,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   setFocus(id: string): void {
+    this.closeWorkspaceExplorer();
     this.quickPersonId.set(null);
     this.helpOpen.set(false);
     this.detailsOpen.set(false);
@@ -894,6 +991,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   setMode(mode: 'focus' | 'overview'): void {
+    this.closeWorkspaceExplorer();
     this.quickPersonId.set(null);
     this.store.setMode(mode);
     this.tutorialRecord('mode',{mode});
@@ -916,12 +1014,18 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
 
   toggleBranch(key: string, anchorId: string): void {
     this.quickPersonId.set(null);
+    const wasOpen=this.store.isBranchOpen(key);
     this.keepAnchor(anchorId, () => this.toggleBranchOrSwitchOrigin(key,anchorId));
+    if (!wasOpen && this.store.isBranchOpen(key)) this.maybeConserveLayout(anchorId,key);
+    if (!this.store.isBranchOpen(key)) {
+      const pinned=new Set(this.pinnedBranchKeys());pinned.delete(key);this.pinnedBranchKeys.set(pinned);
+    }
     this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
   collapseBranch(key: string, anchorId: string): void {
     this.quickPersonId.set(null);
     this.keepAnchor(anchorId, () => this.store.collapseBranch(key));
+    const pinned=new Set(this.pinnedBranchKeys());pinned.delete(key);this.pinnedBranchKeys.set(pinned);
     this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
   private keepAnchor(id: string, change: () => void): void {

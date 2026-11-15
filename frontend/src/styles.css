@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./main-parity.css";
+@import "./family-explorer-workspace.css";
 
 /* Angular app shell keeps main's global visual tokens. */
 /* Tailwind preflight resets heading emphasis; restore browser's defaults used by main.
