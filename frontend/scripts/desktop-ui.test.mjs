@@ -35,7 +35,7 @@ test('primary actions are accessible while backups stay behind settings panel',(
 test('desktop focus remains readable and Fit remains explicitly available',()=>{
   assert.match(component,/width < 1150 \? 1\.0 : width < 1600 \? 1\.08 : 1\.15/);
   assert.match(component,/fitCanvasFromToolbar\(\): void/);
-  assert.match(html,/generasi terlihat/);
+  assert.match(html,/dari \{\{ store\.people\(\)\.length \}\} terlihat/);
   assert.match(original,/\.main-parity-ui \.scene:not\(\.zoom-compact\) \.node-name/);
   assert.match(html,/\[title\]="node\.person\.name"/);
   assert.match(workspace,/scene\.zoom-far/);

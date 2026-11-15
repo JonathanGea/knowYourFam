@@ -41,9 +41,10 @@ test('Angular Family Explorer hierarchy is header, rail, optional explorer, canv
 
 test('tree cards preserve identity, position and single-person SVG connections',()=>{
   for(const key of ['class="node-top"','class="person-photo"','class="node-name"',
-    'class="node-years"','class="node-bottom"','Profil saya']){
+    'class="node-years"','class="node-self-tag"','Akun saya']){
     assert.ok(html.includes(key),'Person card missing '+key);
   }
+  assert.doesNotMatch(html,/class="node-bottom"/, 'No redundant card footer');
   assert.match(html,/\[style\.left\.px\]="node\.x"/);
   assert.match(html,/\[style\.top\.px\]="node\.y"/);
   assert.match(ts,/yearsOf\(person: Person\): string/);
