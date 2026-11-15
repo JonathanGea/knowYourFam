@@ -133,7 +133,7 @@ test('source-style Angular routes include all key pages and full person profile'
 
 test('new family is a separate explicit mutation with user confirmation',()=>{
   assert.match(html,/\(click\)="createNewTree\(\)"/);
-  assert.match(ts,/window\.confirm\('Buat pohon baru\?/);
+  assert.match(ts,/window\.confirm\('Buat Family Tree baru/);
   assert.match(store,/async createEmptyTree\(/);
   assert.match(store,/this\.focusPersonId\.set\(''\)/);
 });
