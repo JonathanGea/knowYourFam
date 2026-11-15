@@ -741,7 +741,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       for(let attempt=0;attempt<16&&!this.store.visiblePersonIds().has(target);attempt++){
         const before=this.store.hiddenBranchCount(branch.key);
         if(before===0)break;
-        this.store.toggleBranch(branch.key);
+        this.toggleBranchOrSwitchOrigin(branch.key,from);
         const after=this.store.hiddenBranchCount(branch.key);
         if(after>=before)break; // Unreachable owners: do not loop indefinitely.
       }
@@ -753,7 +753,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   expandExplorerBranch(key:string,anchor:string):void {
     const before=this.store.hiddenBranchCount(key);
     if(before<=0)return;
-    this.keepAnchor(anchor,()=>this.store.toggleBranch(key));
+    this.keepAnchor(anchor,()=>this.toggleBranchOrSwitchOrigin(key,anchor));
     this.explorerBranchError.set(this.store.hiddenBranchCount(key)===before);
     this.explorerUnavailableTarget.set(null);
     this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
@@ -892,9 +892,23 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     requestAnimationFrame(() => this.fitThenFocus());
   }
 
+  /** An inactive spouse's ancestor/sibling expansion opens their birth family instead. */
+  private toggleBranchOrSwitchOrigin(key: string, anchorId: string): void {
+    if ((key.startsWith('side:') || key.startsWith('up:')) &&
+        this.store.switchFamilyOrigin(anchorId)) return;
+    this.store.toggleBranch(key);
+  }
+
+  switchFamilyOrigin(id: string): void {
+    if (this.store.mode() !== 'focus') return;
+    this.keepAnchor(this.store.focusPersonId(), () => this.store.switchFamilyOrigin(id));
+    this.explorerUnavailableTarget.set(null);
+    this.explorerBranchError.set(false);
+  }
+
   toggleBranch(key: string, anchorId: string): void {
     this.quickPersonId.set(null);
-    this.keepAnchor(anchorId, () => this.store.toggleBranch(key));
+    this.keepAnchor(anchorId, () => this.toggleBranchOrSwitchOrigin(key,anchorId));
     this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
   collapseBranch(key: string, anchorId: string): void {

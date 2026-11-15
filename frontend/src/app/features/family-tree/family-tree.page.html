@@ -236,6 +236,27 @@
               (click)="resetBranches()">Reset cabang</button>
           </div>
         </div>
+        @if (store.mode()==='focus' && store.familyOrigins().length>1) {
+          <div class="family-origin-toolbar" role="group" aria-label="Pilih keluarga asal yang ditampilkan">
+            <div class="family-origin-intro">
+              <strong>Keluarga yang ditampilkan</strong>
+              <small>Cabang lainnya diringkas. User, pasangan, dan anak tetap terlihat.</small>
+            </div>
+            <div class="family-origin-options">
+              @for (origin of store.familyOrigins(); track origin.id) {
+                <button type="button" class="family-origin-choice"
+                  [class.active]="store.activeFamilyOriginId()===origin.id"
+                  [attr.aria-pressed]="store.activeFamilyOriginId()===origin.id"
+                  (click)="switchFamilyOrigin(origin.id)">
+                  {{ origin.name }}
+                  @if (store.activeFamilyOriginId()!==origin.id && store.hiddenFamilyOriginCount(origin.id)>0) {
+                    <span class="family-origin-hidden">+{{ store.hiddenFamilyOriginCount(origin.id) }} kerabat</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
         <div class="explorer-stage" [class.explorer-open]="!!quickPerson()">
         <div #canvasWindow class="viewport" aria-label="Pohon keluarga interaktif. Ketuk anggota untuk aksi cepat, geser dengan satu jari, cubit dengan dua jari untuk zoom"
           (wheel)="onWheel($event)"
@@ -352,7 +373,7 @@
               <div class="legend-item"><span class="legend-line green"></span> Orang tua – anak</div>
               <div class="legend-item"><span class="legend-line coral"></span> Hubungan pasangan</div>
               <div class="legend-item"><span class="legend-line blue"></span> Saudara langsung tanpa orang tua bersama tercatat</div>
-              <p>Cabang dalam Fokus dapat ditutup dan dibuka lagi. Ketuk kartu untuk menjelajahi hubungan; geser dan cubit untuk navigasi. ↑ Orang tua · ↔ Saudara · ↓ Anak.</p>
+              <p>Dalam Fokus, pilih keluarga asal User atau Pasangan untuk membuka satu kelompok saudara. Cabang lain diringkas dan bisa dikembalikan; User, pasangan, dan anak tetap terlihat. ↑ Orang tua · ↔ Saudara · ↓ Anak.</p>
               <a class="btn soft" routerLink="/guide">Panduan Pengguna ↗</a>
               <a class="btn" routerLink="/rules">Aturan Family Tree</a>
             </div>

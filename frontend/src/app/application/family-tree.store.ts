@@ -7,6 +7,7 @@ import { addRelation, archivePerson, createPerson, editPerson, linkChildToCouple
 
 export const BRANCH_PAGE_SIZE = 12;
 type BranchOption = { key: string; kind: BranchKind; title: string; count: number; open: boolean; hidden: number };
+type OriginBranchState = { expanded: Readonly<Record<string, number>>; collapsed: ReadonlySet<string> };
 
 @Injectable({ providedIn: 'root' })
 export class FamilyTreeStore {
@@ -23,12 +24,35 @@ export class FamilyTreeStore {
   readonly expandedBranches = signal<Readonly<Record<string, number>>>({});
   /** Every default-open direction can be independently collapsed. */
   readonly collapsedBranches = signal<ReadonlySet<string>>(new Set());
+  /** Temporary canvas view state; never persisted to the family database. */
+  readonly familyOriginId = signal<string | null>(null);
+  private originBranchStates = new Map<string, OriginBranchState>();
+  readonly activeFamilyOriginId = computed(() => {
+    const focus = this.focusPersonId();
+    const selected = this.familyOriginId();
+    return selected && (selected === focus || this.relationsFor(focus).partners.includes(selected))
+      ? selected : focus;
+  });
+  readonly familyOrigins = computed(() => {
+    const focus = this.focusPersonId();
+    if (!this.findPerson(focus)) return [];
+    return [focus, ...this.relationsFor(focus).partners]
+      .filter((id, index, ids) => ids.indexOf(id) === index && !!this.findPerson(id))
+      .map(id => ({ id, name: this.findPerson(id)!.name }));
+  });
+  /** Badge reflects direct hidden ancestors/siblings, not all hidden descendants. */
+  hiddenFamilyOriginCount(id: string): number {
+    const relatives = this.relationsFor(id);
+    const visible = this.visiblePersonIds();
+    return new Set([...relatives.parents, ...relatives.siblings].filter(personId => !visible.has(personId))).size;
+  }
   readonly focusHistory = signal<readonly string[]>([]);
   readonly tutorialActive = signal(false);
   private tutorialOriginal: {
     tree: FamilyTree; focus: string; selected: string; mode: 'focus'|'overview';
     history: readonly string[]; expanded: Readonly<Record<string, number>>;
-    collapsed: ReadonlySet<string>; zoom: number
+    collapsed: ReadonlySet<string>; zoom: number;
+    originId: string | null; originStates: ReadonlyMap<string, OriginBranchState>
   } | null = null;
 
   readonly people = computed(() => this.tree().people.filter(person => !person.deletedAt));
@@ -43,7 +67,17 @@ export class FamilyTreeStore {
     return this.people().filter(p => !query || p.name.toLocaleLowerCase('id').includes(query))
       .slice().sort((a, b) => a.name.localeCompare(b.name, 'id'));
   });
-  readonly defaultBranchKeys = computed(() => this.focusDefaultKeys(this.focusPersonId()));
+  readonly defaultBranchKeys = computed(() => {
+    const focus = this.focusPersonId();
+    const origin = this.activeFamilyOriginId();
+    const keys = new Set(this.focusDefaultKeys(origin));
+    // Preserve the focused person's child branches even when showing a partner's birth family.
+    if (origin !== focus) {
+      if (this.soloChildren(focus).length) keys.add('down:' + encodeURIComponent(focus));
+      this.pairKeys(focus).forEach(key => keys.add(key));
+    }
+    return keys;
+  });
 
   constructor() { void this.reload(); }
 
@@ -56,6 +90,7 @@ export class FamilyTreeStore {
       const first = tree.people.find(person => person.claimed)?.id ?? tree.people.find(person => person.id === 'p7')?.id ?? tree.people.find(person => person.id === 'rudi')?.id ?? tree.people[0]?.id ?? '';
       this.focusPersonId.set(first);
       this.selectedPersonId.set(first);
+      this.resetBranches();
     } catch (error) {
       this.loadError.set(error instanceof Error ? error.message : 'Gagal memuat data pohon keluarga dari Supabase.');
     } finally {
@@ -164,28 +199,9 @@ export class FamilyTreeStore {
       this.people().forEach(p => ids.add(p.id));
       return ids;
     }
-    const focus = this.focusPersonId();
-    const rel = this.relationsFor(focus);
-    const add = (id: string) => { if (this.findPerson(id)) ids.add(id); };
-    add(focus);
-    // Focus's partners always visible, but partners' ancestors do not auto-open.
-    rel.partners.forEach(add);
-    const defaults = this.defaultBranchKeys();
+    // One active birth family; Focus, partner and shared children remain as anchors.
+    this.focusBaseMembers(this.collapsedBranches()).forEach(id => ids.add(id));
     const closed = this.collapsedBranches();
-    const reveal = (key: string) => {
-      if (defaults.has(key) && !closed.has(key)) this.branchMembers(key).forEach(add);
-    };
-    const focusUp = 'up:' + encodeURIComponent(focus);
-    reveal(focusUp);
-    if (!closed.has(focusUp)) {
-      for (const parent of rel.parents) {
-        reveal('up:' + encodeURIComponent(parent));
-        reveal('side:' + encodeURIComponent(parent));
-      }
-    }
-    reveal('side:' + encodeURIComponent(focus));
-    reveal('down:' + encodeURIComponent(focus));
-    for (const key of this.pairKeys(focus)) reveal(key);
     // An expanded branch opens only if its owner(s) are currently reachable.
     // Nested expansions are traversed in iterations, without leaking hidden
     // relatives when an ancestor branch is collapsed.
@@ -284,30 +300,53 @@ export class FamilyTreeStore {
 
   private focusBaseMembers(closed: ReadonlySet<string>): Set<string> {
     const ids = new Set<string>();
-    const id = this.focusPersonId();
+    const focus = this.focusPersonId();
+    const origin = this.activeFamilyOriginId();
     const add = (p: string) => { if (this.findPerson(p)) ids.add(p); };
-    add(id);
-    const rel = this.relationsFor(id);
-    rel.partners.forEach(add);
+    add(focus);
+    this.relationsFor(focus).partners.forEach(add);
+    const family = this.relationsFor(origin);
     const defaults = this.defaultBranchKeys();
     const reveal = (key: string) => {
       if (!closed.has(key) && defaults.has(key)) this.branchMembers(key).forEach(add);
     };
-    const up = 'up:' + encodeURIComponent(id);
+    const up = 'up:' + encodeURIComponent(origin);
     reveal(up);
     if (!closed.has(up)) {
-      for (const p of rel.parents) {
-        reveal('up:' + encodeURIComponent(p));
-        reveal('side:' + encodeURIComponent(p));
+      for (const parent of family.parents) {
+        reveal('up:' + encodeURIComponent(parent));
+        reveal('side:' + encodeURIComponent(parent));
       }
     }
-    reveal('side:' + encodeURIComponent(id));
-    reveal('down:' + encodeURIComponent(id));
-    this.pairKeys(id).forEach(reveal);
+    reveal('side:' + encodeURIComponent(origin));
+    reveal('down:' + encodeURIComponent(origin));
+    this.pairKeys(origin).forEach(reveal);
+    if (origin !== focus) {
+      reveal('down:' + encodeURIComponent(focus));
+      this.pairKeys(focus).forEach(reveal);
+    }
     return ids;
   }
 
+  /** Restore each birth-family's own expanded/collapsed state when switching back. */
+  switchFamilyOrigin(id: string): boolean {
+    if (this.mode() !== 'focus' || !this.familyOrigins().some(origin => origin.id === id)) return false;
+    const current = this.activeFamilyOriginId();
+    if (id === current) return false;
+    this.originBranchStates.set(current, {
+      expanded: { ...this.expandedBranches() },
+      collapsed: new Set(this.collapsedBranches())
+    });
+    const saved = this.originBranchStates.get(id);
+    this.familyOriginId.set(id);
+    this.expandedBranches.set(saved ? { ...saved.expanded } : {});
+    this.collapsedBranches.set(new Set(saved?.collapsed ?? []));
+    return true;
+  }
+
   resetBranches(): void {
+    this.familyOriginId.set(null);
+    this.originBranchStates.clear();
     this.expandedBranches.set({});
     this.collapsedBranches.set(new Set());
   }
@@ -351,7 +390,8 @@ export class FamilyTreeStore {
     this.tutorialOriginal = {
       tree:this.tree(),focus:this.focusPersonId(),selected:this.selectedPersonId(),
       mode:this.mode(),history:this.focusHistory(),expanded:this.expandedBranches(),
-      collapsed:this.collapsedBranches(),zoom:this.zoom()
+      collapsed:this.collapsedBranches(),zoom:this.zoom(),
+      originId:this.familyOriginId(),originStates:new Map(this.originBranchStates)
     };
     const seed=createTutorialTree(module);
     // Accept a prior tutorial snapshot only when it is a valid isolated graph;
@@ -367,8 +407,7 @@ export class FamilyTreeStore {
     this.selectedPersonId.set('edu-self');
     this.mode.set('focus');
     this.focusHistory.set([]);
-    this.expandedBranches.set({});
-    this.collapsedBranches.set(new Set());
+    this.resetBranches();
     this.tutorialActive.set(true);
   }
 
@@ -383,6 +422,8 @@ export class FamilyTreeStore {
     this.focusHistory.set(original.history);
     this.expandedBranches.set(original.expanded);
     this.collapsedBranches.set(new Set(original.collapsed));
+    this.familyOriginId.set(original.originId);
+    this.originBranchStates = new Map(original.originStates);
     this.zoom.set(original.zoom);
     this.tutorialOriginal = null;
   }
