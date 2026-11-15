@@ -35,3 +35,15 @@ test('repository requires auth and never falls back to demo', () => {
   assert.match(auth, /storage: sessionStorage/);
   assert.match(read('src/app/infrastructure/learning-progress.service.ts'), /\.from\('user_learning_states'\)/);
 });
+
+test('named auth pages replace technical cloud route', () => {
+  const app = read('src/app/app.config.ts');
+  const auth = read('src/app/features/auth/auth.page.ts');
+  for (const path of ["login","register","forgot-password","reset-password","account"]) {
+    assert.ok(app.includes("path: '"+path+"'"), path+' route is missing');
+  }
+  assert.doesNotMatch(app,/path: 'cloud'/);
+  for (const method of ['signInWithPassword','signUp','resetPasswordForEmail','updateUser','signOut']) {
+    assert.ok(auth.includes(method), 'Missing Supabase Auth method '+method);
+  }
+});
