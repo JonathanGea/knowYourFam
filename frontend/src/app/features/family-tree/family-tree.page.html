@@ -273,7 +273,7 @@
             <div class="empty-state">
               <h3>Mulai dari dirimu</h3>
               <p>Tambahkan satu Person, lalu hubungkan orang tua, pasangan, atau anak.</p>
-              <button type="button" class="btn primary" (click)="openAdd('none')">＋ Tambah anggota pertama</button>
+              <button type="button" class="btn primary" (click)="openAdd('none')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg> Tambah anggota pertama</button>
             </div>
           }
           <div class="scene" [style.width.px]="layout().width" [style.height.px]="layout().height"
@@ -379,7 +379,7 @@
           @if (helpOpen()) {
             <div class="tree-help-panel" (click)="$event.stopPropagation()">
               <div class="tree-help-head"><strong>Petunjuk pohon</strong>
-                <button type="button" aria-label="Tutup petunjuk" (click)="helpOpen.set(false)">✕</button>
+                <button type="button" aria-label="Tutup petunjuk" (click)="helpOpen.set(false)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button>
               </div>
               <div class="legend-item"><span class="legend-line green"></span> Orang tua – anak</div>
               <div class="legend-item"><span class="legend-line coral"></span> Hubungan pasangan</div>
@@ -401,7 +401,7 @@
               <div class="explorer-header">
                 <div class="explorer-header-title"><span>PROFIL ANGGOTA</span></div>
                 <button type="button" class="explorer-close" aria-label="Tutup pratinjau profil"
-                  (click)="closeExplorer()">✕</button>
+                  (click)="closeExplorer()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button>
               </div>
               <div class="explorer-person">
                 <span class="person-photo" [class.female]="qp.gender==='female'"
@@ -427,7 +427,7 @@
                 <div class="explorer-main-content person-overview-content">
                   @if (overview.familyContext; as familyContext) {
                     <div class="overview-family-context">
-                      <span class="overview-context-symbol" aria-hidden="true">♧</span>
+                      <span class="overview-context-symbol" aria-hidden="true"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg></span>
                       <p>{{ familyContext }}</p>
                     </div>
                   }
@@ -439,9 +439,9 @@
                           <div class="overview-personal-fact">
                             <span class="overview-personal-icon" aria-hidden="true">
                               @switch (fact.id) {
-                                @case ('residence') { ⌖ }
-                                @case ('occupation') { ▣ }
-                                @default { ◇ }
+                                @case ('residence') { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#location"></use></svg> }
+                                @case ('occupation') { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#briefcase"></use></svg> }
+                                @default { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#info"></use></svg> }
                               }
                             </span>
                             <div class="overview-personal-value">
@@ -476,14 +476,14 @@
               }
               <div class="explorer-footer">
                 <button type="button" class="explorer-focus preview-profile-primary" (click)="viewPersonDetails()">
-                  ☷ Lihat profil lengkap
+                  <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#user"></use></svg> Lihat profil lengkap
                 </button>
                 <div class="explorer-footer-links">
                   <button type="button" (click)="setFocus(qp.id)"
                     [disabled]="qp.id===store.focusPersonId() && store.mode()==='focus'">
-                    {{ qp.id===store.focusPersonId() && store.mode()==='focus' ? '◎ Sedang dijelajahi' : '◎ Jelajahi keluarganya' }}
+                    <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#target"></use></svg> {{ qp.id===store.focusPersonId() && store.mode()==='focus' ? 'Sedang dijelajahi' : 'Jelajahi keluarganya' }}
                   </button>
-                  <button type="button" (click)="openLink(qp.id)">＋ Tambah hubungan</button>
+                  <button type="button" (click)="openLink(qp.id)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg> Tambah hubungan</button>
                 </div>
               </div>
             </aside>
@@ -530,7 +530,7 @@
       <div class="drawer-head">
         <h3>Profil anggota</h3>
         <button type="button" class="btn icon" aria-label="Tutup profil"
-          (click)="closePersonDrawer()">✕</button>
+          (click)="closePersonDrawer()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button>
       </div>
       <div class="drawer-profile">
         <span class="person-photo" [class.female]="person.gender==='female'" [class.male]="person.gender==='male'">
@@ -540,15 +540,15 @@
         <h2>{{ person.name }}</h2>
         <small>{{ yearsOf(person) }}</small>
         @if (store.mode()==='focus' && store.focusPersonId()===person.id) {
-          <span class="focus-current">◎ Fokus sekarang</span>
+          <span class="focus-current"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#target"></use></svg> Fokus sekarang</span>
         }
         <div class="drawer-actions">
-          <button type="button" class="btn" (click)="openEdit(person.id)">✎ Edit</button>
-          <button type="button" class="btn primary" (click)="openAdd('child',person.id)">＋ Relasi baru</button>
+          <button type="button" class="btn" (click)="openEdit(person.id)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#edit"></use></svg> Edit</button>
+          <button type="button" class="btn primary" (click)="openAdd('child',person.id)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg> Relasi baru</button>
         </div>
         <div class="drawer-actions">
           <button type="button" class="btn soft" [disabled]="store.focusPersonId()===person.id && store.mode()==='focus'"
-            (click)="setFocus(person.id)">◎ Jadikan fokus</button>
+            (click)="setFocus(person.id)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#target"></use></svg> Jelajahi keluarganya</button>
           <button type="button" class="btn" (click)="openFullProfile(person.id)">Profil lengkap ↗</button>
         </div>
         @if (store.mode()==='focus') {
@@ -556,7 +556,11 @@
           <div class="directional-actions">
             @for (branch of store.branchOptions(person.id); track branch.key) {
               <button type="button" class="btn" (click)="toggleBranch(branch.key,person.id)">
-                {{ branch.kind==='up'?'↑':branch.kind==='side'?'↔':'↓' }} {{ branch.title }}
+                @switch (branch.kind) {
+                   @case ('up') { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#arrow-up"></use></svg> }
+                   @case ('side') { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#branches"></use></svg> }
+                   @default { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#arrow-down"></use></svg> }
+                 } {{ branch.title }}
                 <small>{{ branch.open?(branch.hidden?'+'+branch.hidden+' lagi':'− Tutup'):'+'+branch.hidden }}</small>
               </button>
             } @empty { <p class="direction-empty">Semua hubungan langsung sudah terlihat.</p> }
@@ -689,7 +693,7 @@
             mode === 'link' ? 'Hubungkan Anggota' : mode === 'pair-child' ? 'Anak Bersama Pasangan' :
             mode === 'rename' ? 'Nama Pohon' : 'Hapus Anggota' }}</h2>
         </div>
-        <button type="button" class="modal-close" aria-label="Tutup" (click)="dialog.set(null)">×</button>
+        <button type="button" class="modal-close" aria-label="Tutup" (click)="dialog.set(null)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button>
       </div>
       <p class="modal-description">Perubahan anggota dan hubungan akan disimpan ke Supabase. Pastikan informasi keluarga sudah benar.</p>
 
