@@ -27,7 +27,7 @@ test('relative navigation never implicitly rewrites focused person',()=>{
     page.indexOf('  private activateExplorerPerson('));
   assert.ok(navigation.length>200,'exploreRelative should exist');
   assert.match(navigation, /this\.tryRevealRelative\(from,id\)/);
-  assert.match(navigation, /this\.activateExplorerPerson\(id,true\)/);
+  assert.match(navigation, /this\.activateExplorerPerson\(id\)/);
   assert.doesNotMatch(navigation, /setFocus\(/);
   assert.match(page, /readonly explorerHistory = signal/);
   assert.match(page, /backExplorerPerson\(\):void/);
@@ -47,18 +47,18 @@ test('canvas expansion is separate from people and only exposes hidden relatives
   assert.match(template, /@if \(group\.people\.length\)/);
 });
 
-test('desktop dock, tablet overlay, mobile expandable sheet preserve canvas',()=>{
+test('desktop dock remains while tablet and phone show centered popup',()=>{
   assert.match(template,/class="explorer-stage"/);
   assert.match(template,/class="relationship-explorer"/);
-  assert.doesNotMatch(template,/class="quick-panel main-angular-quick"/);
+  assert.match(template,/class="relationship-explorer-backdrop"/);
+  assert.match(template,/\[attr\.aria-modal\]="isExplorerPopup\(\) \? 'true' : null"/);
   assert.match(css,/\.explorer-stage > \.viewport/);
   assert.match(css,/\.explorer-stage\.explorer-open \{\s*grid-template-columns:minmax\(0,1fr\) 342px/);
-  assert.match(css,/\.explorer-stage > \.relationship-explorer \{[\s\S]*?grid-row:1; grid-column:2/);
-  assert.match(css,/@media\(min-width:651px\) and \(max-width:900px\)/);
-  assert.match(css,/@media\(max-width:650px\) \{[\s\S]*?\.explorer-sheet-handle/);
-  assert.match(template,/onExplorerHandleDown\(\$event\)/);
-  assert.match(template,/\[class\.explorer-compact\]="explorerCompact\(\)"/);
+  assert.match(css,/@media\(max-width:1100px\), \(any-pointer:coarse\)/);
+  assert.match(css,/transform:translate\(-50%,-50%\)/);
+  assert.match(css,/max-height:min\(72dvh,555px\)/);
+  assert.match(css,/\.relationship-explorer-backdrop \{/);
+  assert.doesNotMatch(template,/class="explorer-sheet-handle"/);
+  assert.match(page,/isExplorerPopup\(\):boolean/);
   assert.match(css,/\.node\.selected:not\(\.focus-person\)/);
-  assert.match(page,/clearWidth=Math\.max\(180,panelRect\.left-viewRect\.left-12\)/);
-  assert.match(page,/const previousWidth=viewport\?\.clientWidth/);
 });

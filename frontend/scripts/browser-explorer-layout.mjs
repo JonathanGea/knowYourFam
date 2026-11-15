@@ -7,60 +7,77 @@ import { chromium } from 'playwright';
 const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const original=readFileSync(resolve(project,'src/main-parity.css'),'utf8');
 const component=readFileSync(resolve(project,'src/app/features/family-tree/family-tree.page.css'),'utf8');
-
 const browser=await chromium.launch({headless:true});
 try {
-  for(const width of [1440,1024,768,390]) {
-    const page=await browser.newPage({viewport:{width,height:850},deviceScaleFactor:1});
+  for (const config of [
+    {width:1440,touch:false},{width:1024,touch:false},
+    {width:768,touch:false},{width:390,touch:true},
+    {width:1440,touch:true}
+  ]) {
+    const {width,touch}=config;
+    const page=await browser.newPage({viewport:{width,height:850},deviceScaleFactor:1,hasTouch:touch});
     try {
-      await page.setContent(`<!doctype html>
-      <html><head><meta name="viewport" content="width=device-width,initial-scale=1">
-        <style>${original}\n${component}</style>
-      </head><body>
-        <div class="app main-parity-ui">
-          <section class="explorer-stage explorer-open" style="height:600px;flex:0 0 600px">
-            <div class="viewport"><div class="scene"><span>Family Tree Canvas</span></div></div>
-            <aside class="relationship-explorer">
-              <div class="explorer-header">Jelajahi Keluarga</div>
-              <div class="explorer-person">Anggota keluarga</div>
-              <div class="explorer-main-content">Kerabat</div>
-              <div class="explorer-footer">Lihat profil</div>
-            </aside>
-          </section>
-        </div>
-      </body></html>`);
-      const rect=await page.evaluate(()=>{
-        const get=selector=>{
-          const el=document.querySelector(selector);
-          if(!el) throw new Error('missing '+selector);
-          const {left,right,top,bottom,width,height}=el.getBoundingClientRect();
+      await page.setContent(`<!doctype html><html>
+        <head><meta name="viewport" content="width=device-width,initial-scale=1">
+          <style>${original}\n${component}</style>
+        </head>
+        <body>
+          <div class="app main-parity-ui">
+            <section class="canvas-shell explorer-modal-open">
+              <section class="explorer-stage explorer-open" style="height:600px;flex:0 0 600px">
+                <div class="viewport"><div class="scene">Family Tree Canvas</div></div>
+                <div class="relationship-explorer-backdrop"></div>
+                <aside class="relationship-explorer" role="dialog" aria-label="Jelajahi keluarga">
+                  <div class="explorer-header">Jelajahi Keluarga</div>
+                  <div class="explorer-person">Anggota keluarga</div>
+                  <div class="explorer-main-content">
+                    ${'<div class="explorer-relative" style="min-height:42px">Hubungan keluarga terdekat</div>'.repeat(23)}
+                  </div>
+                  <div class="explorer-footer">Lihat profil</div>
+                </aside>
+              </section>
+            </section>
+          </div>
+        </body>
+      </html>`);
+      const state=await page.evaluate(()=>{
+        const rect=selector=>{
+          const elem=document.querySelector(selector);
+          if(!elem)throw new Error('missing '+selector);
+          const {left,right,top,bottom,width,height}=elem.getBoundingClientRect();
           return {left,right,top,bottom,width,height};
         };
-        return {stage:get('.explorer-stage'),viewport:get('.viewport'),
-          panel:get('.relationship-explorer'),
-          layout:getComputedStyle(document.querySelector('.explorer-stage')).display};
+        return {
+          stage:rect('.explorer-stage'), viewport:rect('.viewport'),
+          panel:rect('.relationship-explorer'),
+          backdrop:rect('.relationship-explorer-backdrop'),
+          backdropDisplay:getComputedStyle(document.querySelector('.relationship-explorer-backdrop')).display,
+          coarse:matchMedia('(any-pointer:coarse)').matches,
+          body: {
+            clientHeight:document.querySelector('.explorer-main-content').clientHeight,
+            scrollHeight:document.querySelector('.explorer-main-content').scrollHeight
+          }
+        };
       });
-      const {stage,viewport,panel}=rect;
       const near=(a,b,epsilon=3)=>Math.abs(a-b)<epsilon;
-      assert.ok(stage.width>=width-2,`stage unexpectedly narrow at ${width}px: ${JSON.stringify(rect)}`);
-      assert.ok(viewport.width>=240,`canvas unusably narrow at ${width}px: ${JSON.stringify(rect)}`);
-      if(width>=901){
-        assert.equal(rect.layout,'grid',`desktop must use grid, at ${width}px`);
-        assert.ok(near(viewport.right,panel.left),`inspector must dock to RIGHT of canvas at ${width}px: ${JSON.stringify(rect)}`);
-        assert.ok(near(panel.right,stage.right),`inspector must dock to far RIGHT at ${width}px: ${JSON.stringify(rect)}`);
-        assert.ok(panel.width>=330 && panel.width<=375,`inspector width out of bounds at ${width}px: ${JSON.stringify(rect)}`);
-        assert.ok(near(viewport.left,stage.left),`canvas must begin at stage left at ${width}px`);
-      } else if(width>650){
-        assert.ok(near(panel.right,stage.right-8),`tablet inspector must float at RIGHT at ${width}px: ${JSON.stringify(rect)}`);
-        assert.ok(near(viewport.width,stage.width),`tablet canvas should stay full-width behind overlay at ${width}px`);
+      const {stage,viewport,panel,backdrop,backdropDisplay,coarse,body}=state;
+      assert.ok(viewport.width>=250,`canvas too narrow at ${width}: ${JSON.stringify(state)}`);
+      const shouldPopup=width<=1100||coarse;
+      if(!shouldPopup){
+        assert.equal(backdropDisplay,'none');
+        assert.ok(near(viewport.right,panel.left),`desktop panel not docked to right: ${JSON.stringify(state)}`);
+        assert.ok(near(panel.right,stage.right),`desktop panel not flush right: ${JSON.stringify(state)}`);
       } else {
-        assert.ok(near(panel.left,stage.left) && near(panel.right,stage.right),`mobile sheet should span width at ${width}px`);
-        assert.ok(near(panel.bottom,stage.bottom),`mobile sheet should sit at bottom at ${width}px`);
-        assert.ok(panel.height<stage.height,`mobile sheet cannot cover the whole tree by default at ${width}px`);
+        assert.equal(backdropDisplay,'block',`popup missing backdrop: ${JSON.stringify(state)}`);
+        assert.ok(near(panel.left+panel.width/2,width/2),`popup not horizontally centered: ${JSON.stringify(state)}`);
+        assert.ok(near(panel.top+panel.height/2,425),`popup not vertically centered: ${JSON.stringify(state)}`);
+        assert.ok(panel.width>=300&&panel.width<width-14,`popup width unsuitable: ${JSON.stringify(state)}`);
+        assert.ok(panel.height<850*.8,`popup covers too much of the screen: ${JSON.stringify(state)}`);
+        assert.ok(near(viewport.width,stage.width),`popup must not shrink canvas: ${JSON.stringify(state)}`);
+        assert.ok(backdrop.width>=width&&backdrop.height>=850,`backdrop must cover viewport: ${JSON.stringify(state)}`);
+        assert.ok(body.scrollHeight>body.clientHeight,`family list should scroll independently: ${JSON.stringify(state)}`);
       }
-      console.log(`PASS ${width}px: canvas x=${Math.round(viewport.left)}..${Math.round(viewport.right)}; inspector x=${Math.round(panel.left)}..${Math.round(panel.right)}`);
-    } finally {
-      await page.close();
-    }
+      console.log(`PASS ${width}px touch=${touch} coarse=${coarse}: panel x=${Math.round(panel.left)}..${Math.round(panel.right)}, y=${Math.round(panel.top)}..${Math.round(panel.bottom)}`);
+    } finally {await page.close();}
   }
 } finally {await browser.close()}

@@ -129,11 +129,10 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly explorerExpandedGroups = signal<ReadonlySet<string>>(new Set());
   readonly explorerUnavailableTarget = signal<string | null>(null);
   readonly explorerBranchError = signal(false);
-  readonly explorerExpanded = signal(false);
-  readonly explorerCompact = signal(false);
-  private explorerSwipe: {pointerId:number; y:number} | null = null;
-  private explorerSwipeHandled = false;
-  private explorerSuppressClickUntil = 0;
+  /** Narrow browser or touch device: use an in-place centered popup. */
+  isExplorerPopup():boolean {
+    return window.matchMedia('(max-width: 1100px), (any-pointer: coarse)').matches;
+  }
   readonly quickPerson = computed(() => this.quickPersonId() ? this.store.findPerson(this.quickPersonId()!) : undefined);
   readonly explorerKinshipSummary = computed(() => {
     const current = this.quickPerson();
@@ -661,8 +660,6 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.explorerUnavailableTarget.set(null);
     this.explorerBranchError.set(false);
     this.explorerExpandedGroups.set(new Set());
-    this.explorerExpanded.set(false);
-    this.explorerCompact.set(false);
   }
 
   private centerExplorerPerson(id:string):void {
@@ -678,7 +675,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     // Center the inspected person in the unobscured part of the canvas.
     let clearWidth=width;
     const panel=this.explorerPanel?.nativeElement;
-    if(panel){
+    if(panel && !this.isExplorerPopup()){
       const viewRect=viewport.getBoundingClientRect();
       const panelRect=panel.getBoundingClientRect();
       if(panelRect.left>viewRect.left+80 && panelRect.left<viewRect.right &&
@@ -712,16 +709,15 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       return;
     }
     this.explorerHistory.update(history=>[...history,from]);
-    this.activateExplorerPerson(id,true);
+    this.activateExplorerPerson(id);
   }
 
-  private activateExplorerPerson(id:string,compact=false):void {
+  private activateExplorerPerson(id:string):void {
     this.store.select(id);
     this.quickPersonId.set(id);
     this.explorerExpandedGroups.set(new Set());
     this.explorerUnavailableTarget.set(null);
     this.explorerBranchError.set(false);
-    this.explorerCompact.set(compact);
     this.helpOpen.set(false);
     requestAnimationFrame(()=>this.centerExplorerPerson(id));
   }
@@ -738,7 +734,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       return;
     }
     this.explorerHistory.set(history.slice(0,-1));
-    this.activateExplorerPerson(previous,true);
+    this.activateExplorerPerson(previous);
   }
 
   /**
@@ -772,46 +768,10 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
 
-  toggleExplorerSheet():void {
-    if(performance.now()<this.explorerSuppressClickUntil)return;
-    this.explorerCompact.set(false);
-    this.explorerExpanded.update(value=>!value);
-  }
-  onExplorerHandleDown(event:PointerEvent):void {
-    if(window.innerWidth>650&&window.innerWidth>1100)return;
-    if(event.pointerType==='mouse'&&event.button!==0)return;
-    this.explorerSwipe={pointerId:event.pointerId,y:event.clientY};
-    this.explorerSwipeHandled=false;
-    try{(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);}
-    catch{/* Pointer capture is best-effort. */}
-  }
-  onExplorerHandleMove(event:PointerEvent):void {
-    if(!this.explorerSwipe||event.pointerId!==this.explorerSwipe.pointerId||this.explorerSwipeHandled)return;
-    const dy=event.clientY-this.explorerSwipe.y;
-    if(Math.abs(dy)<40)return;
-    this.explorerSwipeHandled=true;
-    this.explorerSuppressClickUntil=performance.now()+420;
-    if(dy<0){this.explorerExpanded.set(true);this.explorerCompact.set(false);}
-    else if(this.explorerExpanded()){this.explorerExpanded.set(false);}
-    else if(!this.explorerCompact()){this.explorerCompact.set(true);}
-    else this.closeExplorer();
-  }
-  onExplorerHandleUp(event:PointerEvent):void {
-    if(!this.explorerSwipe||this.explorerSwipe.pointerId!==event.pointerId)return;
-    if(!this.explorerSwipeHandled)this.onExplorerHandleMove(event);
-    this.explorerSwipe=null;
-    this.explorerSwipeHandled=false;
-  }
-  onExplorerHandleCancel():void {
-    this.explorerSwipe=null;
-    this.explorerSwipeHandled=false;
-  }
-
   selectPerson(id: string): void {
     if (Date.now() < this.suppressClickUntil) return;
     this.store.select(id);
     this.explorerHistory.set([]);
-    this.explorerExpanded.set(false);
     this.activateExplorerPerson(id);
     this.helpOpen.set(false);
     this.mobileListOpen.set(false);
@@ -888,7 +848,6 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   @HostListener('document:pointerup', ['$event'])
   onDrawerDocumentPointerUp(event: PointerEvent): void {
     if(this.drawerStart)this.onDrawerGrabUp(event);
-    if(this.explorerSwipe)this.onExplorerHandleUp(event);
   }
 
   onDrawerShadeClick():void {
@@ -1094,8 +1053,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       // Canvas has pointer capture. Resolve the original tapped node manually.
       this.suppressClickUntil=Date.now()+450;
       this.explorerHistory.set([]);
-      this.explorerExpanded.set(false);
-      this.activateExplorerPerson(tapId);
+        this.activateExplorerPerson(tapId);
       this.tutorialRecord('card',{id:tapId});
     }
     if (wasPinch) this.tutorialRecord('zoom');

@@ -866,60 +866,75 @@ body .main-parity-ui .explorer-footer-links button:hover {background:#f2f8f3}
     grid-template-columns:minmax(0,1fr) 370px;
   }
 }
-@media(min-width:651px) and (max-width:900px) {
-  body .main-parity-ui .explorer-stage {
-    display:block;
+
+/* Centered relationship popup for mobile and tablet, including large touch tablets
+   using desktop site mode. Desktop with mouse retains the inspector column. */
+body .main-parity-ui .relationship-explorer-backdrop { display:none; }
+@media(max-width:1100px), (any-pointer:coarse) {
+  body .main-parity-ui .canvas-shell.explorer-modal-open {
+    position:relative;
+    z-index:12;
+  }
+  body .main-parity-ui .explorer-stage.explorer-open {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) !important;
   }
   body .main-parity-ui .explorer-stage > .viewport {
-    position:absolute; inset:0; width:100%; height:100%;
+    grid-column:1;
+    grid-row:1;
+    position:relative;
+    inset:auto;
+    width:100%;
+    height:100%;
+  }
+  body .main-parity-ui .relationship-explorer-backdrop {
+    display:block;
+    position:fixed;
+    inset:0;
+    z-index:80;
+    background:rgba(14,31,20,.34);
+    -webkit-backdrop-filter:blur(1.5px);
+    backdrop-filter:blur(1.5px);
   }
   body .main-parity-ui .explorer-stage > .relationship-explorer {
-    position:absolute; z-index:9; top:8px;right:8px;bottom:8px;left:auto;
-    height:auto; width:min(350px,calc(100% - 16px));
-    border:1px solid #d7e8d9; border-radius:16px;
-    box-shadow:0 14px 46px #25432c2a;
+    position:fixed;
+    z-index:81;
+    top:50%; left:50%; right:auto; bottom:auto;
+    grid-row:auto; grid-column:auto;
+    transform:translate(-50%,-50%);
+    align-self:auto;
+    width:min(460px,calc(100vw - 36px));
+    height:auto;
+    max-width:calc(100vw - 24px);
+    max-height:min(78dvh,640px);
+    min-height:0;
+    border:1px solid #dceadd;
+    border-radius:19px;
+    box-shadow:0 24px 75px #0b291b40;
+    background:#fff;
+    overflow:hidden;
   }
+  body .main-parity-ui .explorer-main-content { min-height:0; overflow-y:auto; }
+  body .main-parity-ui .explorer-footer {flex:none;}
 }
 @media(max-width:650px) {
-  body .main-parity-ui .explorer-stage {
-    display:block;
-  }
-  body .main-parity-ui .explorer-stage > .viewport {
-    position:absolute; inset:0; width:100%; height:100%;
-  }
   body .main-parity-ui .explorer-stage > .relationship-explorer {
-    position:absolute; z-index:9;
-    bottom:0; left:0; right:0; top:auto;
-    width:100%; max-width:100%; height:min(61%,480px); max-height:calc(100% - 8px);
-    border:1px solid #dceadd; border-bottom:0;
-    border-radius:19px 19px 0 0;
-    box-shadow:0 -14px 42px #1b3d2829;
-    transition:height .2s ease;
+    width:calc(100vw - 28px);
+    max-height:min(72dvh,555px);
+    border-radius:17px;
   }
-  body .main-parity-ui .explorer-stage > .relationship-explorer.explorer-expanded {
-    height:calc(100% - 8px); max-height:calc(100% - 8px);
+  body .main-parity-ui .explorer-header {padding:12px 14px 6px;}
+  body .main-parity-ui .explorer-person {padding:5px 14px 11px;gap:10px;}
+  body .main-parity-ui .explorer-person > .person-photo {width:43px;height:43px;font-size:13px;}
+  body .main-parity-ui .explorer-person-text h2 {font-size:14px;line-height:1.32;}
+  body .main-parity-ui .explorer-main-content {padding:10px 14px 12px;}
+  body .main-parity-ui .explorer-footer {padding:10px 14px 12px;}
+  body .main-parity-ui .explorer-focus {min-height:39px;}
+}
+@media(max-height:560px) {
+  body .main-parity-ui .explorer-stage > .relationship-explorer {
+    max-height:calc(100dvh - 30px);
   }
-  body .main-parity-ui .explorer-stage > .relationship-explorer.explorer-compact {
-    height:155px; max-height:calc(100% - 8px);
-  }
-  body .main-parity-ui .explorer-sheet-handle {
-    display:flex;justify-content:center; flex:none;
-    height:22px; touch-action:none;
-  }
-  body .main-parity-ui .explorer-grab-button {
-    display:grid;place-items:center; width:100%;height:100%;
-    border:0;background:transparent;
-  }
-  body .main-parity-ui .explorer-grab-button span {
-    width:36px;height:4px;border-radius:999px;background:#bfd1c3;
-  }
-  body .main-parity-ui .explorer-header {padding:2px 14px 9px}
-  body .main-parity-ui .explorer-person {padding:6px 14px 13px}
-  body .main-parity-ui .explorer-main-content {padding:11px 14px}
-  body .main-parity-ui .explorer-footer {padding:9px 14px max(11px,env(safe-area-inset-bottom,0px))}
-  body .main-parity-ui .relationship-explorer.explorer-compact .explorer-main-content,
-  body .main-parity-ui .relationship-explorer.explorer-compact .explorer-footer {display:none}
-  body .main-parity-ui .explorer-branches {padding-bottom:8px}
 }
 @media(prefers-reduced-motion:reduce) {
   body .main-parity-ui .explorer-stage > .relationship-explorer,
@@ -939,4 +954,15 @@ body .main-parity-ui .scene .node.focus-person {
 @media(min-width:901px){
   body .main-parity-ui .explorer-stage.explorer-open > .viewport {grid-column:1;grid-row:1}
   body .main-parity-ui .explorer-stage.explorer-open > .relationship-explorer {grid-column:2;grid-row:1}
+}
+
+/* Explicitly cancel desktop grid coordinates on touch devices whose browser
+   reports a wide desktop-mode viewport. Also retain true fullscreen mode. */
+@media(max-width:1100px), (any-pointer:coarse) {
+  body .main-parity-ui .explorer-stage.explorer-open > .relationship-explorer {
+    grid-column:auto; grid-row:auto;
+  }
+  body .main-parity-ui .canvas-shell.is-fullscreen.explorer-modal-open {
+    position:fixed; z-index:16;
+  }
 }

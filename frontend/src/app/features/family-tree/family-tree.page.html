@@ -204,7 +204,7 @@
         <div class="stat">♢ <strong>{{ store.relationships().length }}</strong> hubungan</div>
       </div>
 
-      <section class="canvas-shell" [class.is-fullscreen]="fullscreen()" aria-label="Family Tree Canvas">
+      <section class="canvas-shell" [class.is-fullscreen]="fullscreen()" [class.explorer-modal-open]="!!quickPerson()" aria-label="Family Tree Canvas">
         <div class="canvas-top">
           <div class="mode-switch" role="group" aria-label="Mode pohon">
             <button type="button" class="mode" [class.active]="store.mode()==='focus'"
@@ -360,20 +360,12 @@
         </div>
 
           @if (quickPerson(); as qp) {
-            <aside #explorerPanel class="relationship-explorer"
-              [class.explorer-expanded]="explorerExpanded()" [class.explorer-compact]="explorerCompact()"
-              role="dialog" [attr.aria-label]="'Jelajahi hubungan '+qp.name"
+            <div class="relationship-explorer-backdrop" aria-hidden="true"
+              (click)="closeExplorer()"></div>
+            <aside #explorerPanel class="relationship-explorer" tabindex="-1"
+              role="dialog" [attr.aria-modal]="isExplorerPopup() ? 'true' : null"
+              [attr.aria-label]="'Jelajahi hubungan '+qp.name"
               (click)="$event.stopPropagation()">
-              <div class="explorer-sheet-handle"
-                (pointerdown)="onExplorerHandleDown($event)"
-                (pointermove)="onExplorerHandleMove($event)"
-                (pointerup)="onExplorerHandleUp($event)"
-                (pointercancel)="onExplorerHandleCancel()">
-                <button type="button" class="explorer-grab-button"
-                  [attr.aria-expanded]="explorerExpanded()"
-                  aria-label="Perluas atau perkecil panel hubungan"
-                  (click)="toggleExplorerSheet()"><span></span></button>
-              </div>
               <div class="explorer-header">
                 <div class="explorer-header-title">
                   <span>♧ JELAJAHI KELUARGA</span>

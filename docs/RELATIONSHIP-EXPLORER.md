@@ -32,10 +32,12 @@ without duplicating the full profile page. It does not mutate Supabase data.
   the canvas occupies the left column and re-centers the inspected node and
   partner cluster without covering tree cards. The inspector deliberately
   avoids legacy Quick Panel position classes.
-- **Tablet 651–900px:** overlay inspector anchored to the right; navigation
-  centers people in the visible region to the left of the overlay.
-- **Mobile <=650px:** bottom sheet, grab to expand/collapse or dismiss;
-  moving to a relative shows the compact state to expose the canvas.
+- **Tablet and mobile** (CSS width <=1100px or coarse touch pointer, including
+  tablet desktop-site mode): a centered, accessible modal popup with a dimmed
+  backdrop, internal scroll area, and sticky footer. No bottom sheet or
+  side overlay. Clicking outside or pressing Escape closes the popup.
+- **Mobile <=650px:** narrower centered popup with a 72dvh maximum height,
+  so users retain spatial context around the modal.
 - Respect `prefers-reduced-motion`, the browser safe area, keyboard focus
   visibility and text wrapping for long family names.
 
@@ -44,7 +46,7 @@ without duplicating the full profile page. It does not mutate Supabase data.
 - `frontend/src/app/features/family-tree/family-tree.page.ts` — inspector
   UI state, history, reveal logic and viewport navigation.
 - `frontend/src/app/features/family-tree/family-tree.page.html` — relationship
-  groups, action controls and responsive sheet.
+  groups, action controls and centered popup.
 - `frontend/src/main-parity.css` — global styles kept outside the Angular
   component size budget.
 - `frontend/src/app/application/family-tree.store.ts` — existing graph,
