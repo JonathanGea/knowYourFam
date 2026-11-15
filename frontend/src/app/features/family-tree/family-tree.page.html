@@ -1,35 +1,33 @@
 <div class="app main-parity-ui family-explorer-page" [class.guide-training]="!!tutorial()">
   <header class="header workspace-global-header">
-    <div class="brand" aria-label="KnowYourFam">
-      <span class="logo" aria-hidden="true">♧</span><span>Know <b>Your</b> Fam</span>
-    </div>
+    <a routerLink="/" class="brand workspace-brand" aria-label="KnowYourFam, ke pohon keluarga">
+      <span class="logo" aria-hidden="true"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg></span><span>Know<span class="brand-weight">Your</span>Fam</span>
+    </a>
     <button type="button" class="workspace-family-button" (click)="openWorkspaceExplorer('settings')"
       [title]="'Kelola '+store.tree().name">
-      <span class="workspace-family-label">Keluarga aktif</span>
-      <strong>{{ store.tree().name }}</strong><span aria-hidden="true">⌄</span>
+      <span class="workspace-family-label">Keluarga</span>
+      <strong>{{ store.tree().name }}</strong><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#chevron-down"></use></svg>
     </button>
     <div class="header-right workspace-header-actions">
       @if (store.tutorialActive()) { <span class="workspace-training-pill">Mode latihan</span> }
-      <button type="button" class="workspace-header-search" (click)="openWorkspaceExplorer('search')" title="Cari anggota" aria-label="Cari anggota">⌕ <span>Cari anggota</span></button>
-      <button type="button" class="btn primary workspace-header-add" (click)="openAdd(store.people().length ? 'child' : 'none')">＋ <span>Tambah</span></button>
-      <a class="workspace-account-link" routerLink="/account" aria-label="Akun" title="Akun">♙</a>
+      <button type="button" class="workspace-header-search" (click)="openWorkspaceExplorer('search')" title="Cari anggota" aria-label="Cari anggota"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#search"></use></svg> <span>Cari anggota</span></button>
+      <button type="button" class="btn primary workspace-header-add" (click)="openAdd(store.people().length ? 'child' : 'none')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg> <span>Tambah anggota</span></button>
+      <a class="workspace-account-link" routerLink="/account" aria-label="Akun" title="Akun"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#user"></use></svg></a>
     </div>
   </header>
 
   <div class="body">
     <nav class="workspace-navigation-rail" aria-label="Navigasi utama">
-      <a routerLink="/" class="rail-link is-active" title="Pohon keluarga" aria-current="page"><span aria-hidden="true">♧</span><small>Pohon</small></a>
-      <a routerLink="/members" class="rail-link" title="Semua anggota"><span aria-hidden="true">☷</span><small>Anggota</small></a>
+      <a routerLink="/" class="rail-link is-active" title="Pohon keluarga" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg><small>Pohon</small></a>
+      <a routerLink="/members" class="rail-link" title="Semua anggota"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#users"></use></svg><small>Anggota</small></a>
       <button type="button" class="rail-link" title="Cari anggota" [class.is-active]="explorerOpen() && explorerTab()==='search'"
-        [attr.aria-pressed]="explorerOpen() && explorerTab()==='search'" (click)="toggleWorkspaceExplorer('search')"><span aria-hidden="true">⌕</span><small>Cari</small></button>
-      <button type="button" class="rail-link" title="Jelajahi cabang keluarga" [class.is-active]="explorerOpen() && explorerTab()==='branches'"
-        [attr.aria-pressed]="explorerOpen() && explorerTab()==='branches'" (click)="toggleWorkspaceExplorer('branches')"><span aria-hidden="true">⑂</span><small>Cabang</small></button>
-      <a routerLink="/guide" class="rail-link" title="Panduan pengguna"><span aria-hidden="true">ⓘ</span><small>Panduan</small></a>
+        [attr.aria-pressed]="explorerOpen() && explorerTab()==='search'" (click)="toggleWorkspaceExplorer('search')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#search"></use></svg><small>Cari</small></button>
+      <a routerLink="/guide" class="rail-link" title="Panduan pengguna"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#book"></use></svg><small>Panduan</small></a>
       <div class="rail-spacer"></div>
       <button type="button" class="rail-link" title="Riwayat eksplorasi" [class.is-active]="explorerOpen() && explorerTab()==='history'"
-        (click)="toggleWorkspaceExplorer('history')"><span aria-hidden="true">↶</span><small>Riwayat</small></button>
+        (click)="toggleWorkspaceExplorer('history')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#history"></use></svg><small>Riwayat</small></button>
       <button type="button" class="rail-link" title="Pengaturan keluarga" [class.is-active]="explorerOpen() && explorerTab()==='settings'"
-        (click)="toggleWorkspaceExplorer('settings')"><span aria-hidden="true">⚙</span><small>Atur</small></button>
+        (click)="toggleWorkspaceExplorer('settings')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#settings"></use></svg><small>Atur</small></button>
     </nav>
 
     @if (explorerOpen()) {
@@ -40,14 +38,14 @@
             <small>JELAJAHI KELUARGA</small>
             <h2>{{ explorerTab()==='search' ? 'Cari anggota' : explorerTab()==='branches' ? 'Cabang keluarga' : explorerTab()==='history' ? 'Riwayat' : 'Pengaturan pohon' }}</h2>
           </div>
-          <button type="button" class="workspace-close-btn" aria-label="Tutup panel" (click)="closeWorkspaceExplorer()">×</button>
+          <button type="button" class="workspace-close-btn" aria-label="Tutup panel" (click)="closeWorkspaceExplorer()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button>
         </div>
         @if (explorerTab()==='search') {
           <label class="workspace-search-field">
-            <span aria-hidden="true">⌕</span>
+            <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#search"></use></svg>
             <input #explorerSearchInput type="search" aria-label="Cari nama anggota" placeholder="Cari nama anggota..."
               [value]="sidebarQuery()" (input)="sidebarQuery.set($any($event.target).value)" autocomplete="off"/>
-            @if (sidebarQuery()) { <button type="button" title="Bersihkan pencarian" aria-label="Hapus pencarian" (click)="sidebarQuery.set('')">×</button> }
+            @if (sidebarQuery()) { <button type="button" title="Bersihkan pencarian" aria-label="Hapus pencarian" (click)="sidebarQuery.set('')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button> }
           </label>
           <p class="workspace-panel-caption">{{ sidebarQuery().trim() ? sidebarMatchCount()+' hasil ditemukan' : 'Keluarga terdekat' }}</p>
           <div class="workspace-explorer-results">
@@ -57,7 +55,7 @@
                   @if (person.photo) { <img [src]="person.photo" alt=""/> } @else { {{ initials(person.name) }} }
                 </span>
                 <span class="workspace-result-copy"><strong>{{ person.name }}</strong><small>{{ yearsOf(person) }}</small></span>
-                <span aria-hidden="true">›</span>
+                <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#chevron-right"></use></svg>
               </button>
             } @empty { <p class="workspace-panel-empty">Tidak ada anggota yang cocok.</p> }
           </div>
@@ -90,7 +88,7 @@
                   <button type="button" class="workspace-branch-pin" [class.is-pinned]="isBranchPinned(branch.key)"
                     [attr.aria-pressed]="isBranchPinned(branch.key)" [title]="isBranchPinned(branch.key) ? 'Lepas pin' : 'Pin cabang'"
                     [attr.aria-label]="isBranchPinned(branch.key) ? 'Lepas pin cabang '+branch.personName : 'Pin cabang '+branch.personName"
-                    (click)="toggleBranchPin(branch.key)">{{ isBranchPinned(branch.key) ? '📌' : '♢' }}</button>
+                    (click)="toggleBranchPin(branch.key)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#pin"></use></svg></button>
                   <button type="button" class="workspace-branch-action" (click)="collapseBranch(branch.key,branch.anchorId)">Ringkas</button>
                 } @else {
                   <button type="button" class="workspace-branch-action" (click)="toggleBranch(branch.key,branch.anchorId)">Buka</button>
@@ -98,26 +96,26 @@
               </div>
             } @empty { <p class="workspace-panel-empty">Belum ada cabang untuk dijelajahi.</p> }
           </div>
-          <button type="button" class="workspace-panel-bottom-link workspace-action-link" (click)="resetBranches()">↻ Reset cabang</button>
+          <button type="button" class="workspace-panel-bottom-link workspace-action-link" (click)="resetBranches()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#reset"></use></svg> Reset cabang</button>
         } @else if (explorerTab()==='history') {
           <p class="workspace-panel-caption">Perpindahan pusat eksplorasi disimpan selama Anda berada di halaman ini.</p>
-          <button type="button" class="workspace-history-item" (click)="returnToMyPerson()"><span aria-hidden="true">◎</span> Kembali ke diri saya</button>
-          <button type="button" class="workspace-history-item" [disabled]="!store.focusHistory().length" (click)="goBackFocus()"><span aria-hidden="true">↶</span> Fokus sebelumnya</button>
+          <button type="button" class="workspace-history-item" (click)="returnToMyPerson()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#target"></use></svg> Kembali ke diri saya</button>
+          <button type="button" class="workspace-history-item" [disabled]="!store.focusHistory().length" (click)="goBackFocus()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#history"></use></svg> Fokus sebelumnya</button>
           <p class="workspace-panel-caption">Person yang sedang dijelajahi: <strong>{{ store.focusPerson()?.name || 'Belum dipilih' }}</strong></p>
         } @else {
           <div class="workspace-settings-group">
             <div class="workspace-panel-section-title">Pohon aktif</div>
             <strong>{{ store.tree().name }}</strong>
             <p>{{ store.people().length }} anggota · {{ store.relationships().length }} hubungan</p>
-            <button type="button" class="workspace-settings-button" (click)="dialog.set('rename')">✎ Ubah nama pohon</button>
-            <button type="button" class="workspace-settings-button" (click)="openLink()">⑂ Hubungkan anggota</button>
-            <button type="button" class="workspace-settings-button" (click)="createNewTree()">＋ Buat pohon baru</button>
+            <button type="button" class="workspace-settings-button" (click)="dialog.set('rename')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#edit"></use></svg> Ubah nama pohon</button>
+            <button type="button" class="workspace-settings-button" (click)="openLink()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#link"></use></svg> Hubungkan anggota</button>
+            <button type="button" class="workspace-settings-button" (click)="createNewTree()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg> Buat pohon baru</button>
             <div class="workspace-panel-section-title">Data dan cadangan</div>
             <input #importFile type="file" accept=".json,application/json" class="hidden-import"
               aria-label="Pilih berkas JSON" (change)="importJson($event)"/>
-            <button type="button" class="workspace-settings-button" (click)="importFile.click()">↑ Impor JSON</button>
-            <button type="button" id="export-btn" class="workspace-settings-button" (click)="downloadLegacyJson()">↓ Ekspor JSON</button>
-            <button type="button" class="workspace-settings-button" (click)="downloadJson()">⇩ Cadangan lengkap</button>
+            <button type="button" class="workspace-settings-button" (click)="importFile.click()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#upload"></use></svg> Impor JSON</button>
+            <button type="button" id="export-btn" class="workspace-settings-button" (click)="downloadLegacyJson()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#download"></use></svg> Ekspor JSON</button>
+            <button type="button" class="workspace-settings-button" (click)="downloadJson()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#download"></use></svg> Cadangan lengkap</button>
             <div class="workspace-panel-section-title">Bantuan</div>
             <a routerLink="/rules" class="workspace-settings-button">Aturan Family Tree</a>
             <a routerLink="/developer" class="workspace-settings-button">Dokumentasi Developer</a>
@@ -231,29 +229,30 @@
       <section class="canvas-shell" [class.is-fullscreen]="fullscreen()" [class.explorer-modal-open]="!!quickPerson()" aria-label="Family Tree Canvas">
         <div class="canvas-top workspace-canvas-toolbar">
           <div class="workspace-canvas-identity">
-            <span class="workspace-canvas-kicker">{{ store.mode()==='overview' ? 'PETA KELUARGA' : 'POHON KELUARGA' }}</span>
-            <strong>{{ store.mode()==='overview' ? 'Struktur seluruh keluarga' : (store.focusPerson()?.name || 'Keluarga Saya') }}</strong>
-            <small>{{ store.visiblePeople().length }} / {{ store.people().length }} anggota · {{ layout().generationCount }} generasi terlihat</small>
+            <strong>{{ store.mode()==='overview' ? 'Peta keluarga' : 'Pohon keluarga' }}</strong>
+            <small>{{ store.mode()==='overview' ? 'Keseluruhan struktur' : ('Menjelajahi '+(store.focusPerson()?.name || 'keluarga')) }} <span class="workspace-meta-separator">·</span> {{ store.visiblePeople().length }} dari {{ store.people().length }} terlihat</small>
           </div>
           <div class="workspace-canvas-toolbar-actions">
             @if (store.mode()==='overview') {
-              <button type="button" class="workspace-map-toggle is-active" (click)="setMode('focus')" title="Kembali menjelajahi keluarga">← Jelajahi pohon</button>
+              <button type="button" class="workspace-map-toggle is-active" (click)="setMode('focus')" title="Kembali menjelajahi keluarga"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#arrow-left"></use></svg> <span>Jelajahi pohon</span></button>
             } @else {
               @if (store.familyOrigins().length>1) {
                 <button type="button" class="workspace-branch-picker" (click)="openWorkspaceExplorer('branches')" title="Pilih keluarga asal">
-                  ⑂ <span>{{ activeOriginName() }}</span> <span aria-hidden="true">⌄</span>
+                  <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#branches"></use></svg> <span>{{ activeOriginName() }}</span> <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#chevron-down"></use></svg>
                 </button>
               }
-              <button type="button" class="workspace-map-toggle" (click)="setMode('overview')" title="Lihat peta seluruh keluarga">▦ <span>Peta keluarga</span></button>
+              <button type="button" class="workspace-map-toggle" (click)="setMode('overview')" title="Lihat peta seluruh keluarga"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#map"></use></svg> <span>Peta keluarga</span></button>
             }
             <div class="canvas-ops">
-              <button type="button" id="zoom-out" class="btn icon" aria-label="Perkecil" (click)="zoomBy(-0.1)">−</button>
+              <button type="button" id="zoom-out" class="btn icon" aria-label="Perkecil" (click)="zoomBy(-0.1)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#minus"></use></svg></button>
               <span id="zoom-value" class="zoom-info">{{ (store.zoom()*100).toFixed(0) }}%</span>
-              <button type="button" id="zoom-in" class="btn icon" aria-label="Perbesar" (click)="zoomBy(0.1)">＋</button>
-              <button type="button" id="fit-btn" class="btn icon" (click)="fitCanvasFromToolbar()" aria-label="Sesuaikan tampilan" title="Pas seluruh area">⛶</button>
+              <button type="button" id="zoom-in" class="btn icon" aria-label="Perbesar" (click)="zoomBy(0.1)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg></button>
+              <button type="button" id="fit-btn" class="btn icon" (click)="fitCanvasFromToolbar()" aria-label="Sesuaikan tampilan" title="Pas seluruh area"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#maximize"></use></svg></button>
               <button type="button" id="fullscreen-btn" class="btn icon" (click)="toggleFullscreen()"
                 [attr.aria-label]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'"
-                [attr.title]="fullscreen() ? 'Tutup layar penuh' : 'Perbesar kanvas'">{{ fullscreen() ? '×' : '⤢' }}</button>
+                [attr.title]="fullscreen() ? 'Tutup layar penuh' : 'Perbesar kanvas'">
+                  @if (fullscreen()) { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#minimize"></use></svg> } @else { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#maximize"></use></svg> }
+              </button>
             </div>
           </div>
         </div>
@@ -261,7 +260,7 @@
           <div class="workspace-collapse-notice" role="status">
             <span>Cabang {{ notice.personName }} diringkas agar pohon lebih mudah dijelajahi.</span>
             <button type="button" (click)="undoAutoCollapse()">Urungkan</button>
-            <button type="button" aria-label="Tutup pemberitahuan" (click)="collapseNotice.set(null)">×</button>
+            <button type="button" aria-label="Tutup pemberitahuan" (click)="collapseNotice.set(null)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button>
           </div>
         }
         <div class="explorer-stage" [class.explorer-open]="!!quickPerson()">
@@ -289,7 +288,6 @@
               <div class="lane-label" [style.top.px]="76+tier*181-22">
                 <div class="lane-number">{{ (tier+1).toString().padStart(2,'0') }}</div>
                 <div class="lane-name">Generasi {{ tier+1 }}</div>
-                <div class="lane-description">Generasi {{ tier+1 }}</div>
               </div>
             }
             <svg class="connections" [attr.width]="layout().width" [attr.height]="layout().height"
@@ -335,10 +333,7 @@
                     <span class="node-years">{{ yearsOf(node.person) }}</span>
                   </span>
                 </span>
-                <span class="node-bottom" [class.self]="node.person.claimed">
-                  <span>{{ node.person.claimed ? 'Profil saya' : 'Lihat anggota' }}</span>
-                  <span aria-hidden="true">›</span>
-                </span>
+                @if (node.person.claimed) { <span class="node-self-tag">Akun saya</span> }
               </button>
             }
             @for (control of branchControls(); track control.key) {
@@ -349,18 +344,23 @@
                 [style.left.px]="control.left" [style.top.px]="control.top"
                 [attr.title]="control.label" [attr.aria-label]="control.label"
                 (click)="$event.stopPropagation();toggleBranch(control.key,control.anchorId)">
-                {{ control.symbol }} <span class="branch-count">{{ control.open && !control.hidden ? '−' : control.hidden }}</span>
-                @if (isBranchPinned(control.key)) { <span class="workspace-pin-indicator" aria-label="Cabang dipertahankan">•</span> }
+                @switch (control.symbol) {
+                  @case ('↑') { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#arrow-up"></use></svg> }
+                  @case ('↔') { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#branches"></use></svg> }
+                  @default { <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#arrow-down"></use></svg> }
+                }
+                <span class="branch-count">{{ control.open && !control.hidden ? '−' : control.hidden }}</span>
+                @if (isBranchPinned(control.key)) { <span class="workspace-pin-indicator" aria-label="Cabang dipertahankan"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#pin"></use></svg></span> }
               </button>
             }
           </div>
           @if (!onboardingDismissed() && !tutorial() && store.people().length>0) {
             <div class="guide-onboard" role="region" aria-label="Panduan untuk pengguna baru">
               <div class="guide-onboard-head">
-                <span style="font-size:20px" aria-hidden="true">♧</span>
+                <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg>
                 <b>Baru menggunakan KnowYourFam?</b>
                 <button type="button" class="guide-close" aria-label="Tutup ajakan tutorial"
-                  (click)="$event.stopPropagation();dismissOnboarding()">✕</button>
+                  (click)="$event.stopPropagation();dismissOnboarding()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#close"></use></svg></button>
               </div>
               <p>Pelajari cara membuat dan menjelajahi silsilah. Latihan aman dan tidak mengubah keluarga asli.</p>
               <div class="guide-onboard-actions">
@@ -370,7 +370,7 @@
             </div>
           }
           <div class="workspace-canvas-footer">
-            <button type="button" class="workspace-return-button" (click)="$event.stopPropagation();returnToMyPerson()" title="Kembali ke diri saya">◎ <span>Ke diri saya</span></button>
+            <button type="button" class="workspace-return-button" (click)="$event.stopPropagation();returnToMyPerson()" title="Kembali ke diri saya"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#target"></use></svg> <span>Ke diri saya</span></button>
             <span class="workspace-gesture-hint">Geser untuk menjelajah · Cubit untuk zoom</span>
           </div>
           <button type="button" class="tree-help-button" aria-label="Buka panduan garis dan navigasi"
@@ -496,19 +496,19 @@
     </main>
   </div>
   <nav class="mobile-nav workspace-mobile-navigation" aria-label="Menu bawah">
-    <a class="active" routerLink="/"><span>♧</span>Pohon</a>
-    <a routerLink="/members"><span>☷</span>Anggota</a>
-    <button type="button" (click)="openWorkspaceExplorer('search')"><span>⌕</span>Cari</button>
+    <a class="active" routerLink="/"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg>Pohon</a>
+    <a routerLink="/members"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#users"></use></svg>Anggota</a>
+    <button type="button" (click)="openWorkspaceExplorer('search')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#search"></use></svg>Cari</button>
     <button type="button" (click)="mobileMenuOpen.set(!mobileMenuOpen())"
-      [attr.aria-expanded]="mobileMenuOpen()"><span>☰</span>Lainnya</button>
+      [attr.aria-expanded]="mobileMenuOpen()"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#menu"></use></svg>Lainnya</button>
   </nav>
   @if (mobileMenuOpen()) {
     <div class="mobile-menu-popover workspace-mobile-more">
-      <button type="button" (click)="mobileMenuOpen.set(false);openWorkspaceExplorer('branches')">⑂ Jelajahi cabang</button>
-      <button type="button" (click)="mobileMenuOpen.set(false);openAdd(store.people().length ? 'child':'none')">＋ Tambah anggota</button>
-      <button type="button" (click)="mobileMenuOpen.set(false);openWorkspaceExplorer('history')">↶ Riwayat eksplorasi</button>
-      <button type="button" (click)="mobileMenuOpen.set(false);openWorkspaceExplorer('settings')">⚙ Pengaturan pohon</button>
-      <a routerLink="/guide">◉ Panduan Pengguna</a>
+      <button type="button" (click)="mobileMenuOpen.set(false);openWorkspaceExplorer('branches')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#branches"></use></svg> Jelajahi cabang</button>
+      <button type="button" (click)="mobileMenuOpen.set(false);openAdd(store.people().length ? 'child':'none')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg> Tambah anggota</button>
+      <button type="button" (click)="mobileMenuOpen.set(false);openWorkspaceExplorer('history')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#history"></use></svg> Riwayat eksplorasi</button>
+      <button type="button" (click)="mobileMenuOpen.set(false);openWorkspaceExplorer('settings')"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#settings"></use></svg> Pengaturan pohon</button>
+      <a routerLink="/guide"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#book"></use></svg> Panduan Pengguna</a>
     </div>
   }
 </div>

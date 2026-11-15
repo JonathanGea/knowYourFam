@@ -1,26 +1,26 @@
 <div class="app main-parity-ui family-workspace-page family-profile-page">
   <header class="header family-page-header">
     <a class="brand family-page-brand" routerLink="/" aria-label="KnowYourFam — Pohon Keluarga">
-      <span class="logo" aria-hidden="true">♧</span><span>Know <b>Your</b> Fam</span>
+      <span class="logo" aria-hidden="true"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg></span><span>Know<span class="brand-weight">Your</span>Fam</span>
     </a>
     <a routerLink="/" class="family-page-tree-name" [title]="store.tree().name">
       <span>Keluarga</span><strong>{{ store.tree().name }}</strong>
     </a>
     <div class="header-right family-page-header-actions">
-      <a routerLink="/" class="family-page-return">◎ <span>Jelajahi pohon</span></a>
-      <a routerLink="/account" class="family-page-account" aria-label="Akun" title="Akun">♙</a>
+      <a routerLink="/" class="family-page-return"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#target"></use></svg> <span>Jelajahi pohon</span></a>
+      <a routerLink="/account" class="family-page-account" aria-label="Akun" title="Akun"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#user"></use></svg></a>
     </div>
   </header>
 
   <div class="body">
     <nav class="family-page-rail" aria-label="Navigasi utama">
-      <a routerLink="/" class="family-page-rail-link" title="Pohon keluarga"><span aria-hidden="true">♧</span><small>Pohon</small></a>
-      <a routerLink="/members" class="family-page-rail-link is-active" title="Semua anggota" aria-current="page"><span aria-hidden="true">☷</span><small>Anggota</small></a>
-      <a routerLink="/guide" class="family-page-rail-link" title="Panduan pengguna"><span aria-hidden="true">ⓘ</span><small>Panduan</small></a>
-      <a routerLink="/rules" class="family-page-rail-link" title="Aturan Family Tree"><span aria-hidden="true">▤</span><small>Aturan</small></a>
+      <a routerLink="/" class="family-page-rail-link" title="Pohon keluarga"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg><small>Pohon</small></a>
+      <a routerLink="/members" class="family-page-rail-link is-active" title="Semua anggota" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#users"></use></svg><small>Anggota</small></a>
+      <a routerLink="/guide" class="family-page-rail-link" title="Panduan pengguna"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#book"></use></svg><small>Panduan</small></a>
+      <a routerLink="/rules" class="family-page-rail-link" title="Aturan Family Tree"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#book"></use></svg><small>Aturan</small></a>
       <div class="family-page-rail-spacer"></div>
-      <a routerLink="/developer" class="family-page-rail-link" title="Dokumentasi Developer"><span aria-hidden="true">⌘</span><small>Dev</small></a>
-      <a routerLink="/account" class="family-page-rail-link" title="Pengaturan akun"><span aria-hidden="true">♙</span><small>Akun</small></a>
+      <a routerLink="/developer" class="family-page-rail-link" title="Dokumentasi Developer"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#file"></use></svg><small>Dev</small></a>
+      <a routerLink="/account" class="family-page-rail-link" title="Pengaturan akun"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#user"></use></svg><small>Akun</small></a>
     </nav>
 
     <main class="main family-page-main">
@@ -168,10 +168,10 @@
     </main>
   </div>
   <nav class="mobile-nav family-page-mobile-navigation" aria-label="Menu bawah">
-    <a routerLink="/" ><span>♧</span>Pohon</a>
-    <a routerLink="/members" class="active"><span>☷</span>Anggota</a>
-    <a routerLink="/guide" ><span>ⓘ</span>Panduan</a>
-    <a routerLink="/rules" ><span>▤</span>Aturan</a>
+    <a routerLink="/" ><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#tree"></use></svg>Pohon</a>
+    <a routerLink="/members" class="active"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#users"></use></svg>Anggota</a>
+    <a routerLink="/guide" ><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#book"></use></svg>Panduan</a>
+    <a routerLink="/rules" ><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#book"></use></svg>Aturan</a>
   </nav>
 
 </div>
