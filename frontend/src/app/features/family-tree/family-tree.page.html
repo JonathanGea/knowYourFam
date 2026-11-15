@@ -391,14 +391,13 @@
 </div>
 
 @if (detailsOpen()) {
-  <div class="shade show" (click)="closePersonDrawer()"></div>
+  <div class="shade show" (click)="onDrawerShadeClick()"></div>
   <aside class="drawer open" [class.expanded]="drawerExpanded()" id="person-inspector"
     aria-label="Detail anggota">
     <div class="sheet-grab-zone"
       (pointerdown)="onDrawerGrabDown($event)"
       (pointerup)="onDrawerGrabUp($event)"
-      (pointercancel)="onDrawerGrabCancel()"
-      (lostpointercapture)="onDrawerGrabCancel()">
+      (pointercancel)="onDrawerGrabCancel()">
       <button type="button" class="sheet-grab"
         aria-label="Perbesar atau perkecil panel profil"
         (click)="toggleDrawerExpanded()"><span></span></button>

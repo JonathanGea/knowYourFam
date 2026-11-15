@@ -646,6 +646,18 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.drawerStart=null;
   }
 
+  // Pointer capture is best-effort; if the swipe ends outside the drawer,
+  // finish it via document instead of losing the gesture.
+  @HostListener('document:pointerup', ['$event'])
+  onDrawerDocumentPointerUp(event: PointerEvent): void {
+    if(this.drawerStart)this.onDrawerGrabUp(event);
+  }
+
+  onDrawerShadeClick():void {
+    // Releasing an upward drag over the backdrop must not close the sheet.
+    if(performance.now()>=this.suppressDrawerGrabClickUntil)this.closePersonDrawer();
+  }
+
   yearsOf(person: Person): string {
     if (!person.birthDate && !person.deathDate) return 'Tahun belum diisi';
     return (person.birthDate?.slice(0, 4) ?? '—') +

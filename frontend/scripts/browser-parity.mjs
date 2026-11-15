@@ -178,6 +178,14 @@ try{
        await angular.mouse.up();
      };
      await swipeAngular(-80);
+     if(!(await angular.locator('.drawer.expanded').count())){
+       console.error('Angular real swipe state:',
+         await angular.evaluate(()=>({
+           open:!!document.querySelector('.drawer.open'),
+           expanded:!!document.querySelector('.drawer.expanded'),
+           elementAtHandle:document.elementFromPoint(window.innerWidth/2,260)?.className
+         })));
+     }
      assert.ok(await angular.locator('.drawer.expanded').count(),
        'Real up-swipe must expand Angular sheet without click toggling it back');
      await swipeAngular(90);
