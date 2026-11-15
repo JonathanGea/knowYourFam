@@ -133,3 +133,30 @@ When ready, implement a Supabase adapter **behind the same repository interface*
 - Never modify/merge to `main` without explicit instruction.
 - Keep the old root `index.html` as reference; it still supports the independent HTML/JSON developer.
 - CI config: `.github/workflows/angular-dev.yml`.
+
+## Person database mode — Supabase
+
+The Angular `FamilyTreeRepository` now selects Supabase whenever a verified
+Supabase Auth session exists. Guest mode keeps the existing localStorage demo
+so main/Angular parity and tutorial mode remain available.
+
+1. Open `/cloud`, enter an email, then open its magic link.
+2. In Supabase Dashboard → Authentication → URL Configuration, allow the
+   Railway application origin and `http://localhost:4200` under Redirect URLs.
+   Set the Site URL to the production origin when deploying.
+3. Login returns to `/`. Your cloud Family Tree is initially empty; create
+   Person nodes and relationships directly in the existing Angular canvas.
+4. The existing Import JSON action can explicitly import a demo export into
+   cloud storage, but guest data is never uploaded automatically.
+5. Sign out using `/cloud` (the page reload prevents stale in-memory data).
+
+The frontend contains ONLY the publishable API key, never a secret or
+database password. The database enforces authenticated/owner RLS.
+Authorization roles and collaboration workflows remain future work.
+
+**MVP limitations:** saves use multiple requests, not a transaction;
+simultaneous edits are not conflict-safe. Compressed profile image data URLs
+are temporarily written to the existing text field; move images to private
+Supabase Storage before public launch. An error in signed-in mode never
+silently falls back to localStorage. Apply the SQL migration in
+`database/migration/V2__relationships_soft_delete_owner.sql` for archive support.
