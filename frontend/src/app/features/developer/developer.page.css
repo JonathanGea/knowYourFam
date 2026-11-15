@@ -17,3 +17,16 @@
 @media(max-width:650px){.main-parity-ui .mobile-nav{display:flex}
   .main-parity-ui .dev-hero{padding:19px}
   .main-parity-ui .dev-grid{grid-template-columns:1fr}}
+
+/* Technical reference remains readable on narrow tablets and phones. */
+.main-parity-ui .dev-toc a { flex:none; white-space:nowrap; }
+.main-parity-ui .dev-panel-head { min-width:0; }
+.main-parity-ui .dev-panel-head h3 { overflow-wrap:anywhere; }
+.main-parity-ui .dev-panel-body pre { max-width:100%; }
+@media(max-width:650px) {
+  .main-parity-ui .heading,
+  .main-parity-ui .dev-panel-head { flex-wrap:wrap; }
+  .main-parity-ui .dev-hero h2 { overflow-wrap:anywhere; }
+  .main-parity-ui .dev-hero-actions .btn { white-space:normal; text-align:center; }
+  .main-parity-ui .dev-panel { min-width:0; }
+}

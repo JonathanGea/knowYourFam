@@ -551,3 +551,25 @@ box-shadow:0 8px 20px rgb(33 83 50 / 7%);border:1px solid #e3ede0;border-radius:
   .main-parity-ui .training-profile .profile-stats {grid-template-columns:repeat(4,minmax(0,1fr))}
   .main-parity-ui .training-profile .profile-fields {grid-template-columns:1fr}
 }
+
+/* Floating controls must coexist with the help icon and mobile navigation. */
+.main-parity-ui .tree-help-panel {
+  max-height:min(70dvh,440px); overflow-y:auto; overscroll-behavior:contain;
+}
+.main-parity-ui .guide-onboard {
+  bottom:57px; max-height:min(52dvh,340px);
+  overflow-y:auto; overscroll-behavior:contain;
+}
+.main-parity-ui .mobile-menu-popover {
+  max-height:min(65dvh,440px); overflow-y:auto; overscroll-behavior:contain;
+}
+@media(max-width:650px) {
+  .main-parity-ui .guide-onboard { bottom:53px; right:8px; }
+  .main-parity-ui .quick-panel.main-angular-quick {
+    max-height:min(68%,calc(100dvh - 230px));
+    overflow-y:auto; overscroll-behavior:contain;
+  }
+  .main-parity-ui .mobile-menu-popover {
+    bottom:calc(65px + env(safe-area-inset-bottom,0px));
+  }
+}

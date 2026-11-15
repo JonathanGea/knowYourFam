@@ -110,3 +110,10 @@ form input::placeholder{color:#98a99c}
     margin-bottom:26px;
   }
 }
+
+/* On a short desktop viewport the absolute footer could overlap register. */
+@media(min-width:801px) {
+  .auth-main { min-height:100dvh; justify-content:flex-start; }
+  .auth-card { margin:auto 0; }
+  .auth-footer { position:static; margin-top:24px; line-height:1.5; }
+}

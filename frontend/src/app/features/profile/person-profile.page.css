@@ -30,3 +30,25 @@
   .main-parity-ui .profile-hero>.person-photo{width:70px;height:70px;border-radius:16px;font-size:19px}
   .main-parity-ui .profile-hero-actions{width:100%}
 }
+
+/* One scroll owner and safe text wrapping for long family names/biodata. */
+.main-parity-ui .person-page.active { overflow:visible; min-width:0; }
+.main-parity-ui .profile-identity { min-width:0; flex:1; overflow-wrap:anywhere; }
+.main-parity-ui .profile-identity h2,
+.main-parity-ui .profile-field strong { overflow-wrap:anywhere; }
+.main-parity-ui .profile-relation-row { min-width:0; }
+.main-parity-ui .profile-relation-row a { min-width:0; overflow-wrap:anywhere; }
+.main-parity-ui .profile-relation-row .btn { flex:none; }
+.main-parity-ui .couple-actions { flex-wrap:wrap; }
+.main-parity-ui .profile-tabs { min-width:0; }
+.main-parity-ui .profile-tab { min-width:0; flex:1; }
+@media(max-width:650px) {
+  .main-parity-ui .heading { flex-wrap:wrap; }
+  .main-parity-ui .profile-hero { flex-wrap:wrap; }
+  .main-parity-ui .profile-hero-actions .btn {
+    flex:1 1 130px; white-space:normal; text-align:center;
+  }
+  .main-parity-ui .profile-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .main-parity-ui .profile-fields { grid-template-columns:minmax(0,1fr); }
+  .main-parity-ui .profile-breadcrumb { flex-wrap:wrap; }
+}
