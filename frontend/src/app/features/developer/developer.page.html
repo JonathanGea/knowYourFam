@@ -1,28 +1,29 @@
-<div class="app main-parity-ui">
-  <header class="header">
-    <a class="brand" routerLink="/" style="color:inherit;text-decoration:none"><span class="logo">♧</span>Know <b>Your</b> Fam</a>
-    <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
-    <div class="header-right"><span class="save-indicator">Dokumentasi internal sementara</span>
-      <a routerLink="/" class="btn">♧ Pohon keluarga</a></div>
+<div class="app main-parity-ui family-workspace-page family-developer-page">
+  <header class="header family-page-header">
+    <a class="brand family-page-brand" routerLink="/" aria-label="KnowYourFam — Pohon Keluarga">
+      <span class="logo" aria-hidden="true">♧</span><span>Know <b>Your</b> Fam</span>
+    </a>
+    <a routerLink="/" class="family-page-tree-name" [title]="store.tree().name">
+      <span>Keluarga</span><strong>{{ store.tree().name }}</strong>
+    </a>
+    <div class="header-right family-page-header-actions">
+      <a routerLink="/" class="family-page-return">◎ <span>Jelajahi pohon</span></a>
+      <a routerLink="/account" class="family-page-account" aria-label="Akun" title="Akun">♙</a>
+    </div>
   </header>
+
   <div class="body">
-    <aside class="side">
-      <div class="side-title">Menu utama</div>
-      <a class="nav" routerLink="/">♧ &nbsp;Pohon keluarga</a>
-      <a class="nav" routerLink="/members">☷ &nbsp;Semua anggota</a>
-      <a class="nav" routerLink="/guide">◉ &nbsp;Panduan Pengguna</a>
-      <a class="nav" routerLink="/rules">▤ &nbsp;Aturan Family Tree</a>
-      <a class="nav active" routerLink="/developer">⌘ &nbsp;Dokumentasi Developer</a>
-      <div class="side-separator"></div>
-      <div class="side-title">Pohon aktif</div>
-      <div class="family-chip"><div class="family-icon">♧</div><div><strong>{{ store.tree().name }}</strong><small>Family Tree</small></div></div>
-    </aside>
-    <main class="main">
-      <div class="heading">
-        <div><div class="eyebrow">Ruang keluarga</div><h1>Dokumentasi Developer</h1>
-          <p>Referensi implementasi HTML main — canvas, layout, hubungan, rendering, dan interaksi.</p>
-        </div>
-      </div>
+    <nav class="family-page-rail" aria-label="Navigasi utama">
+      <a routerLink="/" class="family-page-rail-link" title="Pohon keluarga"><span aria-hidden="true">♧</span><small>Pohon</small></a>
+      <a routerLink="/members" class="family-page-rail-link" title="Semua anggota"><span aria-hidden="true">☷</span><small>Anggota</small></a>
+      <a routerLink="/guide" class="family-page-rail-link" title="Panduan pengguna"><span aria-hidden="true">ⓘ</span><small>Panduan</small></a>
+      <a routerLink="/rules" class="family-page-rail-link" title="Aturan Family Tree"><span aria-hidden="true">▤</span><small>Aturan</small></a>
+      <div class="family-page-rail-spacer"></div>
+      <a routerLink="/developer" class="family-page-rail-link is-active" title="Dokumentasi Developer" aria-current="page"><span aria-hidden="true">⌘</span><small>Dev</small></a>
+      <a routerLink="/account" class="family-page-rail-link" title="Pengaturan akun"><span aria-hidden="true">♙</span><small>Akun</small></a>
+    </nav>
+
+    <main class="main family-page-main">
       <section class="rules-page developer-page active" aria-label="Dokumentasi teknis developer">
         <div class="dev-wrap">
           <header class="dev-hero">
@@ -94,10 +95,11 @@
       </section>
     </main>
   </div>
-  <nav class="mobile-nav" aria-label="Menu bawah">
-    <a routerLink="/"><span>♧</span>Pohon</a>
-    <a routerLink="/members"><span>☷</span>Anggota</a>
-    <a routerLink="/guide"><span>◉</span>Panduan</a>
-    <a routerLink="/rules"><span>▤</span>Aturan</a>
+  <nav class="mobile-nav family-page-mobile-navigation" aria-label="Menu bawah">
+    <a routerLink="/" ><span>♧</span>Pohon</a>
+    <a routerLink="/members" ><span>☷</span>Anggota</a>
+    <a routerLink="/guide" ><span>ⓘ</span>Panduan</a>
+    <a routerLink="/rules" ><span>▤</span>Aturan</a>
   </nav>
+
 </div>

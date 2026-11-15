@@ -1,0 +1,108 @@
+/* Consistent authenticated-page shell for members, guide, rules, profile and developer.
+ * Scoped: login/register screens retain their dedicated auth layout.
+ */
+body .main-parity-ui.family-workspace-page{
+  --family-line:#e2eae3;--family-ink:#2b4b38;--family-muted:#7d9183;
+  display:flex;flex-direction:column;min-height:0;height:100dvh;background:#f8faf8
+}
+body .main-parity-ui.family-workspace-page .family-page-header{
+  display:flex;align-items:center;flex:none;height:60px;min-height:60px;
+  padding:0 20px;gap:16px;background:#fff;border-bottom:1px solid var(--family-line)
+}
+body .main-parity-ui.family-workspace-page .family-page-brand{
+  display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#294635;
+  font-weight:850;font-size:18px;letter-spacing:-.5px;white-space:nowrap
+}
+body .main-parity-ui.family-workspace-page .family-page-tree-name{
+  display:flex;align-items:center;gap:9px;min-width:0;max-width:40vw;
+  border-left:1px solid var(--family-line);padding:6px 12px;
+  text-decoration:none;color:#536c5b;font-size:11px
+}
+body .main-parity-ui.family-workspace-page .family-page-tree-name span{color:#88998e}
+body .main-parity-ui.family-workspace-page .family-page-tree-name strong{
+  min-width:0;color:#2e4f3b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px
+}
+body .main-parity-ui.family-workspace-page .family-page-header-actions{
+  margin-left:auto;display:flex;align-items:center;gap:8px
+}
+body .main-parity-ui.family-workspace-page .family-page-return,
+body .main-parity-ui.family-workspace-page .family-page-account{
+  min-height:36px;display:inline-flex;align-items:center;justify-content:center;
+  gap:7px;padding:0 11px;border:1px solid var(--family-line);
+  border-radius:10px;text-decoration:none;color:#355d43;background:#fff;
+  font-size:12px;font-weight:750
+}
+body .main-parity-ui.family-workspace-page .family-page-account{width:38px;font-size:18px}
+body .main-parity-ui.family-workspace-page .body{
+  display:flex;grid-template-columns:none;min-width:0;min-height:0;flex:1;padding:0
+}
+body .main-parity-ui.family-workspace-page .family-page-rail{
+  display:flex;flex-direction:column;gap:6px;align-items:stretch;flex:0 0 68px;width:68px;
+  background:#fff;padding:13px 8px 12px;border-right:1px solid var(--family-line);min-height:0
+}
+body .main-parity-ui.family-workspace-page .family-page-rail-link{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  min-height:54px;gap:4px;border-radius:11px;background:transparent;
+  text-decoration:none;color:#7d8c81;padding:7px 2px
+}
+body .main-parity-ui.family-workspace-page .family-page-rail-link span{font-size:20px;line-height:1}
+body .main-parity-ui.family-workspace-page .family-page-rail-link small{font-size:9px;font-weight:760}
+body .main-parity-ui.family-workspace-page .family-page-rail-link.is-active,
+body .main-parity-ui.family-workspace-page .family-page-rail-link:hover{
+  background:#eaf4ec;color:#225f42
+}
+body .main-parity-ui.family-workspace-page .family-page-rail-spacer{flex:1}
+body .main-parity-ui.family-workspace-page .family-page-main{
+  flex:1;min-width:0;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  padding:28px clamp(15px,3vw,44px) 46px;display:block;background:#f8faf8
+}
+body .main-parity-ui.family-workspace-page .family-page-main>.heading{margin:0 0 20px}
+body .main-parity-ui.family-workspace-page .family-page-main>.heading h1{
+  font-size:clamp(22px,2.5vw,29px);letter-spacing:-.8px
+}
+body .main-parity-ui.family-workspace-page .family-page-main>.stats{
+  margin:0 0 17px;display:flex;gap:8px
+}
+body .main-parity-ui.family-workspace-page .family-page-main>.stats .stat{min-height:36px}
+body .main-parity-ui.family-workspace-page.family-profile-page .person-page{
+  margin:0 auto;max-width:1180px;
+}
+body .main-parity-ui.family-workspace-page.family-developer-page .developer-page{
+  margin:0 auto;max-width:1400px
+}
+body .main-parity-ui.family-workspace-page .family-page-mobile-navigation{display:none}
+@media(max-width:899px){
+  body .main-parity-ui.family-workspace-page .family-page-rail{display:none}
+  body .main-parity-ui.family-workspace-page .body{padding:0 0 58px}
+  body .main-parity-ui.family-workspace-page .family-page-header{
+    height:56px;min-height:56px;padding:0 13px;gap:9px
+  }
+  body .main-parity-ui.family-workspace-page .family-page-main{padding:19px 13px 26px}
+  body .main-parity-ui.family-workspace-page .family-page-tree-name{max-width:32vw;padding:5px 9px}
+  body .main-parity-ui.family-workspace-page .family-page-tree-name span{display:none}
+  body .main-parity-ui.family-workspace-page .family-page-mobile-navigation{
+    display:flex;position:fixed;z-index:50;bottom:0;left:0;right:0;height:58px;
+    border-top:1px solid var(--family-line);background:#fff;
+    align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom,0px)
+  }
+  body .main-parity-ui.family-workspace-page .family-page-mobile-navigation a{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    text-decoration:none;color:#829387;font-size:10px;font-weight:750
+  }
+  body .main-parity-ui.family-workspace-page .family-page-mobile-navigation a.active{color:#205d40}
+  body .main-parity-ui.family-workspace-page .family-page-mobile-navigation a span{font-size:20px}
+}
+@media(max-width:650px){
+  body .main-parity-ui.family-workspace-page .family-page-header{height:54px;min-height:54px;gap:6px}
+  body .main-parity-ui.family-workspace-page .family-page-brand{font-size:15px;gap:5px}
+  body .main-parity-ui.family-workspace-page .family-page-brand .logo{width:28px;height:28px}
+  body .main-parity-ui.family-workspace-page .family-page-tree-name{max-width:33vw;padding:5px}
+  body .main-parity-ui.family-workspace-page .family-page-tree-name strong{font-size:10px}
+  body .main-parity-ui.family-workspace-page .family-page-return{border:0;padding:0 4px;min-height:32px}
+  body .main-parity-ui.family-workspace-page .family-page-return span{display:none}
+  body .main-parity-ui.family-workspace-page .family-page-account{border:0;width:26px;padding:0}
+  body .main-parity-ui.family-workspace-page .family-page-main{padding:13px 9px 24px}
+  body .main-parity-ui.family-workspace-page .family-page-main>.heading{margin-bottom:13px}
+  body .main-parity-ui.family-workspace-page .family-page-main>.heading h1{font-size:22px}
+  body .main-parity-ui.family-workspace-page .family-page-main>.heading-actions{display:none}
+}

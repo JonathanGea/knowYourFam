@@ -45,7 +45,7 @@
         @if (explorerTab()==='search') {
           <label class="workspace-search-field">
             <span aria-hidden="true">⌕</span>
-            <input type="search" aria-label="Cari nama anggota" placeholder="Cari nama anggota..."
+            <input #explorerSearchInput type="search" aria-label="Cari nama anggota" placeholder="Cari nama anggota..."
               [value]="sidebarQuery()" (input)="sidebarQuery.set($any($event.target).value)" autocomplete="off"/>
             @if (sidebarQuery()) { <button type="button" title="Bersihkan pencarian" aria-label="Hapus pencarian" (click)="sidebarQuery.set('')">×</button> }
           </label>
@@ -61,6 +61,11 @@
               </button>
             } @empty { <p class="workspace-panel-empty">Tidak ada anggota yang cocok.</p> }
           </div>
+          @if (sidebarQuery().trim() && sidebarMatchCount()>sidebarPeople().length) {
+            <button type="button" class="workspace-more-results" (click)="searchResultsLimit.update(n => n+18)">
+              Tampilkan hasil lainnya ({{ sidebarMatchCount()-sidebarPeople().length }} tersisa)
+            </button>
+          }
           <a routerLink="/members" class="workspace-panel-bottom-link">Lihat seluruh {{ store.people().length }} anggota ↗</a>
         } @else if (explorerTab()==='branches') {
           <p class="workspace-panel-caption">Buka atau ringkas cabang tanpa meninggalkan pohon. Pin melindungi cabang dari peringkasan otomatis.</p>
@@ -85,7 +90,7 @@
                   <button type="button" class="workspace-branch-pin" [class.is-pinned]="isBranchPinned(branch.key)"
                     [attr.aria-pressed]="isBranchPinned(branch.key)" [title]="isBranchPinned(branch.key) ? 'Lepas pin' : 'Pin cabang'"
                     [attr.aria-label]="isBranchPinned(branch.key) ? 'Lepas pin cabang '+branch.personName : 'Pin cabang '+branch.personName"
-                    (click)="toggleBranchPin(branch.key)">♧</button>
+                    (click)="toggleBranchPin(branch.key)">{{ isBranchPinned(branch.key) ? '📌' : '♢' }}</button>
                   <button type="button" class="workspace-branch-action" (click)="collapseBranch(branch.key,branch.anchorId)">Ringkas</button>
                 } @else {
                   <button type="button" class="workspace-branch-action" (click)="toggleBranch(branch.key,branch.anchorId)">Buka</button>

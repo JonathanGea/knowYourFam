@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
+import { countNodeCrowding, branchOwnerIds } from './branch-layout-policy';
 import { getTutorialCourse, TUTORIAL_COURSES } from './tutorial-content.data';
 import type { TutorialStep } from './tutorial-content.data';
 import type { FamilyTree } from '../../domain/family-tree.model';
@@ -88,6 +89,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly panY = signal(0);
   readonly mobileListOpen = signal(false);
   readonly sidebarQuery = signal('');
+  readonly searchResultsLimit = signal(18);
   readonly explorerOpen = signal(false);
   readonly explorerTab = signal<'search'|'branches'|'history'|'settings'>('search');
   readonly pinnedBranchKeys = signal<ReadonlySet<string>>(new Set());
@@ -127,7 +129,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const query = this.sidebarQuery().trim().toLocaleLowerCase('id');
     if (query) return people.filter(person =>
       (person.name + ' ' + (person.nickname ?? '')).toLocaleLowerCase('id').includes(query)
-    ).slice(0, 18);
+    ).slice(0, this.searchResultsLimit());
 
     // Keep the sidebar useful without rendering a 100+ person catalog.
     const focus = this.store.focusPersonId();
@@ -148,6 +150,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly canvasWarning = computed(() => this.layout().warnings[0] ?? '');
   readonly quickPersonId = signal<string | null>(null);
   readonly fullscreen = signal(false);
+  private focusCameraBeforeMap: { x:number;y:number;zoom:number } | null = null;
   readonly detailsOpen = signal(false);
   readonly drawerExpanded = signal(false);
   readonly trainingProfileOpen = signal(false);
@@ -227,6 +230,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     return controls;
   });
   @ViewChild('canvasWindow') canvasWindow?: ElementRef<HTMLDivElement>;
+  @ViewChild('explorerSearchInput') explorerSearchInput?: ElementRef<HTMLInputElement>;
   @ViewChild('explorerPanel') explorerPanel?: ElementRef<HTMLElement>;
 
   private readonly pointers = new Map<number, TouchPoint>();
@@ -234,6 +238,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   private pinchGesture: PinchGesture | null = null;
   private fitted = false;
   private suppressClickUntil = 0;
+  private viewportObserver?: ResizeObserver;
 
   constructor() {
     void this.cloud.userId().then(id => this.viewerUserId.set(id))
@@ -262,45 +267,76 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => { if (!this.store.loading()) this.fitThenFocus(); });
+    requestAnimationFrame(() => {
+      if (!this.store.loading()) this.fitThenFocus();
+      const viewport=this.canvasWindow?.nativeElement;
+      if (viewport && typeof ResizeObserver!=='undefined') {
+        this.viewportObserver=new ResizeObserver(()=>this.scheduleViewportReconcile());
+        this.viewportObserver.observe(viewport);
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.viewportObserver?.disconnect();
     if (this.store.tutorialActive()) this.store.endTutorialTree();
   }
 
+  private reconcileViewportSize(): void {
+    const viewport=this.canvasWindow?.nativeElement;
+    if (!viewport) return;
+    const current={width:viewport.clientWidth,height:viewport.clientHeight};
+    if (!current.width || !current.height) return;
+    const previous=this.viewportSize();
+    if(this.fitted && previous.width>1 && previous.height>1) {
+      this.panX.update(x=>x+(current.width-previous.width)/2);
+      this.panY.update(y=>y+(current.height-previous.height)/2);
+    }
+    this.viewportSize.set(current);
+  }
+  private scheduleViewportReconcile(): void {
+    requestAnimationFrame(()=>this.reconcileViewportSize());
+  }
   @HostListener('window:resize')
   onResize(): void {
-    if (!this.fitted) return;
-    requestAnimationFrame(() => {
-      const selected = this.quickPersonId();
-      if (selected && this.store.visiblePersonIds().has(selected)) this.centerExplorerPerson(selected);
-      else this.fitThenFocus();
-    });
+    // A resize must preserve the visible world centre, not invoke Fit All.
+    this.scheduleViewportReconcile();
   }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
-    if (this.fullscreen()) this.toggleFullscreen();
-    this.closeExplorer();
-    if (this.detailsOpen()) this.detailsOpen.set(false);
+    if (this.explorerOpen()) { this.closeWorkspaceExplorer(); return; }
+    if (this.quickPersonId()) { this.closeExplorer(); return; }
+    if (this.mobileMenuOpen()) { this.mobileMenuOpen.set(false); return; }
+    if (this.fullscreen()) { this.toggleFullscreen(); return; }
+    if (this.detailsOpen()) { this.closePersonDrawer(); return; }
     if (this.tutorial()) this.stopTutorial();
   }
 
+  private preserveCameraWhenDockChanges(change:()=>void): void {
+    // Multiple panel transitions during one click reconcile once against
+    // the last measured viewport, preventing double compensation.
+    change();
+    this.scheduleViewportReconcile();
+  }
   openWorkspaceExplorer(tab:'search'|'branches'|'history'|'settings'): void {
-    this.explorerTab.set(tab);
-    this.explorerOpen.set(true);
-    this.mobileMenuOpen.set(false);
-    if (window.matchMedia('(max-width:1279px), (any-pointer:coarse)').matches && this.quickPersonId()) {
-      this.closeExplorer();
-    }
+    this.preserveCameraWhenDockChanges(()=>{
+      this.explorerTab.set(tab);
+      this.explorerOpen.set(true);
+      this.mobileMenuOpen.set(false);
+      if (window.matchMedia('(max-width:1279px), (any-pointer:coarse)').matches && this.quickPersonId()) {
+        this.closeExplorer();
+      }
+    });
+    if (tab==='search') requestAnimationFrame(() => this.explorerSearchInput?.nativeElement.focus());
   }
   toggleWorkspaceExplorer(tab:'search'|'branches'|'history'|'settings'): void {
     if (this.explorerOpen() && this.explorerTab()===tab) this.closeWorkspaceExplorer();
     else this.openWorkspaceExplorer(tab);
   }
   closeWorkspaceExplorer(): void {
-    this.explorerOpen.set(false);
+    if (!this.explorerOpen()) return;
+    this.preserveCameraWhenDockChanges(()=>this.explorerOpen.set(false));
   }
   openSearchPerson(id:string): void {
     this.closeWorkspaceExplorer();
@@ -308,14 +344,17 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
   private previewPerson(id:string):void {
     if (!this.store.findPerson(id)) return;
-    // Previewing a Person never re-centers, zooms or replaces the active tree.
-    this.store.select(id);
-    this.quickPersonId.set(id);
-    this.explorerHistory.set([]);
-    this.explorerUnavailableTarget.set(null);
-    this.explorerBranchError.set(false);
-    this.personClaimError.set('');
-    this.helpOpen.set(false);
+    // Previewing never changes selected focus or zoom. An inspector dock resize
+    // only compensates the canvas width to retain the same world centre.
+    this.preserveCameraWhenDockChanges(()=>{
+      this.store.select(id);
+      this.quickPersonId.set(id);
+      this.explorerHistory.set([]);
+      this.explorerUnavailableTarget.set(null);
+      this.explorerBranchError.set(false);
+      this.personClaimError.set('');
+      this.helpOpen.set(false);
+    });
   }
   returnToMyPerson(): void {
     this.closeWorkspaceExplorer();
@@ -338,26 +377,56 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     else next.add(key);
     this.pinnedBranchKeys.set(next);
   }
+  private pruneBranchPins(): void {
+    const retained = [...this.pinnedBranchKeys()].filter(key =>
+      this.store.isBranchOpen(key) &&
+      branchOwnerIds(key).every(id => this.store.visiblePersonIds().has(id)));
+    if (retained.length!==this.pinnedBranchKeys().size) this.pinnedBranchKeys.set(new Set(retained));
+  }
+
   private maybeConserveLayout(anchorId:string,justOpened:string):void {
-    // Conservative safeguard: let the canvas grow first. Only exceptionally
-    // large focus views are candidates for automatic branch reduction.
-    const viewport=this.canvasWindow?.nativeElement;
-    if (!viewport || this.store.mode()!=='focus' ||
-      this.store.visiblePeople().length<85 ||
-      this.layout().width<viewport.clientWidth*7) return;
-    const focus=this.store.focusPersonId();
-    const protectedPeople=new Set([anchorId,focus,...this.store.relationsFor(focus).partners]);
-    const candidate=Object.keys(this.store.expandedBranches()).find(key=>
-      key!==justOpened && !this.pinnedBranchKeys().has(key) &&
-      ![...protectedPeople].some(id=>key.includes(encodeURIComponent(id))) &&
+    // Conservative means: wide-but-readable diagrams remain open, even when
+    // they exceed the viewport. Only actual card crowding justifies intervention.
+    if (this.store.mode()!=='focus') return;
+    const initialCrowding=countNodeCrowding(this.layout().nodes,CANVAS_CARD_WIDTH,CANVAS_CARD_HEIGHT);
+    if (!initialCrowding) return;
+    const priorExpanded={...this.store.expandedBranches()};
+    const priorCollapsed=new Set(this.store.collapsedBranches());
+    const beforeVisible=this.store.visiblePersonIds();
+    const protectedPeople=new Set([anchorId,this.store.focusPersonId(),
+      ...this.store.relationsFor(this.store.focusPersonId()).partners]);
+    const pinnedKeys=this.pinnedBranchKeys();
+    const pinnedVisible=new Set<string>();
+    for (const key of pinnedKeys) {
+      if (!this.store.isBranchOpen(key)) continue;
+      for (const id of [...branchOwnerIds(key),...this.store.branchMembers(key)]) {
+        if (beforeVisible.has(id)) pinnedVisible.add(id);
+      }
+    }
+    const restore=()=>{
+      this.store.expandedBranches.set({...priorExpanded});
+      this.store.collapsedBranches.set(new Set(priorCollapsed));
+    };
+    const candidates=Object.keys(priorExpanded).filter(key=>
+      key!==justOpened && !pinnedKeys.has(key) &&
+      !branchOwnerIds(key).some(id=>protectedPeople.has(id)) &&
       this.store.isBranchOpen(key));
-    if (!candidate) return;
-    const beforeExpanded={...this.store.expandedBranches()};
-    const beforeCollapsed=new Set(this.store.collapsedBranches());
-    const owner=candidate.startsWith('pair:') ? candidate.slice(5).split('|')[0] : candidate.split(':').slice(1).join(':');
-    const name=this.store.findPerson(decodeURIComponent(owner))?.name ?? 'keluarga';
-    this.keepAnchor(anchorId,()=>this.store.collapseBranch(candidate));
-    this.collapseNotice.set({personName:name,expanded:beforeExpanded,collapsed:beforeCollapsed});
+    for (const candidate of candidates) {
+      this.store.collapseBranch(candidate);
+      const preserved=[...pinnedKeys].every(key=>this.store.isBranchOpen(key) &&
+        branchOwnerIds(key).every(id=>this.store.visiblePersonIds().has(id))) &&
+        [...pinnedVisible].every(id=>this.store.visiblePersonIds().has(id));
+      const afterCrowding=countNodeCrowding(this.layout().nodes,CANVAS_CARD_WIDTH,CANVAS_CARD_HEIGHT);
+      if (preserved && afterCrowding<initialCrowding) {
+        const ownerId=branchOwnerIds(candidate)[0] ?? '';
+        this.collapseNotice.set({
+          personName:this.store.findPerson(ownerId)?.name ?? 'keluarga',
+          expanded:priorExpanded,collapsed:priorCollapsed
+        });
+        return;
+      }
+      restore();
+    }
   }
   undoAutoCollapse():void {
     const notice=this.collapseNotice();
@@ -368,9 +437,11 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   toggleFullscreen(): void {
+    this.closeWorkspaceExplorer();
     this.quickPersonId.set(null);
+    // Fullscreen only changes viewport size; it must not reset camera scale.
     this.fullscreen.update(value => !value);
-    requestAnimationFrame(()=>this.fitCanvas());
+    this.onResize();
   }
 
   viewPersonDetails(): void {
@@ -752,20 +823,13 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   closeExplorer():void {
-    // Preserve the same canvas center when the desktop inspector column disappears.
-    const viewport=this.canvasWindow?.nativeElement;
-    const previousWidth=viewport?.clientWidth ?? 0;
-    this.quickPersonId.set(null);
-    if(viewport && previousWidth){
-      requestAnimationFrame(() => {
-        const change=viewport.clientWidth-previousWidth;
-        if(change) this.panX.update(x => x+change/2);
-      });
-    }
-    this.explorerHistory.set([]);
-    this.explorerUnavailableTarget.set(null);
-    this.explorerBranchError.set(false);
-    this.personClaimError.set('');
+    this.preserveCameraWhenDockChanges(()=>{
+      this.quickPersonId.set(null);
+      this.explorerHistory.set([]);
+      this.explorerUnavailableTarget.set(null);
+      this.explorerBranchError.set(false);
+      this.personClaimError.set('');
+    });
   }
 
   private centerExplorerPerson(id:string):void {
@@ -882,13 +946,18 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   setFocus(id: string): void {
+    if (!this.store.findPerson(id)) return;
     this.closeWorkspaceExplorer();
+    this.collapseNotice.set(null);
+    this.focusCameraBeforeMap=null;
     this.quickPersonId.set(null);
     this.helpOpen.set(false);
     this.detailsOpen.set(false);
     this.store.setFocus(id);
     this.mobileListOpen.set(false);
-    requestAnimationFrame(() => this.fitThenFocus());
+    this.pruneBranchPins();
+    // Keep the current zoom. The explicit Fit control is responsible for resizing.
+    requestAnimationFrame(() => this.centerExplorerPerson(id));
   }
 
   openSidebarPerson(id: string): void {
@@ -999,11 +1068,24 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   setMode(mode: 'focus' | 'overview'): void {
+    if (this.store.mode()===mode) return;
     this.closeWorkspaceExplorer();
+    this.collapseNotice.set(null);
     this.quickPersonId.set(null);
+    if (mode==='overview') this.focusCameraBeforeMap={
+      x:this.panX(),y:this.panY(),zoom:this.store.zoom()
+    };
     this.store.setMode(mode);
     this.tutorialRecord('mode',{mode});
-    requestAnimationFrame(() => this.fitThenFocus());
+    requestAnimationFrame(() => {
+      if (mode==='focus' && this.focusCameraBeforeMap) {
+        const saved=this.focusCameraBeforeMap;
+        this.store.setZoom(saved.zoom);
+        this.panX.set(saved.x);
+        this.panY.set(saved.y);
+        this.focusCameraBeforeMap=null;
+      } else this.fitCanvas();
+    });
   }
 
   /** An inactive spouse's ancestor/sibling expansion opens their birth family instead. */
@@ -1015,25 +1097,29 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
 
   switchFamilyOrigin(id: string): void {
     if (this.store.mode() !== 'focus') return;
+    this.collapseNotice.set(null);
     this.keepAnchor(this.store.focusPersonId(), () => this.store.switchFamilyOrigin(id));
+    this.pruneBranchPins();
     this.explorerUnavailableTarget.set(null);
     this.explorerBranchError.set(false);
   }
 
   toggleBranch(key: string, anchorId: string): void {
     this.quickPersonId.set(null);
+    this.collapseNotice.set(null);
     const wasOpen=this.store.isBranchOpen(key);
-    this.keepAnchor(anchorId, () => this.toggleBranchOrSwitchOrigin(key,anchorId));
-    if (!wasOpen && this.store.isBranchOpen(key)) this.maybeConserveLayout(anchorId,key);
-    if (!this.store.isBranchOpen(key)) {
-      const pinned=new Set(this.pinnedBranchKeys());pinned.delete(key);this.pinnedBranchKeys.set(pinned);
-    }
+    this.keepAnchor(anchorId, () => {
+      this.toggleBranchOrSwitchOrigin(key,anchorId);
+      if (!wasOpen && this.store.isBranchOpen(key)) this.maybeConserveLayout(anchorId,key);
+    });
+    this.pruneBranchPins();
     this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
   collapseBranch(key: string, anchorId: string): void {
     this.quickPersonId.set(null);
+    this.collapseNotice.set(null);
     this.keepAnchor(anchorId, () => this.store.collapseBranch(key));
-    const pinned=new Set(this.pinnedBranchKeys());pinned.delete(key);this.pinnedBranchKeys.set(pinned);
+    this.pruneBranchPins();
     this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
   private keepAnchor(id: string, change: () => void): void {
@@ -1202,15 +1288,20 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   goBackFocus(): void {
     const previous=this.store.goBackFocus();
     if (previous) {
+      this.closeWorkspaceExplorer();
+      this.collapseNotice.set(null);
       this.quickPersonId.set(null);
-      requestAnimationFrame(()=>this.fitThenFocus());
+      this.pruneBranchPins();
+      requestAnimationFrame(()=>this.centerExplorerPerson(previous));
     }
   }
 
   resetBranches(): void {
     this.store.resetBranches();
+    this.pinnedBranchKeys.set(new Set());
+    this.collapseNotice.set(null);
     this.quickPersonId.set(null);
-    requestAnimationFrame(()=>this.fitThenFocus());
+    requestAnimationFrame(()=>this.centerExplorerPerson(this.store.focusPersonId()));
   }
 
   async submitPerson(event: Event): Promise<void> {
