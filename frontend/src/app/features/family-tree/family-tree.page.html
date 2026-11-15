@@ -236,6 +236,7 @@
               (click)="resetBranches()">Reset cabang</button>
           </div>
         </div>
+        <div class="explorer-stage" [class.explorer-open]="!!quickPerson()">
         <div #canvasWindow class="viewport" aria-label="Pohon keluarga interaktif. Ketuk anggota untuk aksi cepat, geser dengan satu jari, cubit dengan dua jari untuk zoom"
           (wheel)="onWheel($event)"
           (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)"
@@ -324,62 +325,6 @@
               </button>
             }
           </div>
-          @if (quickPerson(); as qp) {
-            <div class="quick-panel main-angular-quick"
-              [style.left.px]="quickPosition().left" [style.top.px]="quickPosition().top"
-              role="dialog" [attr.aria-label]="'Aksi cepat '+qp.name" (click)="$event.stopPropagation()">
-              <div class="quick-head">
-                <span class="person-photo" [class.female]="qp.gender==='female'"
-                  [class.male]="qp.gender==='male'">
-                  @if (qp.photo) { <img [src]="qp.photo" alt="" /> }
-                  @else { {{ initials(qp.name) }} }
-                </span>
-                <div class="quick-identity"><strong>{{ qp.name }}</strong><small>{{ yearsOf(qp) }}</small></div>
-                <button type="button" class="quick-close" aria-label="Tutup aksi cepat"
-                  (click)="quickPersonId.set(null)">✕</button>
-              </div>
-              <div class="quick-profile-summary">
-                <div class="quick-profile-metric"><b>{{ store.relationsFor(qp.id).parents.length }}</b><span>Orang tua</span></div>
-                <div class="quick-profile-metric"><b>{{ store.relationsFor(qp.id).partners.length }}</b><span>Pasangan</span></div>
-                <div class="quick-profile-metric"><b>{{ store.relationsFor(qp.id).children.length }}</b><span>Anak</span></div>
-              </div>
-              <div class="quick-sibling-section">
-                <div class="quick-sibling-heading">Saudara <b>({{ store.relationsFor(qp.id).siblings.length }})</b></div>
-                <div class="quick-sibling-list">
-                  @for (siblingId of store.relationsFor(qp.id).siblings; track siblingId; let index=$index) {
-                    @if (index<4 || showAllQuickSiblings()) {
-                      <button type="button" class="quick-sibling-link" (click)="setFocus(siblingId)">
-                        <span class="person-photo mini">{{ initials(store.findPerson(siblingId)?.name ?? '') }}</span>
-                        <span>{{ store.findPerson(siblingId)?.name }}</span><span class="quick-sibling-arrow">↗</span>
-                      </button>
-                    }
-                  } @empty {
-                    <p class="quick-sibling-empty">Belum ada saudara tercatat.</p>
-                  }
-                </div>
-                @if (store.relationsFor(qp.id).siblings.length>4 && !showAllQuickSiblings()) {
-                  <button type="button" class="quick-sibling-more-link"
-                    (click)="showAllQuickSiblings.set(true)">Lihat {{ store.relationsFor(qp.id).siblings.length-4 }} saudara lainnya</button>
-                }
-              </div>
-              <div class="quick-caption">Jelajahi hubungan</div>
-              <div class="quick-directions">
-                @for (dir of quickDirections(qp.id); track dir.kind) {
-                  <button type="button" class="quick-direction" [class.active]="dir.open"
-                    [disabled]="!dir.key" (click)="dir.key && toggleBranch(dir.key,qp.id)">
-                    <b>{{ dir.symbol }}</b><span>{{ dir.label }}</span>
-                    <small>{{ !dir.key ? 'Belum ada' : dir.open ? dir.hidden ? '+'+dir.hidden+' lagi' : 'Tutup cabang' : '+'+dir.hidden+' anggota' }}</small>
-                  </button>
-                }
-              </div>
-              <div class="quick-actions">
-                <button type="button" class="btn soft" (click)="setFocus(qp.id)"
-                  [disabled]="qp.id===store.focusPersonId() && store.mode()==='focus'">◎ Jadikan fokus</button>
-                <button type="button" class="btn" (click)="viewPersonDetails()">☷ Profil lengkap</button>
-              </div>
-              <button type="button" class="quick-relation" (click)="openLink(qp.id)">＋ Tambah hubungan keluarga</button>
-            </div>
-          }
           @if (!onboardingDismissed() && !tutorial() && store.people().length>0) {
             <div class="guide-onboard" role="region" aria-label="Panduan untuk pengguna baru">
               <div class="guide-onboard-head">
@@ -395,7 +340,7 @@
               </div>
             </div>
           }
-          <div class="viewport-footer">Geser satu jari untuk pindah · Cubit dua jari untuk zoom · Ketuk kartu untuk aksi cepat</div>
+          <div class="viewport-footer">Geser satu jari untuk pindah · Cubit dua jari untuk zoom · Ketuk kartu untuk menjelajahi hubungan</div>
           <button type="button" class="tree-help-button" aria-label="Buka panduan garis dan navigasi"
             [attr.aria-expanded]="helpOpen()" title="Bantuan garis & navigasi"
             (click)="$event.stopPropagation();helpOpen.set(!helpOpen())">?</button>
@@ -407,10 +352,133 @@
               <div class="legend-item"><span class="legend-line green"></span> Orang tua – anak</div>
               <div class="legend-item"><span class="legend-line coral"></span> Hubungan pasangan</div>
               <div class="legend-item"><span class="legend-line blue"></span> Saudara langsung tanpa orang tua bersama tercatat</div>
-              <p>Cabang dalam Fokus dapat ditutup dan dibuka lagi. Ketuk kartu untuk aksi cepat; geser dan cubit untuk navigasi. ↑ Orang tua · ↔ Saudara · ↓ Anak.</p>
+              <p>Cabang dalam Fokus dapat ditutup dan dibuka lagi. Ketuk kartu untuk menjelajahi hubungan; geser dan cubit untuk navigasi. ↑ Orang tua · ↔ Saudara · ↓ Anak.</p>
               <a class="btn soft" routerLink="/guide">Panduan Pengguna ↗</a>
               <a class="btn" routerLink="/rules">Aturan Family Tree</a>
             </div>
+          }
+        </div>
+
+          @if (quickPerson(); as qp) {
+            <aside class="quick-panel main-angular-quick" [class.relationship-explorer]="true"
+              [class.explorer-expanded]="explorerExpanded()" [class.explorer-compact]="explorerCompact()"
+              role="dialog" [attr.aria-label]="'Jelajahi hubungan '+qp.name"
+              (click)="$event.stopPropagation()">
+              <div class="explorer-sheet-handle"
+                (pointerdown)="onExplorerHandleDown($event)"
+                (pointermove)="onExplorerHandleMove($event)"
+                (pointerup)="onExplorerHandleUp($event)"
+                (pointercancel)="onExplorerHandleCancel()">
+                <button type="button" class="explorer-grab-button"
+                  [attr.aria-expanded]="explorerExpanded()"
+                  aria-label="Perluas atau perkecil panel hubungan"
+                  (click)="toggleExplorerSheet()"><span></span></button>
+              </div>
+              <div class="explorer-header">
+                <div class="explorer-header-title">
+                  <span>♧ JELAJAHI KELUARGA</span>
+                  @if (explorerHistory().length) {
+                    <button type="button" class="explorer-back"
+                      (click)="backExplorerPerson()" aria-label="Kembali ke anggota sebelumnya">← Kembali</button>
+                  }
+                </div>
+                <button type="button" class="explorer-close" aria-label="Tutup penjelajah keluarga"
+                  (click)="closeExplorer()">✕</button>
+              </div>
+              <div class="explorer-person">
+                <span class="person-photo" [class.female]="qp.gender==='female'"
+                  [class.male]="qp.gender==='male'">
+                  @if (qp.photo) { <img [src]="qp.photo" alt="" /> }
+                  @else { {{ initials(qp.name) }} }
+                </span>
+                <div class="explorer-person-text">
+                  <h2>{{ qp.name }}</h2>
+                  <p>{{ explorerKinshipSummary() }}</p>
+                  <small>{{ yearsOf(qp) }}</small>
+                </div>
+              </div>
+              <div class="explorer-main-content">
+                @if (explorerBranchError()) {
+                  <div class="explorer-notice" role="status">
+                    <strong>Cabang belum dapat dibuka dari tampilan ini.</strong>
+                    <p>Anda dapat menjadikan {{ qp.name }} fokus untuk menjelajahi cabang tersebut.</p>
+                    <button type="button" class="explorer-notice-action" (click)="setFocus(qp.id)">Jadikan fokus</button>
+                    <button type="button" class="explorer-notice-dismiss" (click)="explorerBranchError.set(false)">Tutup</button>
+                  </div>
+                }
+                @if (explorerUnavailableTarget(); as targetId) {
+                  <div class="explorer-notice" role="status">
+                    <strong>{{ store.findPerson(targetId)?.name }} belum bisa ditampilkan di tampilan ini.</strong>
+                    <p>Cabangnya belum dapat dibuka dari fokus saat ini. Anda dapat menjadikannya fokus untuk melihat keluarganya.</p>
+                    <button type="button" class="explorer-notice-action" (click)="setFocus(targetId)">Jadikan fokus anggota ini</button>
+                    <button type="button" class="explorer-notice-dismiss" (click)="explorerUnavailableTarget.set(null)">Batal</button>
+                  </div>
+                }
+                <div class="explorer-section-label">KELUARGA TERDEKAT</div>
+                @for (group of explorerGroups(); track group.kind) {
+                  <section class="explorer-family-group" [attr.aria-label]="group.label">
+                    <div class="explorer-group-header">
+                      <strong>{{ group.label }}</strong>
+                      <span>{{ group.people.length ? group.people.length + ' tercatat' : 'Belum tercatat' }}</span>
+                    </div>
+                    @if (group.people.length) {
+                      <div class="explorer-people-list">
+                        @for (relative of group.people.slice(0, explorerExpandedGroups().has(group.kind) ? group.people.length : 3); track relative.id) {
+                          <button type="button" class="explorer-relative"
+                            [class.is-visible]="store.visiblePersonIds().has(relative.id)"
+                            [title]="'Lihat '+relative.name+' di pohon'"
+                            (click)="exploreRelative(relative.id)">
+                            <span class="person-photo mini" [class.female]="relative.gender==='female'"
+                              [class.male]="relative.gender==='male'">
+                              @if (relative.photo) { <img [src]="relative.photo" alt="" /> }
+                              @else { {{ initials(relative.name) }} }
+                            </span>
+                            <span class="explorer-relative-identity">
+                              <strong>{{ relative.name }}</strong>
+                              <small>{{ store.visiblePersonIds().has(relative.id) ? 'Terlihat di pohon' : 'Lihat di pohon' }}</small>
+                            </span>
+                            <span class="explorer-relative-arrow" aria-hidden="true">↗</span>
+                          </button>
+                        }
+                      </div>
+                      @if (group.people.length > 3) {
+                        <button type="button" class="explorer-show-more"
+                          [attr.aria-expanded]="explorerExpandedGroups().has(group.kind)"
+                          (click)="toggleExplorerGroup(group.kind)">
+                          {{ explorerExpandedGroups().has(group.kind) ? 'Tampilkan lebih sedikit' : 'Lihat ' + (group.people.length - 3) + ' ' + group.label.toLowerCase() + ' lainnya' }}
+                        </button>
+                      }
+                    } @else {
+                      <p class="explorer-empty">Hubungan {{ group.label.toLowerCase() }} belum tercatat dalam silsilah.</p>
+                    }
+                  </section>
+                }
+                @if (store.mode()==='focus' && quickDirections(qp.id).length) {
+                  <section class="explorer-branches" aria-label="Cabang yang belum terlihat">
+                    <div class="explorer-section-label">CABANG POHON</div>
+                    <p class="explorer-explain">Menampilkan kerabat yang tersembunyi tanpa mengubah orang yang menjadi fokus.</p>
+                    @for (dir of quickDirections(qp.id); track dir.key) {
+                      <button type="button" class="explorer-branch-action"
+                        (click)="expandExplorerBranch(dir.key, qp.id)">
+                        <span aria-hidden="true" class="explorer-branch-symbol">{{ dir.symbol }}</span>
+                        <span><strong>{{ dir.label }}</strong><small>Tampilkan {{ dir.hidden }} anggota di pohon</small></span>
+                        <span class="explorer-branch-arrow" aria-hidden="true">＋</span>
+                      </button>
+                    }
+                  </section>
+                }
+              </div>
+              <div class="explorer-footer">
+                <button type="button" class="explorer-focus" (click)="setFocus(qp.id)"
+                  [disabled]="qp.id===store.focusPersonId() && store.mode()==='focus'">
+                  {{ qp.id===store.focusPersonId() && store.mode()==='focus' ? '◎ Sedang menjadi fokus' : '◎ Jadikan fokus pohon' }}
+                </button>
+                <div class="explorer-footer-links">
+                  <button type="button" (click)="viewPersonDetails()">Lihat profil lengkap</button>
+                  <button type="button" (click)="openLink(qp.id)">＋ Tambah hubungan</button>
+                </div>
+              </div>
+            </aside>
           }
         </div>
         @if (canvasWarning()) { <p class="canvas-warning" role="status">{{ canvasWarning() }}</p> }

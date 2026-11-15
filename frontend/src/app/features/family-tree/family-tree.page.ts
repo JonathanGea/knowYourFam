@@ -125,8 +125,46 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly onboardingDismissed = signal(false);
   readonly labelBoost = computed(() => Math.min(1.5, Math.max(1, 0.73 / this.store.zoom())));
   readonly mobileMenuOpen = signal(false);
-  readonly showAllQuickSiblings = signal(false);
+  readonly explorerHistory = signal<readonly string[]>([]);
+  readonly explorerExpandedGroups = signal<ReadonlySet<string>>(new Set());
+  readonly explorerUnavailableTarget = signal<string | null>(null);
+  readonly explorerBranchError = signal(false);
+  readonly explorerExpanded = signal(false);
+  readonly explorerCompact = signal(false);
+  private explorerSwipe: {pointerId:number; y:number} | null = null;
+  private explorerSwipeHandled = false;
+  private explorerSuppressClickUntil = 0;
   readonly quickPerson = computed(() => this.quickPersonId() ? this.store.findPerson(this.quickPersonId()!) : undefined);
+  readonly explorerKinshipSummary = computed(() => {
+    const current = this.quickPerson();
+    if (!current) return '';
+    const relationships = this.store.relationsFor(current.id);
+    const parentNames = relationships.parents
+      .map(id => this.store.findPerson(id)?.name).filter((name): name is string => !!name);
+    if (parentNames.length) return 'Anak dari ' + parentNames.join(' & ');
+    const partner = relationships.partners.map(id => this.store.findPerson(id)?.name).find(Boolean);
+    if (partner) return 'Pasangan dari ' + partner;
+    return 'Hubungan orang tua belum tercatat';
+  });
+  readonly explorerGroups = computed(() => {
+    const current = this.quickPerson();
+    if (!current) return [];
+    const rel = this.store.relationsFor(current.id);
+    const configs = [
+      { kind:'parents', label:'Orang tua', ids:rel.parents },
+      { kind:'siblings', label:'Saudara', ids:rel.siblings },
+      { kind:'partners', label:'Pasangan', ids:rel.partners },
+      { kind:'children', label:'Anak', ids:rel.children }
+    ] as const;
+    return configs.map(group => ({
+      kind:group.kind,
+      label:group.label,
+      people:group.ids
+        .map(id => this.store.findPerson(id))
+        .filter((p): p is Person => !!p)
+        .sort((a,b) => this.compareBirthOrder(a,b))
+    }));
+  });
   readonly viewportSize = signal({ width: 1, height: 1 });
   readonly branchControls = computed(() => {
     if (this.store.mode() !== 'focus') return [];
@@ -172,21 +210,6 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     }
     return controls;
   });
-  quickPosition(): { left: number; top: number } {
-    const id = this.quickPersonId();
-    const node = id ? this.layout().nodes.find(n => n.person.id === id) : undefined;
-    if (!node) return {left:12,top:12};
-    const zoom = this.store.zoom();
-    const {width,height}=this.viewportSize();
-    const x = this.panX() + node.x * zoom, y = this.panY() + node.y * zoom;
-    const right = x + CANVAS_CARD_WIDTH * zoom;
-    const maxWidth = 324;
-    const left = right + 12 + maxWidth < width ? right + 12 : x - maxWidth - 12;
-    return {
-      left: Math.max(8, Math.min(width - maxWidth - 8, left)),
-      top: Math.max(8, Math.min(height - 345, y))
-    };
-  }
   @ViewChild('canvasWindow') canvasWindow?: ElementRef<HTMLDivElement>;
 
   private readonly pointers = new Map<number, TouchPoint>();
@@ -233,7 +256,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   @HostListener('document:keydown.escape')
   onEscape(): void {
     if (this.fullscreen()) this.toggleFullscreen();
-    this.quickPersonId.set(null);
+    this.closeExplorer();
     if (this.detailsOpen()) this.detailsOpen.set(false);
     if (this.tutorial()) this.stopTutorial();
   }
@@ -592,11 +615,154 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       .join(', ') || 'Belum dicatat';
   }
 
+
+  /** A missing birth-order value must never imply a definite sibling rank. */
+  private compareBirthOrder(a: Person, b: Person): number {
+    const rank = (p:Person) => Number.isInteger(p.birthOrder) && (p.birthOrder ?? 0) > 0
+      ? p.birthOrder : undefined;
+    const ao=rank(a), bo=rank(b);
+    if (ao !== undefined && bo !== undefined && ao !== bo) return ao - bo;
+    if (a.birthDate && b.birthDate && a.birthDate !== b.birthDate)
+      return a.birthDate.localeCompare(b.birthDate);
+    return 0; // Preserve source order when dates and rank cannot resolve it.
+  }
+
+  toggleExplorerGroup(kind:string):void {
+    const next=new Set(this.explorerExpandedGroups());
+    if(next.has(kind))next.delete(kind); else next.add(kind);
+    this.explorerExpandedGroups.set(next);
+  }
+
+  closeExplorer():void {
+    this.quickPersonId.set(null);
+    this.explorerHistory.set([]);
+    this.explorerUnavailableTarget.set(null);
+    this.explorerBranchError.set(false);
+    this.explorerExpandedGroups.set(new Set());
+    this.explorerExpanded.set(false);
+    this.explorerCompact.set(false);
+  }
+
+  private centerExplorerPerson(id:string):void {
+    const node=this.layout().nodes.find(n=>n.person.id===id);
+    const viewport=this.canvasWindow?.nativeElement;
+    if(!node||!viewport)return;
+    this.viewportSize.set({width:viewport.clientWidth,height:viewport.clientHeight});
+    const z=this.store.zoom();
+    this.panX.set(viewport.clientWidth/2-(node.x+CANVAS_CARD_WIDTH/2)*z);
+    this.panY.set(viewport.clientHeight/2-(node.y+CANVAS_CARD_HEIGHT/2)*z);
+  }
+
+  /** Navigate within the inspected graph without resetting the tree's focus. */
+  exploreRelative(id:string):void {
+    const from=this.quickPersonId();
+    if(!from||from===id||!this.store.findPerson(id))return;
+    if(!this.tryRevealRelative(from,id)){
+      this.explorerUnavailableTarget.set(id);
+      return;
+    }
+    this.explorerHistory.update(history=>[...history,from]);
+    this.activateExplorerPerson(id,true);
+  }
+
+  private activateExplorerPerson(id:string,compact=false):void {
+    this.store.select(id);
+    this.quickPersonId.set(id);
+    this.explorerExpandedGroups.set(new Set());
+    this.explorerUnavailableTarget.set(null);
+    this.explorerBranchError.set(false);
+    this.explorerCompact.set(compact);
+    this.helpOpen.set(false);
+    requestAnimationFrame(()=>this.centerExplorerPerson(id));
+  }
+
+  backExplorerPerson():void {
+    const history=this.explorerHistory();
+    if(!history.length)return;
+    const previous=history[history.length-1];
+    const current=this.quickPersonId();
+    if(!this.store.findPerson(previous))return;
+    if(!this.store.visiblePersonIds().has(previous) &&
+       (!current || !this.tryRevealRelative(current,previous))){
+      this.explorerUnavailableTarget.set(previous);
+      return;
+    }
+    this.explorerHistory.set(history.slice(0,-1));
+    this.activateExplorerPerson(previous,true);
+  }
+
+  /**
+   * First try to reveal the selected relative through an existing branch.
+   * Never switch the focus implicitly, even when the target cannot be shown.
+   */
+  private tryRevealRelative(from:string,target:string):boolean {
+    if(this.store.visiblePersonIds().has(target))return true;
+    if(this.store.mode()!=='focus'||!this.store.visiblePersonIds().has(from))return false;
+    const relatedBranches=this.store.branchOptions(from)
+      .filter(option=>this.store.branchMembers(option.key).includes(target));
+    for(const branch of relatedBranches){
+      for(let attempt=0;attempt<16&&!this.store.visiblePersonIds().has(target);attempt++){
+        const before=this.store.hiddenBranchCount(branch.key);
+        if(before===0)break;
+        this.store.toggleBranch(branch.key);
+        const after=this.store.hiddenBranchCount(branch.key);
+        if(after>=before)break; // Unreachable owners: do not loop indefinitely.
+      }
+      if(this.store.visiblePersonIds().has(target))return true;
+    }
+    return false;
+  }
+
+  expandExplorerBranch(key:string,anchor:string):void {
+    const before=this.store.hiddenBranchCount(key);
+    if(before<=0)return;
+    this.keepAnchor(anchor,()=>this.store.toggleBranch(key));
+    this.explorerBranchError.set(this.store.hiddenBranchCount(key)===before);
+    this.explorerUnavailableTarget.set(null);
+    this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
+  }
+
+  toggleExplorerSheet():void {
+    if(performance.now()<this.explorerSuppressClickUntil)return;
+    this.explorerCompact.set(false);
+    this.explorerExpanded.update(value=>!value);
+  }
+  onExplorerHandleDown(event:PointerEvent):void {
+    if(window.innerWidth>650&&window.innerWidth>1100)return;
+    if(event.pointerType==='mouse'&&event.button!==0)return;
+    this.explorerSwipe={pointerId:event.pointerId,y:event.clientY};
+    this.explorerSwipeHandled=false;
+    try{(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);}
+    catch{/* Pointer capture is best-effort. */}
+  }
+  onExplorerHandleMove(event:PointerEvent):void {
+    if(!this.explorerSwipe||event.pointerId!==this.explorerSwipe.pointerId||this.explorerSwipeHandled)return;
+    const dy=event.clientY-this.explorerSwipe.y;
+    if(Math.abs(dy)<40)return;
+    this.explorerSwipeHandled=true;
+    this.explorerSuppressClickUntil=performance.now()+420;
+    if(dy<0){this.explorerExpanded.set(true);this.explorerCompact.set(false);}
+    else if(this.explorerExpanded()){this.explorerExpanded.set(false);}
+    else if(!this.explorerCompact()){this.explorerCompact.set(true);}
+    else this.closeExplorer();
+  }
+  onExplorerHandleUp(event:PointerEvent):void {
+    if(!this.explorerSwipe||this.explorerSwipe.pointerId!==event.pointerId)return;
+    if(!this.explorerSwipeHandled)this.onExplorerHandleMove(event);
+    this.explorerSwipe=null;
+    this.explorerSwipeHandled=false;
+  }
+  onExplorerHandleCancel():void {
+    this.explorerSwipe=null;
+    this.explorerSwipeHandled=false;
+  }
+
   selectPerson(id: string): void {
     if (Date.now() < this.suppressClickUntil) return;
     this.store.select(id);
-    this.quickPersonId.set(id);
-    this.showAllQuickSiblings.set(false);
+    this.explorerHistory.set([]);
+    this.explorerExpanded.set(false);
+    this.activateExplorerPerson(id);
     this.helpOpen.set(false);
     this.mobileListOpen.set(false);
     this.tutorialRecord('card',{id});
@@ -672,6 +838,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   @HostListener('document:pointerup', ['$event'])
   onDrawerDocumentPointerUp(event: PointerEvent): void {
     if(this.drawerStart)this.onDrawerGrabUp(event);
+    if(this.explorerSwipe)this.onExplorerHandleUp(event);
   }
 
   onDrawerShadeClick():void {
@@ -692,21 +859,16 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     ]).size;
   }
 
-  quickDirections(id: string): readonly {
-    kind: string; label: string; symbol: string; key: string|null;
-    open: boolean; hidden: number
+  quickDirections(id:string):readonly {
+    key:string;label:string;symbol:string;hidden:number
   }[] {
-    const groups = [
-      { kind: 'up', label: 'Orang tua', symbol: '↑' },
-      { kind: 'side', label: 'Saudara', symbol: '↔' },
-      { kind: 'down', label: 'Anak', symbol: '↓' }
-    ];
-    const options = this.store.branchOptions(id);
-    return groups.map(group => {
-      const option = options.find(branch => group.kind === 'down'
-        ? branch.kind === 'down' || branch.kind === 'pair' : branch.kind === group.kind);
-      return { ...group, key:option?.key ?? null, open:option?.open ?? false, hidden:option?.hidden ?? 0 };
-    });
+    if(this.store.mode()!=='focus')return [];
+    return this.store.branchOptions(id)
+      .filter(branch=>branch.hidden>0)
+      .map(branch=>({
+        key:branch.key,label:branch.title,hidden:branch.hidden,
+        symbol:branch.kind==='up'?'↑':branch.kind==='side'?'↔':'↓'
+      }));
   }
 
   async createNewTree(): Promise<void> {
@@ -805,7 +967,6 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   zoomBy(delta: number): void {
     const el = this.canvasWindow?.nativeElement;
     if (!el) return;
-    this.quickPersonId.set(null);
     this.zoomAt(this.store.zoom() * (delta > 0 ? 1.23 : 1/1.23), el.clientWidth / 2, el.clientHeight / 2);
     this.tutorialRecord('zoom');
   }
@@ -814,7 +975,6 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     if (!this.canvasWindow) return;
     event.preventDefault();
     const rect = this.canvasWindow.nativeElement.getBoundingClientRect();
-    this.quickPersonId.set(null);
     const factor = event.deltaY < 0 ? 1.12 : 1/1.12;
     this.zoomAt(this.store.zoom() * factor, event.clientX - rect.left, event.clientY - rect.top);
     this.tutorialRecord('zoom');
@@ -861,14 +1021,12 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       const zoom=this.store.zoom();
       this.panX.set(mid.x-pinch.worldX*zoom);
       this.panY.set(mid.y-pinch.worldY*zoom);
-      this.quickPersonId.set(null);
       this.suppressClickUntil=Date.now()+500;
     } else if (this.pointers.size===1 && this.panGesture) {
       const [point]=this.pointers.values();
       const dx=point.x-this.panGesture.startX,dy=point.y-this.panGesture.startY;
       if (Math.hypot(dx,dy)>16) {
         this.panGesture.moved=true;
-        this.quickPersonId.set(null);
         this.suppressClickUntil=Date.now()+250;
       }
       this.panX.set(this.panGesture.startPanX+dx);
@@ -885,8 +1043,9 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     if (tapId) {
       // Canvas has pointer capture. Resolve the original tapped node manually.
       this.suppressClickUntil=Date.now()+450;
-      this.store.select(tapId);
-      this.quickPersonId.set(tapId);
+      this.explorerHistory.set([]);
+      this.explorerExpanded.set(false);
+      this.activateExplorerPerson(tapId);
       this.tutorialRecord('card',{id:tapId});
     }
     if (wasPinch) this.tutorialRecord('zoom');
@@ -904,7 +1063,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
 
   onCanvasBackground(event: MouseEvent): void {
     if ((event.target as HTMLElement).closest('.person-node,.node,.branch-toggle,.quick-panel')) return;
-    this.quickPersonId.set(null);
+    this.closeExplorer();
   }
 
   goBackFocus(): void {

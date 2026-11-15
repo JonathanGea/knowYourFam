@@ -660,3 +660,258 @@ body .modal-backdrop {
   .main-parity-ui .side { overflow-y:auto; }
   .main-parity-ui .person-links { flex:none; max-height:190px; }
 }
+
+
+/* Relationship Explorer: a navigation inspector, not a second profile page.
+   Desktop docks beside the canvas; tablet floats; mobile uses a staged sheet. */
+body .main-parity-ui .explorer-stage {
+  display:flex; flex:1 1 0; min-height:0; min-width:0;
+  position:relative; isolation:isolate;
+}
+body .main-parity-ui .explorer-stage > .viewport {
+  flex:1 1 0; min-width:0; min-height:0;
+}
+body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
+  position:relative; inset:auto; transform:none;
+  flex:0 0 365px; align-self:stretch;
+  width:365px; height:auto; max-width:none; max-height:none;
+  min-height:0; min-width:0; margin:0; padding:0;
+  display:flex; flex-direction:column; overflow:hidden;
+  color:#244534; background:#fff;
+  border:0; border-left:1px solid #dce8dd;
+  border-radius:0; box-shadow:-8px 0 25px #244a310d;
+  cursor:default; text-align:left; user-select:text;
+  scrollbar-width:thin;
+}
+body .main-parity-ui .relationship-explorer button {font-family:inherit}
+body .main-parity-ui .explorer-sheet-handle {display:none}
+body .main-parity-ui .explorer-header {
+  display:flex; align-items:center; gap:10px;
+  padding:15px 16px 9px; flex:none; min-width:0;
+}
+body .main-parity-ui .explorer-header-title {
+  display:flex; align-items:center; flex:1 1 0;
+  min-width:0; gap:9px; flex-wrap:wrap;
+}
+body .main-parity-ui .explorer-header-title>span {
+  font-size:10px; letter-spacing:1.15px;
+  font-weight:850; color:#6d9a7a;
+}
+body .main-parity-ui .explorer-back {
+  font-size:11px; color:#2d7048;
+  border:0; background:#f1f7f2; border-radius:7px;
+  padding:5px 8px; font-weight:750;
+}
+body .main-parity-ui .explorer-close {
+  display:grid; place-items:center; flex:none;
+  width:30px; height:30px; border:0;
+  border-radius:8px; color:#617b69; background:#f3f6f2;
+  font-size:14px;
+}
+body .main-parity-ui .explorer-close:hover {background:#e5eee6;color:#28573b}
+body .main-parity-ui .explorer-person {
+  display:flex; align-items:flex-start; gap:12px;
+  min-width:0; padding:7px 16px 17px;
+  border-bottom:1px solid #e5ede5; flex:none;
+}
+body .main-parity-ui .explorer-person > .person-photo {
+  width:49px; height:49px; font-size:15px; border-radius:13px;
+  flex:none;
+}
+body .main-parity-ui .explorer-person-text {flex:1 1 0;min-width:0}
+body .main-parity-ui .explorer-person-text h2 {
+  margin:0 0 4px; font-size:15px; line-height:1.35;
+  font-weight:850; letter-spacing:-.2px;
+  color:#224b36; overflow-wrap:anywhere;
+}
+body .main-parity-ui .explorer-person-text p {
+  margin:0 0 2px; font-size:11px; line-height:1.45;
+  color:#5d7866; overflow-wrap:anywhere;
+}
+body .main-parity-ui .explorer-person-text small {
+  font-size:10px; color:#8a9d90;
+}
+body .main-parity-ui .explorer-main-content {
+  flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
+  padding:12px 16px 16px; overscroll-behavior:contain;
+  scrollbar-width:thin; scrollbar-color:#cfddd0 transparent;
+}
+body .main-parity-ui .explorer-section-label {
+  margin:1px 0 12px;
+  color:#86a08b; font-size:10px; font-weight:850; letter-spacing:1.15px;
+}
+body .main-parity-ui .explorer-family-group {margin:0 0 16px}
+body .main-parity-ui .explorer-group-header {
+  display:flex; gap:9px; justify-content:space-between;
+  align-items:baseline; margin-bottom:6px;
+}
+body .main-parity-ui .explorer-group-header strong {
+  font-size:12px; color:#31563d;
+}
+body .main-parity-ui .explorer-group-header>span {
+  font-size:10px; font-weight:650; color:#93a497; white-space:nowrap;
+}
+body .main-parity-ui .explorer-people-list {display:grid;gap:5px}
+body .main-parity-ui .explorer-relative {
+  display:flex; align-items:center; gap:9px;
+  width:100%; min-width:0; border:1px solid #e4ece3;
+  border-radius:10px; background:#f9fbf9; padding:8px 9px;
+  color:#355844; text-align:left;
+  transition:border-color .15s,background-color .15s;
+}
+body .main-parity-ui .explorer-relative:hover,
+body .main-parity-ui .explorer-relative:focus-visible {
+  background:#ebf5ed; border-color:#a6caae;
+}
+body .main-parity-ui .explorer-relative .person-photo.mini {
+  width:34px; height:34px; font-size:11px; border-radius:9px;flex:none;
+}
+body .main-parity-ui .explorer-relative-identity {
+  flex:1 1 0; min-width:0;
+  display:flex; flex-direction:column; gap:3px;
+}
+body .main-parity-ui .explorer-relative-identity strong {
+  font-size:11px; line-height:1.3; font-weight:780;
+  overflow-wrap:anywhere; white-space:normal;
+}
+body .main-parity-ui .explorer-relative-identity small {
+  font-size:10px; color:#829b87;
+}
+body .main-parity-ui .explorer-relative-arrow {
+  flex:none; align-self:center; font-size:15px; color:#659977;
+}
+body .main-parity-ui .explorer-show-more {
+  border:0; background:transparent; color:#34724c;
+  font-weight:750; font-size:11px; padding:8px 0 0;
+  text-align:left; text-decoration:underline;
+  text-decoration-color:transparent;
+}
+body .main-parity-ui .explorer-show-more:hover {text-decoration-color:currentColor}
+body .main-parity-ui .explorer-empty {
+  padding:7px 0; font-size:11px; color:#94a499;
+  line-height:1.5; font-style:normal;
+}
+body .main-parity-ui .explorer-branches {
+  border-top:1px solid #e7eee7; margin-top:7px; padding-top:16px;
+}
+body .main-parity-ui .explorer-explain {
+  font-size:10px; color:#829687; line-height:1.5; margin:-5px 0 9px;
+}
+body .main-parity-ui .explorer-branch-action {
+  width:100%; display:flex; gap:10px; align-items:center;
+  padding:10px; margin:0 0 6px;
+  border:1px solid #cfe3d2; border-radius:11px;
+  background:#eff7f0; text-align:left; color:#28573a;
+}
+body .main-parity-ui .explorer-branch-action:hover {
+  border-color:#91bd9a; background:#e7f3e9;
+}
+body .main-parity-ui .explorer-branch-symbol {
+  flex:none; width:30px; height:30px; display:grid; place-items:center;
+  border-radius:9px; background:#dcece0; font-size:16px;
+}
+body .main-parity-ui .explorer-branch-action>span:nth-child(2) {
+  min-width:0; flex:1 1 0;display:flex;flex-direction:column;
+}
+body .main-parity-ui .explorer-branch-action strong {font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+body .main-parity-ui .explorer-branch-action small {font-size:10px;color:#70917a;margin-top:2px}
+body .main-parity-ui .explorer-branch-arrow {font-size:19px}
+body .main-parity-ui .explorer-notice {
+  padding:11px 12px; margin-bottom:14px;
+  border:1px solid #f0dab2; background:#fff9ec;
+  border-radius:11px; color:#77562e;
+}
+body .main-parity-ui .explorer-notice strong {display:block;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+body .main-parity-ui .explorer-notice p {font-size:11px;margin:5px 0 8px;line-height:1.5}
+body .main-parity-ui .explorer-notice button {
+  font-size:11px; font-weight:750; border:0;
+  background:transparent; padding:5px 6px 5px 0; color:#3d7651;
+}
+body .main-parity-ui .explorer-notice .explorer-notice-action {
+  padding:7px 10px; margin-right:6px;
+  border-radius:8px; background:#eaf4e9;
+}
+body .main-parity-ui .explorer-footer {
+  flex:none; display:flex; flex-direction:column; gap:8px;
+  padding:12px 16px 14px; border-top:1px solid #e2ece2;
+  background:#fff;
+}
+body .main-parity-ui .explorer-focus {
+  border:1px solid #245b43; background:#245b43; color:#fff;
+  width:100%; border-radius:10px; min-height:40px;
+  font-size:12px; font-weight:800;
+}
+body .main-parity-ui .explorer-focus:not(:disabled):hover {background:#1b4c35}
+body .main-parity-ui .explorer-focus:disabled {
+  opacity:1; background:#eef5ee; color:#5c8165; border-color:#e0ebe1;
+  cursor:default;
+}
+body .main-parity-ui .explorer-footer-links {display:flex;gap:8px;min-width:0}
+body .main-parity-ui .explorer-footer-links button {
+  flex:1 1 0; min-width:0; border:1px solid #dbe8dd;
+  background:#fff; color:#386345;
+  padding:9px 6px; border-radius:9px; font-size:11px; font-weight:750;
+}
+body .main-parity-ui .explorer-footer-links button:hover {background:#f2f8f3}
+@media(min-width:1500px) {
+  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
+    flex-basis:390px; width:390px;
+  }
+}
+@media(min-width:651px) and (max-width:1100px) {
+  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
+    position:absolute; z-index:9; top:8px;right:8px;bottom:8px;left:auto;
+    flex:none; align-self:auto; height:auto;
+    width:min(360px,calc(100% - 16px)); max-width:none; max-height:none;
+    border:1px solid #d7e8d9; border-radius:16px;
+    box-shadow:0 14px 46px #25432c2a;
+  }
+}
+@media(max-width:650px) {
+  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
+    position:absolute; z-index:9;
+    bottom:0; left:0; right:0; top:auto; flex:none; align-self:auto;
+    width:100%; max-width:100%; height:min(61%,480px); max-height:calc(100% - 8px);
+    border:1px solid #dceadd; border-bottom:0;
+    border-radius:19px 19px 0 0;
+    box-shadow:0 -14px 42px #1b3d2829;
+    transition:height .2s ease;
+  }
+  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer.explorer-expanded {
+    height:calc(100% - 8px); max-height:calc(100% - 8px);
+  }
+  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer.explorer-compact {
+    height:155px; max-height:calc(100% - 8px);
+  }
+  body .main-parity-ui .explorer-sheet-handle {
+    display:flex;justify-content:center; flex:none;
+    height:22px; touch-action:none;
+  }
+  body .main-parity-ui .explorer-grab-button {
+    display:grid;place-items:center; width:100%;height:100%;
+    border:0;background:transparent;
+  }
+  body .main-parity-ui .explorer-grab-button span {
+    width:36px;height:4px;border-radius:999px;background:#bfd1c3;
+  }
+  body .main-parity-ui .explorer-header {padding:2px 14px 9px}
+  body .main-parity-ui .explorer-person {padding:6px 14px 13px}
+  body .main-parity-ui .explorer-main-content {padding:11px 14px}
+  body .main-parity-ui .explorer-footer {padding:9px 14px max(11px,env(safe-area-inset-bottom,0px))}
+  body .main-parity-ui .relationship-explorer.explorer-compact .explorer-main-content,
+  body .main-parity-ui .relationship-explorer.explorer-compact .explorer-footer {display:none}
+  body .main-parity-ui .explorer-branches {padding-bottom:8px}
+}
+@media(prefers-reduced-motion:reduce) {
+  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer,
+  body .main-parity-ui .explorer-relative {transition:none}
+}
+
+/* The inspected card is visually distinct from the tree's focused person. */
+body .main-parity-ui .scene .node.selected:not(.focus-person) {
+  outline:2px solid #65a8a7; outline-offset:3px;
+  box-shadow:0 5px 18px #4d9c9640;
+}
+body .main-parity-ui .scene .node.focus-person {
+  outline:0; border-color:#285e42;
+}
