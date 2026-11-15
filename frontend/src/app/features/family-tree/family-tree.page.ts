@@ -141,7 +141,8 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const relationships = this.store.relationsFor(current.id);
     const parentNames = relationships.parents
       .map(id => this.store.findPerson(id)?.name).filter((name): name is string => !!name);
-    if (parentNames.length) return 'Anak dari ' + parentNames.join(' & ');
+    if (parentNames.length > 1) return 'Anak dari ' + parentNames.length + ' orang tua tercatat';
+    if (parentNames.length === 1) return 'Anak dari ' + parentNames[0];
     const partner = relationships.partners.map(id => this.store.findPerson(id)?.name).find(Boolean);
     if (partner) return 'Pasangan dari ' + partner;
     return 'Hubungan orang tua belum tercatat';
@@ -165,6 +166,10 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
         .sort((a,b) => this.compareBirthOrder(a,b))
     }));
   });
+  readonly explorerMissingGroups = computed(() =>
+    this.explorerGroups().filter(group => group.people.length === 0)
+      .map(group => group.label.toLowerCase())
+  );
   readonly viewportSize = signal({ width: 1, height: 1 });
   readonly branchControls = computed(() => {
     if (this.store.mode() !== 'focus') return [];
@@ -211,6 +216,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     return controls;
   });
   @ViewChild('canvasWindow') canvasWindow?: ElementRef<HTMLDivElement>;
+  @ViewChild('explorerPanel') explorerPanel?: ElementRef<HTMLElement>;
 
   private readonly pointers = new Map<number, TouchPoint>();
   private panGesture: PointerGesture | null = null;
@@ -251,7 +257,14 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  onResize(): void { if (this.fitted) this.fitThenFocus(); }
+  onResize(): void {
+    if (!this.fitted) return;
+    requestAnimationFrame(() => {
+      const selected = this.quickPersonId();
+      if (selected && this.store.visiblePersonIds().has(selected)) this.centerExplorerPerson(selected);
+      else this.fitThenFocus();
+    });
+  }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
@@ -634,7 +647,16 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   closeExplorer():void {
+    // Preserve the same canvas center when the desktop inspector column disappears.
+    const viewport=this.canvasWindow?.nativeElement;
+    const previousWidth=viewport?.clientWidth ?? 0;
     this.quickPersonId.set(null);
+    if(viewport && previousWidth){
+      requestAnimationFrame(() => {
+        const change=viewport.clientWidth-previousWidth;
+        if(change) this.panX.update(x => x+change/2);
+      });
+    }
     this.explorerHistory.set([]);
     this.explorerUnavailableTarget.set(null);
     this.explorerBranchError.set(false);
@@ -644,13 +666,41 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   private centerExplorerPerson(id:string):void {
-    const node=this.layout().nodes.find(n=>n.person.id===id);
+    const nodes=this.layout().nodes;
+    const node=nodes.find(n=>n.person.id===id);
     const viewport=this.canvasWindow?.nativeElement;
     if(!node||!viewport)return;
-    this.viewportSize.set({width:viewport.clientWidth,height:viewport.clientHeight});
+    const width=viewport.clientWidth,height=viewport.clientHeight;
+    if(!width||!height)return;
+    this.viewportSize.set({width,height});
+
+    // Tablet inspector overlays the right edge rather than consuming a grid column.
+    // Center the inspected person in the unobscured part of the canvas.
+    let clearWidth=width;
+    const panel=this.explorerPanel?.nativeElement;
+    if(panel){
+      const viewRect=viewport.getBoundingClientRect();
+      const panelRect=panel.getBoundingClientRect();
+      if(panelRect.left>viewRect.left+80 && panelRect.left<viewRect.right &&
+         panelRect.right>viewRect.left && panelRect.top<viewRect.bottom &&
+         panelRect.bottom>viewRect.top){
+        clearWidth=Math.max(180,panelRect.left-viewRect.left-12);
+      }
+    }
+
     const z=this.store.zoom();
-    this.panX.set(viewport.clientWidth/2-(node.x+CANVAS_CARD_WIDTH/2)*z);
-    this.panY.set(viewport.clientHeight/2-(node.y+CANVAS_CARD_HEIGHT/2)*z);
+    let worldX=node.x+CANVAS_CARD_WIDTH/2;
+    const spouses=this.store.relationsFor(id).partners
+      .map(partnerId=>nodes.find(n=>n.person.id===partnerId))
+      .filter((n):n is typeof node=>!!n && n.y===node.y);
+    if(spouses.length){
+      const minX=Math.min(node.x,...spouses.map(n=>n.x));
+      const maxX=Math.max(node.x,...spouses.map(n=>n.x))+CANVAS_CARD_WIDTH;
+      if((maxX-minX)*z<clearWidth-28)worldX=(minX+maxX)/2;
+    }
+
+    this.panX.set(clearWidth/2-worldX*z);
+    this.panY.set(height/2-(node.y+CANVAS_CARD_HEIGHT/2)*z);
   }
 
   /** Navigate within the inspected graph without resetting the tree's focus. */

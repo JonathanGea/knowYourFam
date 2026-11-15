@@ -360,7 +360,7 @@
         </div>
 
           @if (quickPerson(); as qp) {
-            <aside class="quick-panel main-angular-quick" [class.relationship-explorer]="true"
+            <aside #explorerPanel class="relationship-explorer"
               [class.explorer-expanded]="explorerExpanded()" [class.explorer-compact]="explorerCompact()"
               role="dialog" [attr.aria-label]="'Jelajahi hubungan '+qp.name"
               (click)="$event.stopPropagation()">
@@ -416,13 +416,13 @@
                 }
                 <div class="explorer-section-label">KELUARGA TERDEKAT</div>
                 @for (group of explorerGroups(); track group.kind) {
+                  @if (group.people.length) {
                   <section class="explorer-family-group" [attr.aria-label]="group.label">
                     <div class="explorer-group-header">
                       <strong>{{ group.label }}</strong>
                       <span>{{ group.people.length ? group.people.length + ' tercatat' : 'Belum tercatat' }}</span>
                     </div>
-                    @if (group.people.length) {
-                      <div class="explorer-people-list">
+                    <div class="explorer-people-list">
                         @for (relative of group.people.slice(0, explorerExpandedGroups().has(group.kind) ? group.people.length : 3); track relative.id) {
                           <button type="button" class="explorer-relative"
                             [class.is-visible]="store.visiblePersonIds().has(relative.id)"
@@ -435,7 +435,7 @@
                             </span>
                             <span class="explorer-relative-identity">
                               <strong>{{ relative.name }}</strong>
-                              <small>{{ store.visiblePersonIds().has(relative.id) ? 'Terlihat di pohon' : 'Lihat di pohon' }}</small>
+                              @if (!store.visiblePersonIds().has(relative.id)) { <small>Tersembunyi di pohon</small> }
                             </span>
                             <span class="explorer-relative-arrow" aria-hidden="true">↗</span>
                           </button>
@@ -448,10 +448,11 @@
                           {{ explorerExpandedGroups().has(group.kind) ? 'Tampilkan lebih sedikit' : 'Lihat ' + (group.people.length - 3) + ' ' + group.label.toLowerCase() + ' lainnya' }}
                         </button>
                       }
-                    } @else {
-                      <p class="explorer-empty">Hubungan {{ group.label.toLowerCase() }} belum tercatat dalam silsilah.</p>
-                    }
                   </section>
+                  }
+                }
+                @if (explorerMissingGroups().length) {
+                  <p class="explorer-empty-note">Belum tercatat: {{ explorerMissingGroups().join(', ') }}</p>
                 }
                 @if (store.mode()==='focus' && quickDirections(qp.id).length) {
                   <section class="explorer-branches" aria-label="Cabang yang belum terlihat">

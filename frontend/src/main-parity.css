@@ -665,16 +665,24 @@ body .modal-backdrop {
 /* Relationship Explorer: a navigation inspector, not a second profile page.
    Desktop docks beside the canvas; tablet floats; mobile uses a staged sheet. */
 body .main-parity-ui .explorer-stage {
-  display:flex; flex:1 1 0; min-height:0; min-width:0;
-  position:relative; isolation:isolate;
+  display:grid; grid-template-columns:minmax(0,1fr);
+  flex:1 1 0; min-height:0; min-width:0;
+  position:relative; isolation:isolate; overflow:hidden;
+}
+@media(min-width:901px) {
+  body .main-parity-ui .explorer-stage.explorer-open {
+    grid-template-columns:minmax(0,1fr) 342px;
+  }
 }
 body .main-parity-ui .explorer-stage > .viewport {
-  flex:1 1 0; min-width:0; min-height:0;
+  grid-row:1; grid-column:1; min-width:0; min-height:0;
+  width:100%; height:100%; align-self:stretch;
 }
-body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
-  position:relative; inset:auto; transform:none;
-  flex:0 0 365px; align-self:stretch;
-  width:365px; height:auto; max-width:none; max-height:none;
+body .main-parity-ui .explorer-stage > .relationship-explorer {
+  grid-row:1; grid-column:2;
+  position:relative; top:auto;right:auto;bottom:auto;left:auto;
+  order:0; align-self:stretch; justify-self:stretch;
+  width:100%; height:100%; max-width:none; max-height:none;
   min-height:0; min-width:0; margin:0; padding:0;
   display:flex; flex-direction:column; overflow:hidden;
   color:#244534; background:#fff;
@@ -710,8 +718,8 @@ body .main-parity-ui .explorer-close {
 }
 body .main-parity-ui .explorer-close:hover {background:#e5eee6;color:#28573b}
 body .main-parity-ui .explorer-person {
-  display:flex; align-items:flex-start; gap:12px;
-  min-width:0; padding:7px 16px 17px;
+  display:flex; align-items:flex-start; gap:10px;
+  min-width:0; padding:7px 16px 12px;
   border-bottom:1px solid #e5ede5; flex:none;
 }
 body .main-parity-ui .explorer-person > .person-photo {
@@ -733,14 +741,14 @@ body .main-parity-ui .explorer-person-text small {
 }
 body .main-parity-ui .explorer-main-content {
   flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
-  padding:12px 16px 16px; overscroll-behavior:contain;
+  padding:10px 16px 12px; overscroll-behavior:contain;
   scrollbar-width:thin; scrollbar-color:#cfddd0 transparent;
 }
 body .main-parity-ui .explorer-section-label {
-  margin:1px 0 12px;
+  margin:1px 0 9px;
   color:#86a08b; font-size:10px; font-weight:850; letter-spacing:1.15px;
 }
-body .main-parity-ui .explorer-family-group {margin:0 0 16px}
+body .main-parity-ui .explorer-family-group {margin:0 0 11px}
 body .main-parity-ui .explorer-group-header {
   display:flex; gap:9px; justify-content:space-between;
   align-items:baseline; margin-bottom:6px;
@@ -751,11 +759,11 @@ body .main-parity-ui .explorer-group-header strong {
 body .main-parity-ui .explorer-group-header>span {
   font-size:10px; font-weight:650; color:#93a497; white-space:nowrap;
 }
-body .main-parity-ui .explorer-people-list {display:grid;gap:5px}
+body .main-parity-ui .explorer-people-list {display:grid;gap:4px}
 body .main-parity-ui .explorer-relative {
   display:flex; align-items:center; gap:9px;
   width:100%; min-width:0; border:1px solid #e4ece3;
-  border-radius:10px; background:#f9fbf9; padding:8px 9px;
+  border-radius:9px; background:#f9fbf9; padding:6px 9px;
   color:#355844; text-align:left;
   transition:border-color .15s,background-color .15s;
 }
@@ -764,7 +772,7 @@ body .main-parity-ui .explorer-relative:focus-visible {
   background:#ebf5ed; border-color:#a6caae;
 }
 body .main-parity-ui .explorer-relative .person-photo.mini {
-  width:34px; height:34px; font-size:11px; border-radius:9px;flex:none;
+  width:30px; height:30px; font-size:10px; border-radius:8px;flex:none;
 }
 body .main-parity-ui .explorer-relative-identity {
   flex:1 1 0; min-width:0;
@@ -787,8 +795,8 @@ body .main-parity-ui .explorer-show-more {
   text-decoration-color:transparent;
 }
 body .main-parity-ui .explorer-show-more:hover {text-decoration-color:currentColor}
-body .main-parity-ui .explorer-empty {
-  padding:7px 0; font-size:11px; color:#94a499;
+body .main-parity-ui .explorer-empty-note {
+  padding:7px 0 3px; font-size:10px; color:#829588;
   line-height:1.5; font-style:normal;
 }
 body .main-parity-ui .explorer-branches {
@@ -832,8 +840,8 @@ body .main-parity-ui .explorer-notice .explorer-notice-action {
   border-radius:8px; background:#eaf4e9;
 }
 body .main-parity-ui .explorer-footer {
-  flex:none; display:flex; flex-direction:column; gap:8px;
-  padding:12px 16px 14px; border-top:1px solid #e2ece2;
+  flex:none; display:flex; flex-direction:column; gap:7px;
+  padding:10px 16px 12px; border-top:1px solid #e2ece2;
   background:#fff;
 }
 body .main-parity-ui .explorer-focus {
@@ -854,33 +862,44 @@ body .main-parity-ui .explorer-footer-links button {
 }
 body .main-parity-ui .explorer-footer-links button:hover {background:#f2f8f3}
 @media(min-width:1500px) {
-  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
-    flex-basis:390px; width:390px;
+  body .main-parity-ui .explorer-stage.explorer-open {
+    grid-template-columns:minmax(0,1fr) 370px;
   }
 }
-@media(min-width:651px) and (max-width:1100px) {
-  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
+@media(min-width:651px) and (max-width:900px) {
+  body .main-parity-ui .explorer-stage {
+    display:block;
+  }
+  body .main-parity-ui .explorer-stage > .viewport {
+    position:absolute; inset:0; width:100%; height:100%;
+  }
+  body .main-parity-ui .explorer-stage > .relationship-explorer {
     position:absolute; z-index:9; top:8px;right:8px;bottom:8px;left:auto;
-    flex:none; align-self:auto; height:auto;
-    width:min(360px,calc(100% - 16px)); max-width:none; max-height:none;
+    height:auto; width:min(350px,calc(100% - 16px));
     border:1px solid #d7e8d9; border-radius:16px;
     box-shadow:0 14px 46px #25432c2a;
   }
 }
 @media(max-width:650px) {
-  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer {
+  body .main-parity-ui .explorer-stage {
+    display:block;
+  }
+  body .main-parity-ui .explorer-stage > .viewport {
+    position:absolute; inset:0; width:100%; height:100%;
+  }
+  body .main-parity-ui .explorer-stage > .relationship-explorer {
     position:absolute; z-index:9;
-    bottom:0; left:0; right:0; top:auto; flex:none; align-self:auto;
+    bottom:0; left:0; right:0; top:auto;
     width:100%; max-width:100%; height:min(61%,480px); max-height:calc(100% - 8px);
     border:1px solid #dceadd; border-bottom:0;
     border-radius:19px 19px 0 0;
     box-shadow:0 -14px 42px #1b3d2829;
     transition:height .2s ease;
   }
-  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer.explorer-expanded {
+  body .main-parity-ui .explorer-stage > .relationship-explorer.explorer-expanded {
     height:calc(100% - 8px); max-height:calc(100% - 8px);
   }
-  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer.explorer-compact {
+  body .main-parity-ui .explorer-stage > .relationship-explorer.explorer-compact {
     height:155px; max-height:calc(100% - 8px);
   }
   body .main-parity-ui .explorer-sheet-handle {
@@ -903,7 +922,7 @@ body .main-parity-ui .explorer-footer-links button:hover {background:#f2f8f3}
   body .main-parity-ui .explorer-branches {padding-bottom:8px}
 }
 @media(prefers-reduced-motion:reduce) {
-  body .main-parity-ui .quick-panel.main-angular-quick.relationship-explorer,
+  body .main-parity-ui .explorer-stage > .relationship-explorer,
   body .main-parity-ui .explorer-relative {transition:none}
 }
 
@@ -914,4 +933,10 @@ body .main-parity-ui .scene .node.selected:not(.focus-person) {
 }
 body .main-parity-ui .scene .node.focus-person {
   outline:0; border-color:#285e42;
+}
+
+/* Inspector layout invariant: DOM order is canvas, then right inspector. */
+@media(min-width:901px){
+  body .main-parity-ui .explorer-stage.explorer-open > .viewport {grid-column:1;grid-row:1}
+  body .main-parity-ui .explorer-stage.explorer-open > .relationship-explorer {grid-column:2;grid-row:1}
 }

@@ -40,5 +40,7 @@ jobs:
         run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright
       - name: Install Chromium for UI parity
         run: npx playwright install --with-deps chromium
+      - name: Validate relationship explorer geometry on desktop, tablet and phone
+        run: node scripts/browser-explorer-layout.mjs
       - name: Verify private Angular routes and guest auth boundary
         run: node scripts/browser-auth.mjs

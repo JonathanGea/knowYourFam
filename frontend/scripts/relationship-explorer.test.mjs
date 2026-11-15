@@ -43,17 +43,22 @@ test('canvas expansion is separate from people and only exposes hidden relatives
   assert.match(page, /this\.store\.toggleBranch\(key\)/);
   assert.match(page, /this\.explorerBranchError\.set\(/);
   assert.match(page, /private compareBirthOrder\(a: Person, b: Person\)/);
-  assert.match(template,/Hubungan \{\{ group\.label\.toLowerCase\(\) \}\} belum tercatat/);
+  assert.match(template,/explorerMissingGroups\(\)\.join\(', '\)/);
+  assert.match(template, /@if \(group\.people\.length\)/);
 });
 
 test('desktop dock, tablet overlay, mobile expandable sheet preserve canvas',()=>{
   assert.match(template,/class="explorer-stage"/);
-  assert.match(template,/class="quick-panel main-angular-quick"/);
+  assert.match(template,/class="relationship-explorer"/);
+  assert.doesNotMatch(template,/class="quick-panel main-angular-quick"/);
   assert.match(css,/\.explorer-stage > \.viewport/);
-  assert.match(css,/\.relationship-explorer \{[\s\S]*?flex:0 0 365px/);
-  assert.match(css,/@media\(min-width:651px\) and \(max-width:1100px\)/);
+  assert.match(css,/\.explorer-stage\.explorer-open \{\s*grid-template-columns:minmax\(0,1fr\) 342px/);
+  assert.match(css,/\.explorer-stage > \.relationship-explorer \{[\s\S]*?grid-row:1; grid-column:2/);
+  assert.match(css,/@media\(min-width:651px\) and \(max-width:900px\)/);
   assert.match(css,/@media\(max-width:650px\) \{[\s\S]*?\.explorer-sheet-handle/);
   assert.match(template,/onExplorerHandleDown\(\$event\)/);
   assert.match(template,/\[class\.explorer-compact\]="explorerCompact\(\)"/);
   assert.match(css,/\.node\.selected:not\(\.focus-person\)/);
+  assert.match(page,/clearWidth=Math\.max\(180,panelRect\.left-viewRect\.left-12\)/);
+  assert.match(page,/const previousWidth=viewport\?\.clientWidth/);
 });
