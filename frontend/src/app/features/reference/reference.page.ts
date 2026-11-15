@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -6,6 +6,7 @@ import { FamilyTreeStore } from '../../application/family-tree.store';
 import { LEARNING_ARTICLES, LEARNING_GROUPS } from './guide-content.data';
 import { MAIN_RULES_HTML } from './main-rules.data';
 import { TUTORIAL_COURSES } from '../family-tree/tutorial-content.data';
+import { LearningProgressService } from '../../infrastructure/learning-progress.service';
 
 type ReferenceView = 'members'|'guide'|'rules';
 
@@ -23,21 +24,13 @@ export class ReferencePage {
   readonly groups = LEARNING_GROUPS;
   readonly guideSearch = signal('');
   readonly courses = TUTORIAL_COURSES;
-  readonly learning = this.readLearning();
-  readonly completedCount = this.courses.filter(c => this.learning.completed.includes(c.id)).length;
-  readonly courseProgress = Math.round(100*this.completedCount/this.courses.length);
-  private readLearning():{completed:string[];progress:Record<string,number>} {
-    try {
-      const raw:unknown=JSON.parse(localStorage.getItem('knowyourfam_learning_v1')??'{}');
-      if(!raw || typeof raw!=='object')return {completed:[],progress:{}};
-      const record=raw as Record<string,unknown>;
-      return {
-        completed:Array.isArray(record['completed'])
-          ? record['completed'].filter((v):v is string=>typeof v==='string'):[],
-        progress:record['progress'] && typeof record['progress']==='object'
-          ? record['progress'] as Record<string,number> : {}
-      };
-    }catch{return {completed:[],progress:{}};}
+  private readonly learningProgress = inject(LearningProgressService);
+  readonly learning = this.learningProgress.state;
+  readonly completedCount = computed(() => this.courses.filter(c => this.learning().completed.includes(c.id)).length);
+  readonly courseProgress = computed(() => Math.round(100 * this.completedCount() / this.courses.length));
+
+  constructor() {
+    void this.learningProgress.load().catch(() => { /* Error is exposed on service. */ });
   }
 
   illustration(articleGroup:string):readonly string[] {
@@ -47,8 +40,8 @@ export class ReferencePage {
       ['Orang tua','Anggota','Anak'];
   }
   courseStatus(id:string):string {
-    return this.learning.completed.includes(id)?'✓ Selesai · Ulangi':
-      (this.learning.progress[id]??0)>0?'↻ Lanjutkan tutorial':'▶ Coba tutorial';
+    return this.learning().completed.includes(id)?'✓ Selesai · Ulangi':
+      (this.learning().progress[id]??0)>0?'↻ Lanjutkan tutorial':'▶ Coba tutorial';
   }
 
   readonly rulesHtml = MAIN_RULES_HTML;

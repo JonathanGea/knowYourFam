@@ -106,12 +106,10 @@ test('mobile and drawer mirror main UI while keeping manual docs entry',()=>{
   assert.match(html,/routerLink="\/guide"/);
 });
 
-test('main test generation merge is non-destructive and prevents duplicates',()=>{
-  assert.equal(MAIN_REFERENCE_TREE.people.length,124);
-  assert.ok(MAIN_REFERENCE_TREE.people.some(p=>p.id.startsWith('uji-')));
-  assert.match(store,/async mergeTestMembers\(\)/);
-  assert.match(store,/id\.startsWith\('uji-'\) && !existing\.has/);
-  assert.match(store,/relationships: \[\.\.\.tree\.relationships, \.\.\.links\]/);
+test('database-first mode never seeds production with reference test people',()=>{
+  assert.equal(MAIN_REFERENCE_TREE.people.length,124,'reference remains as a fixture');
+  assert.doesNotMatch(store,/mergeTestMembers\(/);
+  assert.doesNotMatch(html,/Lengkapi data uji/);
 });
 
 test('source-style Angular routes include all key pages and full person profile',()=>{

@@ -1,9 +1,9 @@
 import type { FamilyRelationship, FamilyTree, Gender, Person, RelationKind, RelationStatus } from '../domain/family-tree.model';
 
 /**
- * Offline/demo-only parser: accepts legacy main/index.html JSON and the
+ * Database import parser: accepts legacy main/index.html JSON and the
  * Angular FamilyTree JSON export. NEVER use as an authorization boundary.
- * Validates tree scope and graph integrity before replacing local data.
+ * Validates tree scope and graph integrity before adding data to Supabase.
  */
 export function parseDemoTreeJson(text: string): FamilyTree {
   if (text.length > 3_100_000) throw new Error('File terlalu besar. Maksimal 3 MB.');

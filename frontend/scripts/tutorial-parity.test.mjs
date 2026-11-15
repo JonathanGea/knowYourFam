@@ -42,7 +42,8 @@ test('tutorial persistence is isolated and restores the original graph and view'
   assert.match(store,/this\.tree\.set\(original\.tree\)/);
   assert.match(store,/this\.focusPersonId\.set\(original\.focus\)/);
   assert.match(store,/this\.collapsedBranches\.set\(new Set\(original\.collapsed\)\)/);
-  assert.match(ui,/knowyourfam_learning_v1/);
+  assert.match(ui,/LearningProgressService/);
+  assert.match(read('src/app/infrastructure/learning-progress.service.ts'), /user_learning_states/);
   assert.match(ui,/snapshots\[next\.module\]=structuredClone\(this\.store\.tree\(\)\)/);
 });
 

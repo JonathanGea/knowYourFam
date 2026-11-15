@@ -3,8 +3,8 @@
     <div class="brand"><span class="logo">♧</span>Know <b>Your</b> Fam</div>
     <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
     <div class="header-right">
-      <span class="save-indicator">{{ cloud.signedIn() ? (store.tutorialActive() ? "Mode latihan lokal" : "Tersimpan di Supabase") : "Tersimpan di browser" }}</span>
-      <a class="btn" routerLink="/cloud">{{ cloud.signedIn() ? "☁ Akun" : "☁ Data online" }}</a>
+      <span class="save-indicator">{{ store.tutorialActive() ? "Mode latihan sementara" : "Supabase • Database aktif" }}</span>
+      <a class="btn" routerLink="/cloud">☁ Akun</a>
       <button type="button" id="export-btn" class="btn" (click)="downloadLegacyJson()" title="Ekspor dengan format HTML main">↓ Ekspor</button>
       <button type="button" id="top-add" class="btn primary" (click)="openAdd(store.people().length ? 'child' : 'none')">＋ Tambah anggota</button>
     </div>
@@ -18,7 +18,6 @@
       <a class="nav" routerLink="/guide">◉ &nbsp;Panduan Pengguna</a>
       <a class="nav" routerLink="/rules">▤ &nbsp;Aturan Family Tree</a>
       <a class="nav" routerLink="/developer">⌘ &nbsp;Dokumentasi Developer</a>
-      <button type="button" class="nav" (click)="addTestGenerations()">⊕ &nbsp;Lengkapi data uji (10 generasi)</button>
       <div class="side-separator"></div>
       <div class="side-title">Pohon aktif</div>
       <div class="family-chip">
@@ -51,6 +50,18 @@
     </aside>
 
     <main class="main">
+      @if (store.loading()) {
+        <p role="status" class="note">Memuat silsilah dari Supabase...</p>
+      }
+      @if (store.loadError(); as error) {
+        <div role="alert" class="form-error">
+          Gagal mengambil data dari Supabase: {{ error }}
+          <button type="button" class="btn" (click)="store.reload()">Coba lagi</button>
+        </div>
+      }
+      @if (learningError(); as error) {
+        <p role="alert" class="form-error">Progres tutorial belum tersimpan di Supabase: {{ error }}</p>
+      }
       @if (trainingProfileOpen()) {
         @if (store.selectedPerson(); as p) {
           <section class="person-page active training-profile" aria-label="Profil latihan">
@@ -531,7 +542,7 @@
           <div class="guide-need-action">
             <span>☝</span>
             <span>{{ step.type==='created' || step.type==='edited-order' || step.type==='edited-notes'
-              ? 'Gunakan form latihan sungguhan. Langkah dinyatakan selesai setelah data demo tersimpan.'
+              ? 'Gunakan form latihan sungguhan. Langkah dinyatakan selesai setelah data latihan berubah.'
               : step.type==='simulate-export' || step.type==='simulate-import'
               ? 'Simulasi aman, tanpa impor/ekspor file nyata.'
               : 'Lakukan aksi pada kanvas. Progress maju hanya setelah tindakan benar-benar berhasil.' }}</span>
@@ -562,14 +573,14 @@
   <div class="modal-backdrop" (click)="dialog.set(null)">
     <div class="modal-card extended-modal" role="dialog" aria-modal="true" aria-labelledby="family-dialog-title" (click)="$event.stopPropagation()">
       <div class="modal-head">
-        <div><span class="eyebrow">FAMILY TREE · DEMO LOKAL</span>
+        <div><span class="eyebrow">FAMILY TREE · SUPABASE</span>
           <h2 id="family-dialog-title">{{ mode === 'add' ? 'Tambah Anggota' : mode === 'edit' ? 'Edit Biodata' :
             mode === 'link' ? 'Hubungkan Anggota' : mode === 'pair-child' ? 'Anak Bersama Pasangan' :
             mode === 'rename' ? 'Nama Pohon' : 'Hapus Anggota' }}</h2>
         </div>
         <button type="button" class="modal-close" aria-label="Tutup" (click)="dialog.set(null)">×</button>
       </div>
-      <p class="modal-description">Aksi ini hanya mengubah data demo di browser. Permission Owner/Editor/Contributor belum ditegakkan oleh backend.</p>
+      <p class="modal-description">Perubahan anggota dan hubungan akan disimpan ke Supabase. Pastikan informasi keluarga sudah benar.</p>
 
       @if (mode === 'add' || mode === 'edit') {
         <form (submit)="submitPerson($event)">
@@ -681,8 +692,8 @@
         </form>
       }
       @if (mode === 'delete') {
-        <p>Arsipkan <strong>{{ store.findPerson(dialogPersonId())?.name }}</strong> beserta hubungan langsungnya? Data dipertahankan sebagai soft-delete dalam JSON demo.</p>
-        <p class="form-error">Untuk data kolaboratif nyata, penghapusan harus melewati persetujuan sesuai dokumen permission MVP.</p>
+        <p>Arsipkan <strong>{{ store.findPerson(dialogPersonId())?.name }}</strong> beserta hubungan langsungnya? Data diarsipkan menggunakan soft-delete dalam database.</p>
+        <p class="form-error">Hapus hanya data yang Anda kelola. Fitur persetujuan kolaboratif belum tersedia.</p>
         @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
         <div class="modal-actions"><button type="button" class="cancel-button" (click)="dialog.set(null)">Batal</button><button type="button" class="save-button danger" (click)="submitDelete()">Arsipkan Person</button></div>
       }

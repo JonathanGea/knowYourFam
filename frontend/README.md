@@ -1,17 +1,25 @@
-# KnowYourFam — Angular MVP Foundation
+# KnowYourFam — Angular MVP, Supabase database-only
 
-This is the **new Angular frontend** on `dev/fullstack-mvp`. The legacy root `/index.html` on `main` remains untouched.
+The runnable application lives in `frontend/` on `dev/fullstack-mvp`.
+The root `index.html` on `main` is a **separate historical HTML prototype**, not the
+running Angular application. The Angular frontend no longer has browser-local
+Family Tree storage or a guest/demo data repository.
 
-## Stack
+## Stack and behavior
 
-- Angular 22, standalone components, signals, strict TypeScript
-- Tailwind CSS 4, plus component-scoped CSS
-- A provider-independent `FamilyTreeRepository` boundary
-- A `DemoFamilyTreeRepository` using `localStorage` only
+- Angular 22 standalone components + TypeScript + Tailwind
+- Supabase Auth email magic link (required before viewing data)
+- Supabase PostgreSQL for `family_trees`, `persons`, `relationships`
+- `user_learning_states` for onboarding and guided tutorial progress/snapshots
+- RLS restricts data by authenticated tree owner and memberships
+- No offline write queue or demo fallback. Network errors are visible to users.
+- A tutorial uses **temporary in-memory practice data** while active (not the real
+  family); its progress is saved to PostgreSQL and the real tree is restored on exit.
+- Auth tokens are temporarily stored in `sessionStorage` to complete magic-link
+  login and survive reloads within a tab. Family Tree data is **never** stored there.
+  Closing the tab may require signing in again.
 
-## Run locally
-
-Prerequisite: Node.js **24.15+** (Angular v22) and npm.
+## Install / run
 
 ```bash
 cd frontend
@@ -19,144 +27,67 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:4200.
+In Supabase `knowyourfam`, run `database/migration/V3__user_learning_states.sql`
+(the migration is already applied to the configured cloud project). Under
+Authentication → URL Configuration, allow `http://localhost:4200/cloud`
+and your deployed `https://YOUR_DOMAIN/cloud` redirect origin. Set the Site URL
+to the deployed application URL. Open `/cloud`, enter your email and follow the
+magic link. Routes such as `/`, `/members` and `/person/:id` redirect
+unauthenticated visitors to `/cloud`.
 
-```bash
-npm run build
-npm run check
-```
+On first login the API creates an empty "Keluarga Saya" tree, not fictitious
+sample Persons. Add Persons and relationships through the existing Angular
+canvas. Refresh or open the application on another device with the same email
+to read the same database records. Edits and soft deletions go to Supabase.
 
-**Important:** The initial Angular scaffold was authored from ChatGPT without access to the npm registry in its execution container. There is not yet a committed npm lockfile. Generate and commit `package-lock.json` from an environment that can run `npm install`; CI currently uses `npm install`. Until CI succeeds, do not describe this project as build-verified.
+Existing JSON Import adds a **new** tree to PostgreSQL by explicit user action.
+Export JSON is a manual backup download; it is not browser-local app persistence.
+If you have meaningful data in an older browser-only build, export it **before
+switching deployments** and import it after login. No automatic transfer is
+performed, to avoid uploading mock data or overriding private trees.
 
-## Deploy Angular to Railway (production)
+## Deployment on Railway
 
-**Railway service source:** GitHub `dev/fullstack-mvp` with **Root Directory `/frontend`**. This directory contains `railway.json`, `package.json`, and `server.mjs`. A service deployed from the repository root will not use this configuration.
+Use `dev/fullstack-mvp`, Root Directory `/frontend`.
+The `railway.json` build command installs packages and builds Angular.
+Start command is `npm start` (the `server.mjs` static server).
+Use Railway → Deployments → deploy the latest commit manually if auto deploy
+is disabled.
 
-- **Build command** (set in `frontend/railway.json`): `npm install --include=dev --no-audit --no-fund && npm run build`. Including development dependencies at build time is required for the Angular compiler.
-- **Start command:** `npm start` → `node server.mjs`. This serves `dist/knowyourfam/browser`, not `ng serve`.
-- **Healthcheck:** `/health` checks that the process is responding.
-- **PORT:** automatically read from `process.env.PORT`, bound to `0.0.0.0`. No fixed port in Railway variables is needed.
-- **SPA fallback:** direct navigation to `/developer` returns `index.html`, then Angular handles routing.
-- **Node.js:** v24.15+; see `.nvmrc` and the package `engines` field.
-
-**Tablet/manual deploy:** Railway → knowYourFam Angular → Settings → ensure Root Directory is `/frontend`, GitHub branch is `dev/fullstack-mvp`, and the service uses the latest `railway.json`. Then deploy manually from the Deployments tab. If the service has a custom Start Command overriding its config, set it to `npm start` (never `ng serve`). Confirm the **Build Logs** include a successful `ng build` and the **Deploy Logs** show `KnowYourFam Angular static server listening`.
-
-**Not a hosting test:** local static-server smoke tests are not evidence that the Angular bundle builds successfully. Both `npm run build` and `npm run test:serve` must pass before treating deployment as verified.
-
-**Local development:** use `npm run dev` (Angular HMR). `npm start` intentionally serves an already-compiled production build, so run `npm run build` first if you need to test it locally.
-
-## What works in this frontend foundation
-
-- Responsive, mobile-friendly single-page Family Tree workspace.
-- **The same 124-person `githubSeed` from `main/index.html`** on a fresh browser; existing Angular localStorage data takes precedence (the prior fictional 31-person sample is reserved for isolated tutorials).
-- Focus Person following current `main` rules (parents, grandparents, parental siblings, focal siblings, partners and children); spouse-origin branches are expandable separately.
-- Full Overview including Overview Lineage Spine V2 for 6+ generations; source-migrated family-group layout and orthogonal family buses; four directional on-canvas expansion buttons (`up/side/down/pair`), independent collapse and 12-person manual paging; anchored pan, zoom, mobile pinch, Fit All and fullscreen.
-- Quick panel on node click (siblings, branch actions, focus, add/edit/link), focus back history, reset branches and contextual detail drawer.
-- Read-only `/developer` page with all 15 developer chapters transcribed from `main`. The **temporary `Developer Docs · TEMP` header link** and `/developer` route are available in both development and production. **Remove them manually** when no longer needed; there is no environment toggle or automatic hiding.
-- Demo CRUD: create/edit Person with complete biodata, nickname, birth/death, sibling order, compressed photo; create Parent/Child/Partner/Sibling, link two existing Persons, connect a child to both recorded partners, unlink a direct edge and soft-archive a Person (demo only; new relations marked `unconfirmed`).
-- Main reference routes: `/members`, `/rules`, `/guide` (14 articles/6 categories), `/developer` (15 chapters). Tutorial uses an isolated disposable 31-person practice tree: no changes to saved family data.
-- Both Angular JSON backup and main-compatible JSON export are available.
-- Browser-local demo data persists in localStorage and can be exported as JSON.
-
-## Main HTML → Angular UI parity
-
-`src/main-parity.css` contains the **original 50 KB stylesheet** from `main/index.html`, pinned to Git blob `1d52703f6572639c4b64b1e476fe7a0eba201a72`.
-Angular uses the source's exact application shell and card classes: `.header`, `.side`, `.main`, `.canvas-shell`, `.viewport`, `.scene`, `.node`, `.drawer` and `.mobile-nav`.
-
-The Angular route `/person/:id` implements the source's profile page and Biodata/Keluarga/Kenangan tabs. Profile actions navigate back to Angular Family Tree with explicit action query parameters; they never inject or execute legacy JavaScript. The route pages `/members`, `/guide`, `/rules`, `/developer` now use the **same source-style shell and relevant content classes**.
-
-Canvas SVG includes the source safety mask that clips parent/sibling/partner connectors behind cards.
-
-**Validation:** `npm run test:canvas` includes UI parity contracts (layout class hierarchy, 185 × 113 card size, mask, focus controls, responsive nav) and graph tests. Exact screenshot equivalence still requires browser-side comparison with matching JSON and viewport. See `docs/MAIN-ANGULAR-UI-PARITY.md`.
-
-## Source-parity canvas implementation
-
-The main-branch `index.html` has a mature 33k-character layout engine. Rather than rebuilding its geometry from scratch, the Angular canvas now reuses that core algorithm inside isolated modules. The extracted code is temporarily marked `// @ts-nocheck`; the public `LayoutNode` / `LayoutEdge` interfaces stay typed.
-
-Read `docs/MAIN-ANGULAR-PARITY.md` for source-to-Angular feature mapping, verification and remaining gaps; see `docs/CANVAS-MAIN-ANGULAR-MIGRATION.md` for geometry details. Source-faithful developer documentation is in `docs/DEVELOPER-CANVAS-MAIN-REFERENCE.md` and accessible via `/developer`.
-
-Run canvas regression checks without an npm install:
+## Validation
 
 ```bash
 npm run test:canvas
+npm run build
+npm run test:serve
 ```
 
-For full Angular build, install dependencies and run `npm run build`. The GitHub Action performs both the canvas smoke tests and build.
+CI also launches a real Chromium browser and confirms protected routes never
+render private data before login. Historical pixel-by-pixel parity tests against
+the public HTML demo cannot run against a live authenticated database without
+an isolated test account; source-level graph/canvas parity unit tests remain.
+Do not claim database write E2E coverage without testing a real signed-in user.
 
-## Compare with current main tree
-
-The Angular **fresh-install default** now uses the 124-person `githubSeed` in `main/index.html`. The actual main page may open `githubSeed` or locally saved family data instead. To compare behavior on the **same data**, export JSON from main and import it using Angular's **Impor JSON** button. This replaces the local Angular demo after confirmation, with no remote upload. Both legacy arrays and Angular relationship rows are supported.
-
-The importer rejects missing people, duplicate identities, cycles, and invalid dates, and preserves safe compressed profile photos; it is demo-only and is **not** a permission system. The original Angular v1 localStorage key remains untouched. The Angular v2 storage key is preserved; it is **not overwritten** when the default seed changes. If a browser still shows the older sample, export its data first and use Import JSON to switch trees safely.
-
-## Not implemented (deliberately)
-
-- Supabase project/database connection, production migrations, Auth and RLS.
-- Person invitation/claim, permission enforcement, contribution proposals, approval workflow, audit history.
-- Production verification of graph layout on large/multi-partner families, virtualized large graphs, complete mobile gesture QA, and full UI parity with the legacy prototype.
-- Real simultaneous collaboration, API authorization, precise visual/UI regression parity, all original tutorial workflow automation (the isolated Angular tutorial currently guides manual actions), local undo/revision history.
-
-**Do not use the demo write operations as a backend authorization model.** Final permissions are in `docs/PERMISSIONS-AND-CONTRIBUTIONS-MVP.md`. The current UI is an offline prototype to facilitate the upcoming vertical slices.
-
-## Architecture
+## Architecture and limitations
 
 ```text
 src/app/
-  domain/
-    family-tree.model.ts            # Canonical TypeScript shapes
-    family-tree.repository.ts       # Replaceable data boundary
-  application/
-    family-tree.store.ts            # Signals, Focus, Expand, demo use cases
-  infrastructure/
-    demo-family-tree.repository.ts  # Only adapter currently active
-  features/family-tree/
-    family-layout.ts                # Typed canvas facade
-    main-layout-engine.ts           # Direct geometry port from main
-    main-connector-engine.ts        # Parent buses / corridor SVG port from main
-  scripts/
-    canvas-parity.test.mjs          # Node-only layout regression tests
-    family-tree.page.ts             # UI controller
-    family-tree.page.html           # UI template
-    family-tree.page.css            # Responsive styling
-  features/developer/
-    developer.page.ts               # Read-only reference page
-    developer-reference.data.ts     # Source snapshot of 15 chapters
-  infrastructure/
-    main-sample.data.ts             # Fictional dataset from main
+  application/family-tree.store.ts          # canonical graph state, no storage
+  application/require-cloud-auth.guard.ts   # protect all data routes
+  domain/family-tree.repository.ts          # provider-independent interface
+  infrastructure/supabase-family-tree.repository.ts
+  infrastructure/supabase-connection.service.ts
+  infrastructure/learning-progress.service.ts
+  features/auth/cloud-login.page.ts
 ```
 
-When ready, implement a Supabase adapter **behind the same repository interface** (and extend async APIs as necessary), then replace it later with an HTTP adapter for Spring Boot / Node. Do not import `supabase-js` in UI or domain layers. Authentication identity must remain distinct from Person identity.
+Both tree and tutorial changes require a valid Supabase session. The browser
+contains **only a publishable API key**; never expose secret/service_role keys,
+database passwords or JWT signing secrets.
 
-## Git and collaboration
-
-- Commit Angular changes to `dev/fullstack-mvp`.
-- Never modify/merge to `main` without explicit instruction.
-- Keep the old root `index.html` as reference; it still supports the independent HTML/JSON developer.
-- CI config: `.github/workflows/angular-dev.yml`.
-
-## Person database mode — Supabase
-
-The Angular `FamilyTreeRepository` now selects Supabase whenever a verified
-Supabase Auth session exists. Guest mode keeps the existing localStorage demo
-so main/Angular parity and tutorial mode remain available.
-
-1. Open `/cloud`, enter an email, then open its magic link.
-2. In Supabase Dashboard → Authentication → URL Configuration, allow the
-   Railway application origin and `http://localhost:4200` under Redirect URLs.
-   Set the Site URL to the production origin when deploying.
-3. Login returns to `/`. Your cloud Family Tree is initially empty; create
-   Person nodes and relationships directly in the existing Angular canvas.
-4. The existing Import JSON action can explicitly import a demo export into
-   cloud storage, but guest data is never uploaded automatically.
-5. Sign out using `/cloud` (the page reload prevents stale in-memory data).
-
-The frontend contains ONLY the publishable API key, never a secret or
-database password. The database enforces authenticated/owner RLS.
-Authorization roles and collaboration workflows remain future work.
-
-**MVP limitations:** saves use multiple requests, not a transaction;
-simultaneous edits are not conflict-safe. Compressed profile image data URLs
-are temporarily written to the existing text field; move images to private
-Supabase Storage before public launch. An error in signed-in mode never
-silently falls back to localStorage. Apply the SQL migration in
-`database/migration/V2__relationships_soft_delete_owner.sql` for archive support.
+Tree saving currently issues multiple API requests, not a single database
+transaction. Simultaneous editors and partial failure recovery need transactional
+RPC/backend work before collaborative editing. Profile photos are currently
+limited compressed data URLs stored in the existing text column; migrate to
+private Storage for production scale. Permission/collaboration workflows are
+out of scope for the current Person-focused MVP.

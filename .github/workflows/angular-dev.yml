@@ -22,11 +22,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Checkout authoritative HTML main for browser parity
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          path: main-reference
       - name: Node.js 24
         uses: actions/setup-node@v4
         with:
@@ -45,12 +40,5 @@ jobs:
         run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright
       - name: Install Chromium for UI parity
         run: npx playwright install --with-deps chromium
-      - name: Compare main HTML and Angular in Chromium
-        run: node scripts/browser-parity.mjs
-      - name: Upload visual reference screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: main-angular-parity-screenshots
-          path: frontend/artifacts/browser-parity
-          if-no-files-found: ignore
+      - name: Verify private Angular routes and guest auth boundary
+        run: node scripts/browser-auth.mjs
