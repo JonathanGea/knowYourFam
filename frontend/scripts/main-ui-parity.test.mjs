@@ -60,7 +60,7 @@ test('source Focus/Overview toolbar, branch toggles, help and quick actions pres
   for(const key of ['Fokus Orang','Seluruh Pohon','Reset cabang',
    'Kembali','branchControls()','class="branch-toggle"','class="quick-panel main-angular-quick"',
    'quickDirections(qp.id)','class="tree-help-button"','class="tree-help-panel"',
-   'toggleFullscreen()','fitCanvas()']){
+   'toggleFullscreen()','fitCanvasFromToolbar()']){
     assert.ok(html.includes(key),'Behavior control missing: '+key);
   }
 });

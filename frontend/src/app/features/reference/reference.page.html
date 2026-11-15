@@ -78,6 +78,12 @@
                   <div class="guide-overline">KNOWYOURFAM · {{ getGroupTitle(detail.group) }}</div>
                   <h2>{{ detail.title }}</h2>
                   <p class="guide-summary">{{ detail.summary }}</p>
+                  <div class="guide-illustration" [attr.aria-label]="'Ilustrasi '+detail.title">
+                    @for (label of illustration(detail.group); track label; let i=$index) {
+                      @if (i>0) { <span class="guide-illus-arrow">→</span> }
+                      <div class="guide-illus-card"><span class="guide-illus-icon">{{ i===0?'♧':i===1?'♙':'♡' }}</span><b>{{ label }}</b></div>
+                    }
+                  </div>
                   <h3>Langkah penggunaan</h3>
                   <ol>@for (step of detail.steps; track step) { <li>{{ step }}</li> }</ol>
                   <div class="guide-result"><b>Hasil yang diharapkan:</b> {{ detail.result }}</div>
@@ -125,6 +131,42 @@
                   }
                 }
               </div>
+              <section class="guide-progress">
+                <div class="guide-progress-top">
+                  <b>Tutorial Interaktif</b>
+                  <span>{{ completedCount }} dari {{ courses.length }} modul selesai</span>
+                </div>
+                <div class="guide-progress-bar"><div [style.width.%]="courseProgress"></div></div>
+                <div class="guide-course-grid">
+                  @for (course of courses; track course.id) {
+                    <a class="guide-course" routerLink="/" [queryParams]="{tutorial:course.id}">
+                      <span class="guide-course-icon">{{ course.icon }}</span>
+                      <b>{{ course.title }}</b>
+                      <small>{{ course.description }}</small>
+                      <em>{{ courseStatus(course.id) }}</em>
+                    </a>
+                  }
+                </div>
+              </section>
+              <section class="guide-faq">
+                <h3>Pertanyaan umum</h3>
+                <details>
+                  <summary>Apakah latihan mengubah data keluarga saya?</summary>
+                  <p>Tidak. Tutorial memakai pohon demo terisolasi; data dan relasi keluarga asli tidak disimpan ulang.</p>
+                </details>
+                <details>
+                  <summary>Mengapa beberapa anggota tidak terlihat?</summary>
+                  <p>Fokus Orang hanya menampilkan cabang terdekat. Expand ↑ ↔ ↓ untuk membuka satu arah, atau pilih Seluruh Pohon.</p>
+                </details>
+                <details>
+                  <summary>Apakah data di browser otomatis tersinkron?</summary>
+                  <p>Belum. Pada MVP ini data asli tersimpan di browser. Gunakan Ekspor JSON secara berkala untuk membuat cadangan.</p>
+                </details>
+                <details>
+                  <summary>Bisakah saya berhenti dan melanjutkan tutorial?</summary>
+                  <p>Ya. Progress dan salinan data demo disimpan pada kunci terpisah di browser. Tombol keluar mengembalikan pohon asli.</p>
+                </details>
+              </section>
             }
           </div>
         </section>

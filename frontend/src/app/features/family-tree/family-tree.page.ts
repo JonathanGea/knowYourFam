@@ -6,8 +6,20 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
+import { getTutorialCourse, TUTORIAL_COURSES } from './tutorial-content.data';
+import type { TutorialStep } from './tutorial-content.data';
+import type { FamilyTree } from '../../domain/family-tree.model';
 import { parseDemoTreeJson } from '../../infrastructure/demo-import';
 
+interface LearningState {
+  dismissed: boolean;
+  completed: string[];
+  progress: Record<string, number>;
+  snapshots: Record<string, FamilyTree>;
+}
+interface TutorialSession {
+  module: string; index: number; minimized: boolean; preview: string;
+}
 interface TouchPoint { x: number; y: number }
 interface PointerGesture {
   readonly startX: number;
@@ -38,22 +50,26 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   private queryApplied = false;
   readonly dialog = signal<'add'|'edit'|'link'|'pair-child'|'delete'|'rename'|null>(null);
   readonly dialogPersonId = signal('');
+  readonly dialogPartnerId = signal('');
   readonly dialogTargetId = signal('');
   readonly dialogRelation = signal<'none'|'parent'|'child'|'partner'|'sibling'>('child');
   readonly photoData = signal('');
-  readonly tutorial = signal<{ module: string; index: number } | null>(null);
-  readonly tutorialSteps = computed(() => {
-    const name = this.tutorial()?.module ?? '';
-    const examples: Record<string, readonly string[]> = {
-      kartu: ['Ketuk satu kartu Person di kanvas.', 'Buka panel aksi cepat dan lihat kerabatnya.', 'Gunakan Jadikan fokus untuk menjelajahi anggota tersebut.'],
-      hubungan: ['Pilih anggota keluarga sebagai titik hubungan.', 'Gunakan Tambah anggota untuk membuat Person baru, atau Hubungkan untuk memilih Person lama.', 'Periksa perubahan relasi yang langsung muncul di kanvas.'],
-      saudara: ['Fokus pada satu Person dan buka daftar saudaranya.', 'Urutan saudara mengikuti birthOrder, kemudian tanggal lahir jika tersedia.', 'Urutan lahir dapat diedit dari profil.'],
-      cabang: ['Gunakan tombol ↑ untuk membuka orang tua.', 'Gunakan ↔ untuk saudara, ↓ untuk anak, atau tombol pasangan untuk anak bersama.', 'Tutup cabang tanpa menutup bagian keluarga lain.'],
-      kanvas: ['Geser area kosong untuk memindahkan kanvas.', 'Gunakan tombol + / − atau pinch untuk memperbesar dan memperkecil.', 'Tekan Pas untuk menyesuaikan seluruh pohon.'],
-      data: ['Data demo hanya disimpan di browser ini.', 'Gunakan Ekspor JSON untuk membuat cadangan.', 'Impor JSON dari main untuk membandingkan pohon yang identik.']
-    };
-    return examples[name] ?? examples['kanvas'];
+  readonly tutorial = signal<TutorialSession | null>(null);
+  readonly courses = TUTORIAL_COURSES;
+  readonly learning = signal<LearningState>(this.readLearning());
+  readonly tutorialCourse = computed(() => getTutorialCourse(this.tutorial()?.module ?? ''));
+  readonly tutorialSteps = computed(() => this.tutorialCourse()?.steps ?? []);
+  readonly tutorialStep = computed(() => this.tutorialSteps()[this.tutorial()?.index ?? 0]);
+  readonly tutorialDone = computed(() =>
+    !!this.tutorial() && (this.tutorial()?.index ?? 0) >= this.tutorialSteps().length);
+  readonly tutorialPercentage = computed(() =>
+    Math.round(100 * (this.tutorial()?.index ?? 0) / Math.max(1,this.tutorialSteps().length)));
+  readonly highlightedTutorialPerson = computed(() => {
+    const step=this.tutorialStep();
+    return step?.target ?? (step?.type==='branch'?'edu-self':null);
   });
+  readonly highlightedTutorialBranch = computed(() =>
+    this.tutorialStep()?.type==='branch' ? this.tutorialStep()?.key : null);
   readonly editingPerson = computed(() => this.store.findPerson(this.dialogPersonId()));
   readonly layout = computed(() => createFamilyLayout(
     this.store.visiblePeople(),
@@ -70,6 +86,10 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly quickPersonId = signal<string | null>(null);
   readonly fullscreen = signal(false);
   readonly detailsOpen = signal(false);
+  readonly drawerExpanded = signal(false);
+  readonly trainingProfileOpen = signal(false);
+  readonly trainingProfileTab = signal<'bio'|'family'|'memories'>('bio');
+  private drawerStart: {pointerId:number;y:number} | null = null;
   readonly helpOpen = signal(false);
   readonly onboardingDismissed = signal(false);
   readonly labelBoost = computed(() => Math.min(1.5, Math.max(1, 0.73 / this.store.zoom())));
@@ -198,40 +218,190 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   viewPersonDetails(): void {
     const id = this.quickPersonId() ?? this.store.selectedPersonId();
     this.quickPersonId.set(null);
-    if (id && this.store.findPerson(id)) void this.router.navigate(['/person', id]);
+    if (!id || !this.store.findPerson(id)) return;
+    if (this.store.tutorialActive() && window.innerWidth>650) {
+      this.trainingProfileTab.set('bio');
+      this.trainingProfileOpen.set(true);
+      this.detailsOpen.set(false);
+      this.tutorialRecord('profile',{id});
+    } else if (window.innerWidth<=650) {
+      this.drawerExpanded.set(false);
+      this.detailsOpen.set(true);
+      this.tutorialRecord('profile',{id});
+    } else {
+      void this.router.navigate(['/person', id]);
+    }
+  }
+
+  private readLearning(): LearningState {
+    try {
+      const parsed: unknown=JSON.parse(localStorage.getItem('knowyourfam_learning_v1') ?? '{}');
+      const record=parsed && typeof parsed==='object' && !Array.isArray(parsed)
+        ? parsed as Record<string,unknown> : {};
+      const completed=Array.isArray(record['completed']) ? record['completed'].filter(
+        (id):id is string=>typeof id==='string'&&!!getTutorialCourse(id)) : [];
+      const progress=record['progress'] && typeof record['progress']==='object'
+        ? record['progress'] as Record<string,number> : {};
+      const snapshots=record['snapshots'] && typeof record['snapshots']==='object'
+        ? record['snapshots'] as Record<string,FamilyTree> : {};
+      return {dismissed:record['dismissed']===true,completed,progress,snapshots};
+    } catch { return {dismissed:false,completed:[],progress:{},snapshots:{}}; }
+  }
+
+  private saveLearning(next: LearningState): void {
+    this.learning.set(next);
+    this.onboardingDismissed.set(next.dismissed);
+    try { localStorage.setItem('knowyourfam_learning_v1',JSON.stringify(next)); }
+    catch { /* Browser storage is optional; never overwrite real family data. */ }
   }
 
   dismissOnboarding(): void {
-    this.onboardingDismissed.set(true);
-    try {
-      const raw = localStorage.getItem('knowyourfam_learning_v1');
-      const parsed: unknown = raw ? JSON.parse(raw) : {};
-      const old = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-      localStorage.setItem('knowyourfam_learning_v1', JSON.stringify({ ...old, dismissed: true }));
-    } catch { /* Dismissed for this page even if browser storage is unavailable. */ }
+    this.saveLearning({...this.learning(),dismissed:true});
   }
 
   startTutorial(module: string): void {
+    const course=getTutorialCourse(module);
+    if (!course) return;
+    if (this.store.tutorialActive()) this.stopTutorial();
+    const state=this.learning();
+    const raw=Number(state.progress[module] ?? 0);
+    const index=Number.isInteger(raw) && raw>=0 && raw<course.steps.length ? raw : 0;
+    this.store.startTutorialTree(module,state.snapshots[module]);
+    this.tutorial.set({module,index,minimized:false,preview:''});
+    this.dialog.set(null);
+    this.quickPersonId.set(null);
+    this.detailsOpen.set(false);
+    this.trainingProfileOpen.set(false);
+    this.helpOpen.set(false);
     this.dismissOnboarding();
-    this.store.startTutorialTree();
-    this.tutorial.set({module,index:0});
-    requestAnimationFrame(()=>this.fitCanvas());
+    requestAnimationFrame(()=>this.fitThenFocus());
   }
 
   stopTutorial(): void {
+    this.dialog.set(null);
+    this.quickPersonId.set(null);
+    this.detailsOpen.set(false);
+    this.trainingProfileOpen.set(false);
     this.tutorial.set(null);
     this.store.endTutorialTree();
-    requestAnimationFrame(()=>this.fitCanvas());
+    requestAnimationFrame(()=>this.fitThenFocus());
   }
 
-  nextTutorial(): void {
-    const current=this.tutorial();
-    if (!current) return;
-    if (current.index+1>=this.tutorialSteps().length) this.stopTutorial();
-    else this.tutorial.set({...current,index:current.index+1});
+  private persistTutorialProgress(next: TutorialSession): void {
+    const state=this.learning();
+    const done=next.index >= this.tutorialSteps().length;
+    const completed=done && !state.completed.includes(next.module)
+      ? [...state.completed,next.module] : [...state.completed];
+    const progress={...state.progress};
+    const snapshots={...state.snapshots};
+    if(done) {
+      delete progress[next.module];
+      delete snapshots[next.module];
+    } else {
+      progress[next.module]=next.index;
+      snapshots[next.module]=structuredClone(this.store.tree());
+    }
+    this.saveLearning({...state,progress,snapshots,completed});
   }
+
+  private advanceTutorial(): void {
+    const prev=this.tutorial();
+    if(!prev || this.tutorialDone())return;
+    const next={...prev,index:prev.index+1,preview:''};
+    this.tutorial.set(next);
+    this.persistTutorialProgress(next);
+  }
+
+  tutorialRecord(event: string, payload: {
+    id?:string;key?:string;open?:boolean;mode?:string;operation?:string;
+    relation?:string;birthOrder?:number;notes?:string
+  }={}): void {
+    if(!this.store.tutorialActive())return;
+    const step=this.tutorialStep();
+    if(!step)return;
+    let correct=false;
+    switch(step.type) {
+      case 'card':correct=event==='card' && payload.id===step.target;break;
+      case 'profile':correct=event==='profile' && payload.id==='edu-self';break;
+      case 'return':correct=event==='return';break;
+      case 'created':correct=event==='person-save' && payload.operation==='create' &&
+        payload.relation===step.relation;break;
+      case 'edited-order':correct=event==='person-save' && payload.operation==='edit' &&
+        payload.id==='edu-older' && payload.birthOrder===1;break;
+      case 'edited-notes':correct=event==='person-save' && payload.operation==='edit' &&
+        payload.id==='edu-self' && !!payload.notes?.trim() && payload.notes!=='Data latihan saja';break;
+      case 'branch':correct=event==='branch' && payload.key===step.key && payload.open===step.open;break;
+      case 'mode':correct=event==='mode' && payload.mode===step.mode;break;
+      case 'zoom':correct=event==='zoom';break;
+      case 'pan':correct=event==='pan';break;
+      case 'fit':correct=event==='fit';break;
+      case 'inspect':correct=event==='inspect';break;
+      case 'simulate-export':correct=event==='simulate-export';break;
+      case 'simulate-import':correct=event==='simulate-import';break;
+    }
+    if(correct)this.advanceTutorial();
+  }
+
+  tutorialAction(action: 'back'|'exit'|'guide'|'finish'|'next-course'|'minimize'|'action'): void {
+    const session=this.tutorial();
+    if(!session)return;
+    if(action==='exit'||action==='finish') { this.stopTutorial();return; }
+    if(action==='guide') { this.stopTutorial();void this.router.navigate(['/guide']);return; }
+    if(action==='minimize'){
+      this.tutorial.set({...session,minimized:!session.minimized});return;
+    }
+    if(action==='back') {
+      if(session.index>0){
+        const previous={...session,index:session.index-1,preview:''};
+        this.tutorial.set(previous);
+        this.persistTutorialProgress(previous);
+      }
+      return;
+    }
+    if(action==='next-course'){
+      const index=TUTORIAL_COURSES.findIndex(course=>course.id===session.module);
+      this.startTutorial(TUTORIAL_COURSES[(index+1)%TUTORIAL_COURSES.length].id);
+      return;
+    }
+    const step: TutorialStep|undefined=this.tutorialStep();
+    if(!step)return;
+    if(step.type==='created') { this.openAdd(step.relation ?? 'child','edu-self'); return; }
+    if(step.type==='edited-order') { this.openEdit('edu-older'); return; }
+    if(step.type==='edited-notes') { this.openEdit('edu-self'); return; }
+    if(step.type==='return') {
+      this.closePersonDrawer();
+      this.trainingProfileOpen.set(false);
+      this.tutorialRecord('return');
+      return;
+    }
+    if(step.type==='inspect') {
+      this.fitCanvas();
+      this.tutorialRecord('inspect');
+      return;
+    }
+    if(step.type==='simulate-export') {
+      const preview=JSON.stringify({
+        treeName:'LATIHAN',
+        people:this.store.people().slice(0,2).map(p=>({id:p.id,name:p.name}))
+      },null,2);
+      this.tutorialRecord('simulate-export');
+      this.tutorial.update(t=>t?{...t,preview}:t);
+      return;
+    }
+    if(step.type==='simulate-import') {
+      this.tutorialRecord('simulate-import');
+      this.tutorial.update(t=>t?{
+        ...t,preview:'Pratinjau: JSON valid → konfirmasi → mengganti pohon aktif. Tidak ada file dipilih.'
+      }:t);
+    }
+  }
+
+  /** Previous simple `nextTutorial` allowed skipping without performing an action.
+   * Keep a compatibility entry point but never advance without a verified event. */
+  nextTutorial(): void { this.tutorialAction('action'); }
 
   openAdd(relation: 'none'|'parent'|'child'|'partner'|'sibling'='child', targetId?:string): void {
+    this.dialogPartnerId.set('');
     this.formError.set('');
     this.quickPersonId.set(null);
     this.dialogPersonId.set('');
@@ -239,6 +409,63 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.dialogRelation.set(relation);
     this.photoData.set('');
     this.dialog.set('add');
+  }
+
+  openAddToCouple(parentA:string,parentB:string):void {
+    this.openAdd('child',parentA);
+    this.dialogPartnerId.set(parentB);
+  }
+
+  genderLabel(person:Person):string {
+    return ({male:'Laki-laki',female:'Perempuan',other:'Lainnya',unknown:'Belum diisi'} as const)[person.gender];
+  }
+  dateText(value?:string):string {
+    if(!value)return 'Belum diisi';
+    const date=new Date(value+'T00:00:00');
+    return Number.isNaN(date.getTime())?'Belum diisi':
+      new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'long',year:'numeric'}).format(date);
+  }
+  drawerGroups(id:string):readonly {label:string;kind:'parent'|'partner'|'child'|'sibling';ids:readonly string[]}[] {
+    const relations=this.store.relationsFor(id);
+    return [
+      {label:'Orang tua',kind:'parent',ids:relations.parents},
+      {label:'Pasangan',kind:'partner',ids:relations.partners},
+      {label:'Anak',kind:'child',ids:relations.children},
+      {label:'Saudara',kind:'sibling',ids:relations.siblings}
+    ];
+  }
+
+  drawerDirectEdge(personId:string,otherId:string,
+    kind:'parent'|'partner'|'child'|'sibling') {
+    return this.store.directRelationship(
+      kind==='parent'?otherId:personId,
+      kind==='parent'?personId:otherId,
+      kind==='child'?'parent':kind);
+  }
+
+  openFullProfile(id:string):void {
+    if(!this.store.findPerson(id))return;
+    this.store.select(id);
+    this.quickPersonId.set(null);
+    this.detailsOpen.set(false);
+    if(this.store.tutorialActive()) {
+      this.trainingProfileTab.set('bio');
+      this.trainingProfileOpen.set(true);
+      this.tutorialRecord('profile',{id});
+    } else {
+      void this.router.navigate(['/person',id]);
+    }
+  }
+
+  selectDrawerRelative(id:string):void {
+    if(!this.store.findPerson(id))return;
+    this.store.select(id);
+    this.quickPersonId.set(null);
+    this.detailsOpen.set(true);
+  }
+  returnFromTutorialProfile():void {
+    this.trainingProfileOpen.set(false);
+    this.tutorialRecord('return');
   }
 
   openEdit(id?:string): void {
@@ -360,6 +587,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.showAllQuickSiblings.set(false);
     this.helpOpen.set(false);
     this.mobileListOpen.set(false);
+    this.tutorialRecord('card',{id});
   }
 
   setFocus(id: string): void {
@@ -374,7 +602,35 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   openSidebarPerson(id: string): void {
     this.store.select(id);
     this.quickPersonId.set(null);
+    this.drawerExpanded.set(false);
     this.detailsOpen.set(true);
+  }
+
+  closePersonDrawer():void {
+    this.detailsOpen.set(false);
+    this.drawerExpanded.set(false);
+    this.drawerStart=null;
+    this.tutorialRecord('return');
+  }
+
+  toggleDrawerExpanded():void {
+    this.drawerExpanded.update(expanded=>!expanded);
+  }
+
+  onDrawerGrabDown(event:PointerEvent):void {
+    if(window.innerWidth>650)return;
+    this.drawerStart={pointerId:event.pointerId,y:event.clientY};
+  }
+
+  onDrawerGrabUp(event:PointerEvent):void {
+    if(!this.drawerStart||event.pointerId!==this.drawerStart.pointerId)return;
+    const delta=event.clientY-this.drawerStart.y;
+    this.drawerStart=null;
+    if(delta<-36)this.drawerExpanded.set(true);
+    else if(delta>65){
+      if(this.drawerExpanded())this.drawerExpanded.set(false);
+      else this.closePersonDrawer();
+    }
   }
 
   yearsOf(person: Person): string {
@@ -437,16 +693,19 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   setMode(mode: 'focus' | 'overview'): void {
     this.quickPersonId.set(null);
     this.store.setMode(mode);
+    this.tutorialRecord('mode',{mode});
     requestAnimationFrame(() => this.fitThenFocus());
   }
 
   toggleBranch(key: string, anchorId: string): void {
     this.quickPersonId.set(null);
     this.keepAnchor(anchorId, () => this.store.toggleBranch(key));
+    this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
   collapseBranch(key: string, anchorId: string): void {
     this.quickPersonId.set(null);
     this.keepAnchor(anchorId, () => this.store.collapseBranch(key));
+    this.tutorialRecord('branch',{key,open:this.store.isBranchOpen(key)});
   }
   private keepAnchor(id: string, change: () => void): void {
     const before = this.layout().nodes.find(n => n.person.id === id);
@@ -492,6 +751,11 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.panY.set(viewport.clientHeight/2 - (person.y + CANVAS_CARD_HEIGHT/2)*z);
   }
 
+  fitCanvasFromToolbar(): void {
+    this.fitCanvas();
+    this.tutorialRecord('fit');
+  }
+
   zoomAt(newZoom: number, screenX: number, screenY: number): void {
     const before = this.store.zoom();
     this.store.setZoom(newZoom);
@@ -506,6 +770,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     if (!el) return;
     this.quickPersonId.set(null);
     this.zoomAt(this.store.zoom() * (delta > 0 ? 1.23 : 1/1.23), el.clientWidth / 2, el.clientHeight / 2);
+    this.tutorialRecord('zoom');
   }
 
   onWheel(event: WheelEvent): void {
@@ -515,6 +780,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.quickPersonId.set(null);
     const factor = event.deltaY < 0 ? 1.12 : 1/1.12;
     this.zoomAt(this.store.zoom() * factor, event.clientX - rect.left, event.clientY - rect.top);
+    this.tutorialRecord('zoom');
   }
 
   onPointerDown(event: PointerEvent): void {
@@ -574,6 +840,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
   onPointerUp(event: PointerEvent): void {
     if (!this.pointers.has(event.pointerId)) return;
+    const wasPinch=this.pointers.size>1;
     const gesture=this.panGesture;
     const tapId=event.type==='pointerup' && this.pointers.size===1
       && gesture && !gesture.moved ? gesture.tapId : null;
@@ -583,7 +850,10 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       this.suppressClickUntil=Date.now()+450;
       this.store.select(tapId);
       this.quickPersonId.set(tapId);
+      this.tutorialRecord('card',{id:tapId});
     }
+    if (wasPinch) this.tutorialRecord('zoom');
+    else if (gesture?.moved) this.tutorialRecord('pan');
     if (this.pointers.size===1) {
       const [point]=this.pointers.values();
       this.panGesture={startX:point.x,startY:point.y,
@@ -634,11 +904,22 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     };
     try {
       if (this.dialog()==='edit') {
-        await this.store.updatePerson(this.dialogPersonId(),details);
+        const id=this.dialogPersonId();
+        await this.store.updatePerson(id,details);
+        this.tutorialRecord('person-save',{
+          operation:'edit',id,birthOrder:details.birthOrder,notes:details.notes
+        });
       } else {
         const {birthDate,birthOrder}=details;
-        await this.store.addPerson({name,gender,birthDate,birthOrder,relationTo,
-          targetId:this.dialogTargetId()},details);
+        const draft={name,gender,birthDate,birthOrder,relationTo,
+          targetId:this.dialogTargetId()};
+        if(this.dialogPartnerId()) {
+          await this.store.addChildToCouple(this.dialogTargetId(),this.dialogPartnerId(),draft,details);
+          this.dialogPartnerId.set('');
+        } else {
+          await this.store.addPerson(draft,details);
+        }
+        this.tutorialRecord('person-save',{operation:'create',relation:relationTo});
       }
       this.dialog.set(null);
       this.formError.set('');

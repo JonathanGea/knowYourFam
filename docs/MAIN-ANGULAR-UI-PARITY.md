@@ -60,10 +60,30 @@ same-data, same-viewport states.
 ## Remaining differences not to conceal
 
 - Full standalone Person Profile page and all nested rich actions in \`main\` still exceed the Angular drawer experience.
-- Advanced tutorial engine from main includes action-driven guided overlays and progression; Angular currently provides simpler isolated steps.
+- Angular now includes six learning courses, action-validated steps, isolated training graph and resume states. The tutorial's profile step now renders the source-shaped full profile view on desktop, preserving the lesson panel and returning to the same training graph. Mobile Quick Actions opens a bottom sheet as in main; the sheet also offers full profile.
 - Guide, Rules, Members, Developer and Profile pages now use the main-style global shell; individual illustrations, help interactions and long-document states still need visual screenshot comparisons.
-- Mobile drawer swipe-to-expand/dismiss, edge-case quick popovers, multi-partner geometry and complex connector visual diff need browser testing.
+- Mobile drawer swipe-to-expand/dismiss was added. Device-level gestures, edge-case popovers, complex relationships and pixel-diff still need verification.
 - Data changes remain local demo operations; backend permissions/claims are not implemented.
 
 **Policy:** Treat \`main\` as source of visual/behavior truth. No branch merge, no
 copying main JavaScript into Angular components, and **1 feature task = 1 commit**.
+
+## Continued behavior parity: tutorial and profile sheet
+
+- Source course titles and steps come from main/index.html LEARNING_COURSES.
+- Angular definitions: frontend/src/app/features/family-tree/tutorial-content.data.ts.
+- Lesson progress advances on matching events only; no unconditional Next button.
+- Local browser key knowyourfam_learning_v1 stores isolated lesson snapshots and progress. The real family key is never modified during training.
+- Training graph mirrors main teachingSeed() with 7 / 5 / 1 people by module, omitting a dangling edge referencing nonexistent persons.
+- Exiting training restores original tree, focus, branch state and zoom; adding a Person no longer replaces the existing focus.
+- The guide now includes six modules, progress statuses, source illustration pattern and FAQ.
+- Mobile drawer supports grab bar swipe, expanded and collapsed states.
+
+The browser parity checks and source contract tests must pass before claiming parity. Passing tests cover the tested behavior, not every edge case.
+
+## Profile behavior alignment
+
+- Desktop tutorial Profile step swaps the canvas for an inline source-shaped full Person profile, with Biodata/Keluarga/Kenangan tabs.
+- Source-shaped person detail drawer now has header, photo, birth/death details, directional navigation, direct vs inferred relationship labels and couple-based child actions.
+- Couple-based creation uses a single immutable graph update to add the Person and two parent edges; it never silently adds a partner relation.
+- On mobile, Quick Actions opens the bottom sheet; the explicit Profil lengkap button opens the full profile route.

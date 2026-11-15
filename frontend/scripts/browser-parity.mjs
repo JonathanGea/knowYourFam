@@ -148,6 +148,29 @@ try{
    assert.ok(await main.locator('#quick-panel:not([hidden])').count(),'Missing main quick actions');
    assert.ok(await angular.locator('.quick-panel').count(),'Missing angular quick actions');
    await snapshot(main,angular,size.name+'-quick');
+   if(size.name==='mobile'){
+     await Promise.all([
+       main.locator('#quick-profile').evaluate(button=>button.click()),
+       angular.locator('.quick-actions .btn').last().evaluate(button=>button.click())
+     ]);
+     assert.ok(await main.locator('.drawer.open').isVisible(),'main profile bottom-sheet missing');
+     assert.ok(await angular.locator('.drawer.open').isVisible(),'Angular profile bottom-sheet missing');
+     await snapshot(main,angular,size.name+'-sheet');
+     for(const page of [main,angular]){
+       const grab=page.locator('.sheet-grab-zone');
+       await grab.dispatchEvent('pointerdown',{pointerId:41,clientY:700,pointerType:'touch'});
+       await grab.dispatchEvent('pointerup',{pointerId:41,clientY:625,pointerType:'touch'});
+       assert.ok(await page.locator('.drawer.expanded').count(),'Up-swipe did not expand profile sheet');
+       await grab.dispatchEvent('pointerdown',{pointerId:42,clientY:600,pointerType:'touch'});
+       await grab.dispatchEvent('pointerup',{pointerId:42,clientY:690,pointerType:'touch'});
+       assert.equal(await page.locator('.drawer.expanded').count(),0,
+         'Down-swipe did not collapse profile sheet');
+       await grab.dispatchEvent('pointerdown',{pointerId:43,clientY:600,pointerType:'touch'});
+       await grab.dispatchEvent('pointerup',{pointerId:43,clientY:690,pointerType:'touch'});
+       assert.equal(await page.locator('.drawer.open').count(),0,
+         'Second down-swipe did not close profile sheet');
+     }
+   }
    if(size.name==='desktop'){
      const focusId=await main.locator('.node').first().getAttribute('data-person');
      await Promise.all([
@@ -171,8 +194,86 @@ try{
    assert.deepEqual(mainErrors,[],'Source JS errors '+size.name);
    assert.deepEqual(angularErrors,[],'Angular JS errors '+size.name);
    console.log(size.name+': Focus '+focusMain+', Overview 124, same card geometry and world positions');
+
    await context.close();
  }
+ // Run the actual main and Angular tutorial side by side, never mutating family data.
+ const practiceContext=await browser.newContext({viewport:{width:1440,height:900}});
+ const mainTraining=await practiceContext.newPage();
+ const angularTraining=await practiceContext.newPage();
+ await Promise.all([
+   mainTraining.goto(mainUrl+'/index.html',{waitUntil:'domcontentloaded'}),
+   angularTraining.goto(appUrl+'/',{waitUntil:'domcontentloaded'})
+ ]);
+ await Promise.all([
+   mainTraining.waitForSelector('#guide-onboard:not([hidden])'),
+   angularTraining.waitForSelector('.guide-onboard')
+ ]);
+ const originalMainCount=await mainTraining.locator('.node').count();
+ const originalAngularCount=await angularTraining.locator('.node').count();
+ assert.equal(originalAngularCount,originalMainCount);
+ const readOriginal=async()=>{
+   return Promise.all([
+     mainTraining.evaluate(()=>localStorage.getItem('knowyourfam_mvp_v1')),
+     angularTraining.evaluate(()=>localStorage.getItem('knowyourfam.angular.main-parity.v2'))
+   ]);
+ };
+ const before=await readOriginal();
+ await Promise.all([
+   mainTraining.locator('#guide-onboard [data-guide-run="kartu"]').evaluate(el=>el.click()),
+   angularTraining.locator('.guide-onboard .btn.primary').evaluate(el=>el.click())
+ ]);
+ await Promise.all([
+   mainTraining.waitForSelector('.node[data-person="edu-self"]'),
+   angularTraining.waitForSelector('.node[data-person-id="edu-self"]')
+ ]);
+ assert.equal(await mainTraining.locator('.node').count(),
+   await angularTraining.locator('.node').count(),
+   'Tutorial course training seed differs');
+ await snapshot(mainTraining,angularTraining,'tutorial-kartu-start');
+ const mainStep=async()=>(await mainTraining.locator('.guide-step-kicker').textContent()).trim();
+ const angularStep=async()=>(await angularTraining.locator('.guide-step-kicker').textContent()).trim();
+ assert.equal(await mainStep(),await angularStep(),'Tutorial step title mismatch');
+ // Wrong action must not advance; click step Back when already on first.
+ await angularTraining.getByRole('button',{name:'← Sebelumnya'}).evaluate(el=>el.click());
+ assert.equal(await angularStep(),'Langkah 1 dari 3');
+ await Promise.all([
+   mainTraining.locator('.node[data-person="edu-self"]').evaluate(el=>el.click()),
+   angularTraining.locator('.node[data-person-id="edu-self"]').evaluate(el=>el.click())
+ ]);
+ assert.equal(await mainStep(),'Langkah 2 dari 3');
+ assert.equal(await angularStep(),'Langkah 2 dari 3');
+ await Promise.all([
+   mainTraining.locator('#quick-profile').evaluate(el=>el.click()),
+   angularTraining.locator('.quick-actions .btn').last().evaluate(el=>el.click())
+ ]);
+ assert.equal(await mainStep(),'Langkah 3 dari 3');
+ assert.equal(await angularStep(),'Langkah 3 dari 3');
+ assert.ok(await mainTraining.locator('#profile-page .profile-container').count(),'Main training profile page not visible');
+ assert.ok(await angularTraining.locator('.training-profile .profile-container').count(),'Angular training full profile not visible');
+ await snapshot(mainTraining,angularTraining,'tutorial-kartu-profile');
+ await Promise.all([
+   mainTraining.locator('[data-tutorial-action="action"]').evaluate(el=>el.click()),
+   angularTraining.locator('.guide-tutorial-bottom .btn.primary').evaluate(el=>el.click())
+ ]);
+ assert.ok(await mainTraining.getByText('Tutorial selesai!').count());
+ assert.ok(await angularTraining.getByText('Tutorial selesai!').count());
+ await Promise.all([
+   mainTraining.locator('[data-tutorial-action="finish"]').evaluate(el=>el.click()),
+   angularTraining.getByRole('button',{name:'Kembali ke Pohon Asli'}).evaluate(el=>el.click())
+ ]);
+ assert.equal(await mainTraining.locator('.node').count(),originalMainCount,
+   'main original tree not restored after tutorial');
+ assert.equal(await angularTraining.locator('.node').count(),originalAngularCount,
+   'Angular original tree not restored after tutorial');
+ assert.deepEqual(await readOriginal(),before,'Training must not write family localStorage');
+ const completion=await angularTraining.evaluate(()=>{
+   const state=JSON.parse(localStorage.getItem('knowyourfam_learning_v1')||'{}');
+   return state.completed||[];
+ });
+ assert.ok(completion.includes('kartu'),'Training completion not recorded');
+ console.log('Tutorial Kartu: course data, 3 verified actions, completion and no family write passed');
+ await practiceContext.close();
 }finally{
  if(browser)await browser.close();
  for(const proc of processes)proc.child.kill('SIGTERM');

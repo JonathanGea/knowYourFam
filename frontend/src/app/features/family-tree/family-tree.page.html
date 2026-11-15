@@ -1,4 +1,4 @@
-<div class="app main-parity-ui">
+<div class="app main-parity-ui" [class.guide-training]="!!tutorial()">
   <header class="header">
     <div class="brand"><span class="logo">♧</span>Know <b>Your</b> Fam</div>
     <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
@@ -50,6 +50,95 @@
     </aside>
 
     <main class="main">
+      @if (trainingProfileOpen()) {
+        @if (store.selectedPerson(); as p) {
+          <section class="person-page active training-profile" aria-label="Profil latihan">
+            <div class="profile-container">
+              <div class="profile-breadcrumb">
+                <button type="button" class="btn" (click)="returnFromTutorialProfile()">← Kembali ke pohon keluarga</button>
+                <span class="profile-label">PERSON PROFILE</span>
+              </div>
+              <header class="profile-hero">
+                <span class="person-photo" [class.female]="p.gender==='female'" [class.male]="p.gender==='male'">
+                  @if (p.photo) { <img [src]="p.photo" alt="" /> }
+                  @else { {{ initials(p.name) }} }
+                </span>
+                <div class="profile-identity">
+                  <span class="profile-label">Profil anggota keluarga</span>
+                  <h2>{{ p.name }}</h2>
+                  <p>{{ yearsOf(p) }}{{ p.residence ? ' · '+p.residence : '' }}</p>
+                </div>
+                <div class="profile-hero-actions">
+                  <button type="button" class="btn soft" (click)="returnFromTutorialProfile()">◎ Lihat di pohon</button>
+                  <button type="button" class="btn" (click)="openEdit(p.id)">✎ Edit</button>
+                </div>
+              </header>
+              <div class="profile-stats">
+                <div class="profile-stat"><strong>{{ store.relationsFor(p.id).parents.length }}</strong><span>Orang tua</span></div>
+                <div class="profile-stat"><strong>{{ store.relationsFor(p.id).siblings.length }}</strong><span>Saudara</span></div>
+                <div class="profile-stat"><strong>{{ store.relationsFor(p.id).partners.length }}</strong><span>Pasangan</span></div>
+                <div class="profile-stat"><strong>{{ store.relationsFor(p.id).children.length }}</strong><span>Anak</span></div>
+              </div>
+              <nav class="profile-tabs" role="tablist" aria-label="Bagian profil latihan">
+                <button type="button" class="profile-tab" role="tab"
+                  [class.active]="trainingProfileTab()==='bio'" [attr.aria-selected]="trainingProfileTab()==='bio'"
+                  (click)="trainingProfileTab.set('bio')">Biodata</button>
+                <button type="button" class="profile-tab" role="tab"
+                  [class.active]="trainingProfileTab()==='family'" [attr.aria-selected]="trainingProfileTab()==='family'"
+                  (click)="trainingProfileTab.set('family')">Keluarga</button>
+                <button type="button" class="profile-tab" role="tab"
+                  [class.active]="trainingProfileTab()==='memories'" [attr.aria-selected]="trainingProfileTab()==='memories'"
+                  (click)="trainingProfileTab.set('memories')">Kenangan</button>
+              </nav>
+              <div class="profile-content">
+                @if (trainingProfileTab()==='bio') {
+                  <h3>Informasi pribadi</h3>
+                  <div class="profile-fields">
+                    <div class="profile-field"><small>Nama lengkap</small><strong>{{ p.name }}</strong></div>
+                    <div class="profile-field"><small>Nama panggilan</small><strong>{{ p.nickname || 'Belum diisi' }}</strong></div>
+                    <div class="profile-field"><small>Jenis kelamin</small><strong>{{ genderLabel(p) }}</strong></div>
+                    <div class="profile-field"><small>Tanggal lahir</small><strong>{{ dateText(p.birthDate) }}</strong></div>
+                    <div class="profile-field"><small>Urutan lahir</small><strong>{{ p.birthOrder ? 'Ke-'+p.birthOrder : 'Belum diisi' }}</strong></div>
+                    <div class="profile-field"><small>Tempat lahir</small><strong>{{ p.birthPlace || 'Belum diisi' }}</strong></div>
+                    <div class="profile-field"><small>Domisili</small><strong>{{ p.residence || 'Belum diisi' }}</strong></div>
+                    <div class="profile-field"><small>Pekerjaan</small><strong>{{ p.occupation || 'Belum diisi' }}</strong></div>
+                    <div class="profile-field"><small>Tanggal wafat</small><strong>{{ dateText(p.deathDate) }}</strong></div>
+                  </div>
+                  @if (p.notes) { <div class="profile-note">{{ p.notes }}</div> }
+                  <div class="profile-section-tools">
+                    <button type="button" class="btn primary" (click)="openEdit(p.id)">✎ Edit biodata</button>
+                  </div>
+                } @else if (trainingProfileTab()==='family') {
+                  <h3>Hubungan keluarga</h3>
+                  <p class="hint">Hapus hubungan hanya melepaskan garis relasinya; profil anggota tetap ada.</p>
+                  @for (group of drawerGroups(p.id); track group.kind) {
+                    <section class="profile-relation-group">
+                      <div class="profile-group-title"><strong>{{ group.label }} ({{ group.ids.length }})</strong>
+                        <button type="button" class="btn" (click)="openAdd(group.kind,p.id)">＋</button>
+                      </div>
+                      @for (id of group.ids; track id) {
+                        <div class="profile-relative">
+                          <button type="button" class="profile-relative-name" (click)="selectDrawerRelative(id)">
+                            {{ store.findPerson(id)?.name }}
+                          </button>
+                          @if (drawerDirectEdge(p.id,id,group.kind); as edge) {
+                            <button type="button" class="relation-delete" (click)="unlinkRelationship(edge.id)">Hapus</button>
+                          } @else { <span class="relation-explained">Otomatis</span> }
+                        </div>
+                      }
+                    </section>
+                  }
+                } @else {
+                  <div class="profile-placeholder">
+                    <span class="placeholder-icon">▧</span><strong>Foto, cerita, dan kenangan</strong>
+                    <p>Modul kenangan belum tersedia di MVP. Informasi keluarga yang sudah dimasukkan tetap tersimpan.</p>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+      } @else {
       <div class="heading">
         <div>
           <div class="eyebrow">Ruang keluarga</div>
@@ -80,7 +169,7 @@
             <button type="button" id="zoom-out" class="btn icon" aria-label="Perkecil" (click)="zoomBy(-0.1)">−</button>
             <span id="zoom-value" class="zoom-info">{{ (store.zoom()*100).toFixed(0) }}%</span>
             <button type="button" id="zoom-in" class="btn icon" aria-label="Perbesar" (click)="zoomBy(0.1)">＋</button>
-            <button type="button" id="fit-btn" class="btn" (click)="fitCanvas()" aria-label="Pas seluruh area" title="Pas seluruh area">⛶</button>
+            <button type="button" id="fit-btn" class="btn" (click)="fitCanvasFromToolbar()" aria-label="Pas seluruh area" title="Pas seluruh area">⛶</button>
             <button type="button" id="fullscreen-btn" class="btn icon" (click)="toggleFullscreen()"
               [attr.aria-label]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'"
               [attr.title]="fullscreen() ? 'Tutup layar penuh' : 'Perbesar kanvas'">{{ fullscreen() ? '×' : '⤢' }}</button>
@@ -153,6 +242,7 @@
             </svg>
             @for (node of layout().nodes; track node.person.id) {
               <button type="button" class="node" [class.selected]="node.person.id===store.selectedPersonId()"
+                [class.guide-target]="!!tutorial() && highlightedTutorialPerson()===node.person.id"
                 [class.focus-person]="store.mode()==='focus' && node.person.id===store.focusPersonId()"
                 [class.partner-person]="store.mode()==='focus' && store.relationsFor(store.focusPersonId()).partners.includes(node.person.id)"
                 [class.test-node]="node.person.id.startsWith('uji-')"
@@ -177,6 +267,7 @@
             }
             @for (control of branchControls(); track control.key) {
               <button type="button" class="branch-toggle"
+                [class.guide-target]="!!tutorial() && highlightedTutorialBranch()===control.key"
                 [class.opened]="control.open" [class.direction-up]="control.symbol==='↑'"
                 [class.direction-side]="control.symbol==='↔'" [class.direction-down]="control.symbol==='↓'"
                 [style.left.px]="control.left" [style.top.px]="control.top"
@@ -278,6 +369,7 @@
         @if (canvasWarning()) { <p class="canvas-warning" role="status">{{ canvasWarning() }}</p> }
         @if (fullscreen()) { <div class="fullscreen-help">Tekan tombol × untuk kembali</div> }
       </section>
+      }
     </main>
   </div>
   <nav class="mobile-nav" aria-label="Menu bawah">
@@ -299,127 +391,170 @@
 </div>
 
 @if (detailsOpen()) {
-  <div class="shade show" (click)="detailsOpen.set(false)"></div>
-  <aside class="drawer open" id="person-inspector" aria-label="Detail anggota">
-    <div class="inspector">
-      @if (store.selectedPerson(); as person) {
-        <div class="inspector-heading">
-          <span class="eyebrow">PROFIL ANGGOTA</span>
-          <button type="button" class="inspector-close" aria-label="Tutup detail profil" (click)="detailsOpen.set(false)">×</button>
-        </div>
-        <div class="profile-main">
-          <div class="large-avatar" [class.female]="person.gender === 'female'">
-            @if (person.photo) { <img class="avatar-photo" [src]="person.photo" alt=""> }
-            @else { {{ initials(person.name) }} }
-          </div>
-          <h3>{{ person.name }}</h3>
-          <p>{{ person.occupation || 'Anggota keluarga' }}</p>
-          <span class="status-tag" [class.claimed]="person.claimed">{{ person.claimed ? '● Akun terhubung' : '○ Belum diklaim' }}</span>
-        </div>
-        <button type="button" class="focus-button" [disabled]="person.id === store.focusPersonId() && store.mode() === 'focus'" (click)="setFocus(person.id)">
-          ⌖ {{ person.id === store.focusPersonId() && store.mode() === 'focus' ? 'Sedang difokuskan' : 'Jadikan fokus' }}
-        </button>
-        <div class="inspector-divider"></div>
-        <section class="profile-section">
-          <div class="section-title"><span>Informasi pribadi</span><span class="muted-text">Demo</span></div>
-          <div class="info-line"><span>Tahun lahir</span><strong>{{ birthYear(person) }}</strong></div>
-          <div class="info-line"><span>Status profil</span><strong>{{ person.claimed ? 'Sudah klaim' : 'Belum klaim' }}</strong></div>
-        </section>
-        <div class="inspector-divider"></div>
-        <section class="profile-section">
-          <div class="section-title"><span>Hubungan keluarga</span>
-            <button type="button" class="relation-add" (click)="openLink(person.id)">＋ Hubungkan</button>
-          </div>
-          <div class="relationship-item">
-            <span>Orang tua ({{ store.relationsFor(person.id).parents.length }})</span>
-            @for (id of store.relationsFor(person.id).parents; track id) {
-              <div class="relation-line">
-                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
-                @if (store.directRelationship(id,person.id,'parent'); as edge) {
-                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
-                }
-              </div>
-            }
-          </div>
-          <div class="relationship-item">
-            <span>Pasangan ({{ store.relationsFor(person.id).partners.length }})</span>
-            @for (id of store.relationsFor(person.id).partners; track id) {
-              <div class="relation-line">
-                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
-                @if (store.directRelationship(person.id,id,'partner'); as edge) {
-                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
-                }
-              </div>
-            }
-          </div>
-          <div class="relationship-item">
-            <span>Anak ({{ store.relationsFor(person.id).children.length }})</span>
-            @for (id of store.relationsFor(person.id).children; track id) {
-              <div class="relation-line">
-                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
-                @if (store.directRelationship(person.id,id,'parent'); as edge) {
-                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
-                }
-              </div>
-            }
-          </div>
-          <div class="relationship-item">
-            <span>Saudara ({{ store.relationsFor(person.id).siblings.length }})</span>
-            @for (id of store.relationsFor(person.id).siblings; track id) {
-              <div class="relation-line">
-                <button type="button" (click)="setFocus(id)">{{ store.findPerson(id)?.name }}</button>
-                @if (store.directRelationship(person.id,id,'sibling'); as edge) {
-                  <button type="button" class="unlink" (click)="unlinkRelationship(edge.id)">Putus</button>
-                } @else { <small>Otomatis</small> }
-              </div>
-            }
-          </div>
-        </section>
-        @if (store.mode() === 'focus') {
-          <div class="inspector-divider"></div>
-          <section class="profile-section">
-            <div class="section-title"><span>Jelajahi cabang</span></div>
-            <div class="branch-actions">
-              @for (branch of store.branchOptions(person.id); track branch.key) {
-                <button type="button" (click)="toggleBranch(branch.key, person.id)">
-                  <span><b>{{ branch.kind === 'up' ? '↑' : branch.kind === 'side' ? '↔' : '↓' }}</b> {{ branch.title }}</span>
-                  <small>{{ branch.open ? (branch.hidden ? '+' + branch.hidden + ' lagi' : '− Tutup') : '+' + branch.hidden }}</small>
-                </button>
-                @if (branch.open && branch.hidden > 0) {
-                  <button type="button" class="collapse-link"
-                    (click)="collapseBranch(branch.key, person.id)">Tutup cabang {{ branch.title }}</button>
-                }
-              } @empty {
-                <p class="helper-text">Belum ada cabang tambahan untuk anggota ini.</p>
-              }
-            </div>
-            <p class="helper-text">Arah: ↑ leluhur, ↔ saudara, ↓ anak, dan ↓ anak bersama pasangan. Setiap cabang bisa dibuka atau ditutup secara mandiri.</p>
-          </section>
-        }
-        <div class="inspector-bottom">
-          <button type="button" (click)="openAdd('child',person.id)">＋ Tambah kerabat</button>
-          <button type="button" (click)="openEdit(person.id)">✎ Edit biodata</button>
-          <button type="button" (click)="openLink(person.id)">↔ Hubungkan Person lama</button>
-          @if (store.relationsFor(person.id).partners.length) {
-            <button type="button" (click)="openPairChild(person.id)">♡ Hubungkan anak ke pasangan</button>
-          }
-          <button type="button" class="delete-button" (click)="openDelete(person.id)">Hapus Person (demo)</button>
-        </div>
-      } @else {
-        <div class="empty-profile">Pilih kartu Person untuk melihat profilnya.</div>
-      }
+  <div class="shade show" (click)="closePersonDrawer()"></div>
+  <aside class="drawer open" [class.expanded]="drawerExpanded()" id="person-inspector"
+    aria-label="Detail anggota">
+    <div class="sheet-grab-zone"
+      (pointerdown)="onDrawerGrabDown($event)"
+      (pointerup)="onDrawerGrabUp($event)"
+      (pointercancel)="drawerExpanded.set(false)">
+      <button type="button" class="sheet-grab"
+        aria-label="Perbesar atau perkecil panel profil"
+        (click)="toggleDrawerExpanded()"><span></span></button>
     </div>
+    @if (store.selectedPerson(); as person) {
+      <div class="drawer-head">
+        <h3>Profil anggota</h3>
+        <button type="button" class="btn icon" aria-label="Tutup profil"
+          (click)="closePersonDrawer()">✕</button>
+      </div>
+      <div class="drawer-profile">
+        <span class="person-photo" [class.female]="person.gender==='female'" [class.male]="person.gender==='male'">
+          @if (person.photo) { <img [src]="person.photo" alt="" /> }
+          @else { {{ initials(person.name) }} }
+        </span>
+        <h2>{{ person.name }}</h2>
+        <small>{{ yearsOf(person) }}</small>
+        @if (store.mode()==='focus' && store.focusPersonId()===person.id) {
+          <span class="focus-current">◎ Fokus sekarang</span>
+        }
+        <div class="drawer-actions">
+          <button type="button" class="btn" (click)="openEdit(person.id)">✎ Edit</button>
+          <button type="button" class="btn primary" (click)="openAdd('child',person.id)">＋ Relasi baru</button>
+        </div>
+        <div class="drawer-actions">
+          <button type="button" class="btn soft" [disabled]="store.focusPersonId()===person.id && store.mode()==='focus'"
+            (click)="setFocus(person.id)">◎ Jadikan fokus</button>
+          <button type="button" class="btn" (click)="openFullProfile(person.id)">Profil lengkap ↗</button>
+        </div>
+        @if (store.mode()==='focus') {
+          <div class="drawer-section">Jelajahi cabang</div>
+          <div class="directional-actions">
+            @for (branch of store.branchOptions(person.id); track branch.key) {
+              <button type="button" class="btn" (click)="toggleBranch(branch.key,person.id)">
+                {{ branch.kind==='up'?'↑':branch.kind==='side'?'↔':'↓' }} {{ branch.title }}
+                <small>{{ branch.open?(branch.hidden?'+'+branch.hidden+' lagi':'− Tutup'):'+'+branch.hidden }}</small>
+              </button>
+            } @empty { <p class="direction-empty">Semua hubungan langsung sudah terlihat.</p> }
+          </div>
+        }
+      </div>
+      <div class="drawer-section">Informasi pribadi</div>
+      <div class="info-row"><span>Jenis kelamin</span><strong>{{ genderLabel(person) }}</strong></div>
+      @if (person.nickname) { <div class="info-row"><span>Nama panggilan</span><strong>{{ person.nickname }}</strong></div> }
+      <div class="info-row"><span>Tanggal lahir</span><strong>{{ dateText(person.birthDate) }}</strong></div>
+      @if (person.birthPlace) { <div class="info-row"><span>Tempat lahir</span><strong>{{ person.birthPlace }}</strong></div> }
+      <div class="info-row"><span>Tanggal wafat</span><strong>{{ dateText(person.deathDate) }}</strong></div>
+      @if (person.occupation) { <div class="info-row"><span>Pekerjaan</span><strong>{{ person.occupation }}</strong></div> }
+      @if (person.residence) { <div class="info-row"><span>Domisili</span><strong>{{ person.residence }}</strong></div> }
+      @if (person.notes) {
+        <div class="drawer-section">Catatan</div>
+        <p class="drawer-notes">{{ person.notes }}</p>
+      }
+      <div class="drawer-section">Hubungan keluarga</div>
+      <div class="hint drawer-relation-hint">Tombol <strong>Hapus</strong> hanya melepaskan hubungan, tidak menghapus orang. Saudara otomatis mengikuti data orang tua yang sama.</div>
+      @for (group of drawerGroups(person.id); track group.kind) {
+        <div class="relation-head">
+          <span>{{ group.label }} ({{ group.ids.length }})</span>
+          <button type="button" (click)="openAdd(group.kind,person.id)"
+            [attr.aria-label]="'Tambah '+group.label">＋</button>
+        </div>
+        @for (id of group.ids; track id) {
+          <div class="relation-item">
+            <button type="button" class="relation-person" (click)="selectDrawerRelative(id)">
+              <span class="person-photo" [class.female]="store.findPerson(id)?.gender==='female'"
+                [class.male]="store.findPerson(id)?.gender==='male'">
+                {{ initials(store.findPerson(id)?.name ?? '') }}
+              </span>
+              <span class="relation-text">{{ store.findPerson(id)?.name }}</span>
+            </button>
+            @if (drawerDirectEdge(person.id,id,group.kind); as edge) {
+              <button type="button" class="relation-delete" (click)="unlinkRelationship(edge.id)"
+                title="Hapus hanya hubungan ini">Hapus</button>
+            } @else {
+              <span class="relation-explained">Otomatis</span>
+            }
+          </div>
+        } @empty { <p class="drawer-empty-rel">Belum ada</p> }
+        @if (group.kind==='partner' && group.ids.length>0) {
+          <div class="drawer-section">Tambah hubungan berdasarkan pasangan</div>
+          @for (partnerId of group.ids;track partnerId) {
+            <div class="couple-item">
+              <div class="couple-title"><span class="couple-heart">♥</span>
+                <span>Anak {{ person.name }} &amp; {{ store.findPerson(partnerId)?.name }}</span>
+              </div>
+              <div class="couple-actions">
+                <button type="button" class="btn soft" (click)="openAddToCouple(person.id,partnerId)">＋ Anak baru</button>
+                <button type="button" class="btn" (click)="openPairChild(person.id)">Hubungkan anak</button>
+              </div>
+              <small>Kedua orang tercatat sebagai orang tua anak. Tidak mengubah status pasangan.</small>
+            </div>
+          }
+        }
+      }
+      <div class="drawer-buttons">
+        <button type="button" class="btn" (click)="openLink(person.id)">⚭ Hubungkan orang</button>
+        <button type="button" class="btn danger" (click)="openDelete(person.id)">Hapus anggota</button>
+      </div>
+    }
   </aside>
 }
 
 @if (tutorial(); as tour) {
-  <div class="tutorial-panel" role="status">
-    <div class="tour-head"><strong>◉ Tutorial {{ tour.module }}</strong><button type="button" (click)="stopTutorial()" aria-label="Tutup tutorial">×</button></div>
-    <small class="tour-sandbox-note">Pohon latihan terpisah · perubahan tidak disimpan</small>
-    <div class="tour-progress">Langkah {{ tour.index + 1 }} / {{ tutorialSteps().length }}</div>
-    <p>{{ tutorialSteps()[tour.index] }}</p>
-    <button type="button" (click)="nextTutorial()">{{ tour.index + 1 < tutorialSteps().length ? 'Lanjut →' : 'Selesai ✓' }}</button>
-  </div>
+  <aside class="guide-tutorial-panel" [class.is-minimized]="tour.minimized"
+    role="region" aria-label="Tutorial interaktif KnowYourFam">
+    <div class="guide-tutorial-head">
+      <div>
+        <div class="guide-overline">LATIHAN AMAN · {{ tour.index }}/{{ tutorialSteps().length }} LANGKAH</div>
+        <h3>{{ tutorialCourse()?.title }}</h3>
+      </div>
+      <button type="button" (click)="tutorialAction('minimize')"
+        [attr.aria-label]="tour.minimized?'Tampilkan instruksi':'Minimalkan instruksi'">
+        {{ tour.minimized?'▣':'−' }}
+      </button>
+    </div>
+    @if (!tour.minimized) {
+      <div class="guide-tutorial-inner">
+        <div class="guide-tutorial-progress">
+          <span [style.width.%]="tutorialPercentage()"></span>
+        </div>
+        @if (tutorialDone()) {
+          <div class="tutorial-done-icon">✓</div>
+          <h4>Tutorial selesai!</h4>
+          <p>Kamu sudah menyelesaikan {{ tutorialCourse()?.title }}. Semua perubahan tetap di data latihan, dan pohon keluarga asli akan dipulihkan saat keluar.</p>
+        } @else if (tutorialStep(); as step) {
+          <span class="guide-step-kicker">Langkah {{ tour.index+1 }} dari {{ tutorialSteps().length }}</span>
+          <h4>{{ step.title }}</h4>
+          <p>{{ step.hint }}</p>
+          <div class="guide-need-action">
+            <span>☝</span>
+            <span>{{ step.type==='created' || step.type==='edited-order' || step.type==='edited-notes'
+              ? 'Gunakan form latihan sungguhan. Langkah dinyatakan selesai setelah data demo tersimpan.'
+              : step.type==='simulate-export' || step.type==='simulate-import'
+              ? 'Simulasi aman, tanpa impor/ekspor file nyata.'
+              : 'Lakukan aksi pada kanvas. Progress maju hanya setelah tindakan benar-benar berhasil.' }}</span>
+          </div>
+        }
+        @if (tour.preview) { <pre class="tutorial-preview">{{ tour.preview }}</pre> }
+        <div class="guide-practice-info">♧ Pohon latihan terpisah. Anggota, hubungan dan cadangan asli tidak berubah.</div>
+      </div>
+      <div class="guide-tutorial-bottom">
+        @if (tutorialDone()) {
+          <button type="button" class="btn primary" (click)="tutorialAction('finish')">Kembali ke Pohon Asli</button>
+          <button type="button" class="btn" (click)="tutorialAction('next-course')">Coba Tutorial Berikutnya</button>
+        } @else if (tutorialStep(); as step) {
+          @if (step.cta) {
+            <button type="button" class="btn primary" (click)="tutorialAction('action')">{{ step.cta }}</button>
+          }
+        }
+        <div class="guide-tutorial-row">
+          <button type="button" [disabled]="tour.index===0" (click)="tutorialAction('back')">← Sebelumnya</button>
+          <button type="button" (click)="tutorialAction('guide')">Baca Panduan</button>
+          <button type="button" (click)="tutorialAction('exit')">Keluar latihan</button>
+        </div>
+      </div>
+    }
+  </aside>
 }
 @if (dialog(); as mode) {
   <div class="modal-backdrop" (click)="dialog.set(null)">
@@ -466,7 +601,13 @@
           <label>Pekerjaan <input name="occupation" maxlength="100" [value]="editingPerson()?.occupation ?? ''"></label>
           <label>Catatan <textarea name="notes" rows="3" maxlength="500">{{ editingPerson()?.notes ?? '' }}</textarea></label>
           @if (mode === 'add') {
+            @if (dialogPartnerId()) {
+              <p class="context-text">Anak dari {{ store.findPerson(dialogTargetId())?.name }} &amp;
+                {{ store.findPerson(dialogPartnerId())?.name }} (kedua orang tua dicatat)</p>
+            }
             <label>Hubungan ke {{ store.findPerson(dialogTargetId())?.name ?? 'anggota terpilih' }}
+              @if (dialogPartnerId()) { <input type="hidden" name="relationTo" value="child" /> }
+              @else {
               <select name="relationTo">
                 <option value="child" [selected]="dialogRelation() === 'child'">Anak dari anggota terpilih</option>
                 <option value="parent" [selected]="dialogRelation() === 'parent'">Orang tua dari anggota terpilih</option>
@@ -474,6 +615,7 @@
                 <option value="sibling" [selected]="dialogRelation() === 'sibling'">Saudara dari anggota terpilih</option>
                 <option value="none" [selected]="dialogRelation() === 'none'">Tanpa hubungan</option>
               </select>
+              }
             </label>
           }
           @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }

@@ -493,3 +493,61 @@ box-shadow:0 8px 20px rgb(33 83 50 / 7%);border:1px solid #e3ede0;border-radius:
   .main-parity-ui .focus-link{font-size:10px}
   .main-parity-ui .viewport-footer{display:none}
 }
+
+
+/* The main tutorial is a non-skippable, action-driven practice session. */
+.main-parity-ui.guide-training .save-indicator:before{background:#d7a45b}
+.main-parity-ui.guide-training .save-indicator{font-size:0}
+.main-parity-ui.guide-training .save-indicator:after{
+  content:'Latihan aman · data asli tidak berubah';font-size:11px}
+.main-parity-ui.guide-training .canvas-shell:not(.is-fullscreen){
+  margin-right:334px;min-height:170px}
+.main-parity-ui.guide-training .node.guide-target,
+.main-parity-ui.guide-training .branch-toggle.guide-target{
+  outline:4px solid #e0ad48!important;outline-offset:5px;
+  box-shadow:0 0 0 9px #eecf7955,0 6px 18px #34633a33!important;z-index:7}
+.main-parity-ui.guide-training .side-bottom button,
+.main-parity-ui.guide-training .side .nav:last-of-type{
+  opacity:.45}
+.guide-tutorial-panel{z-index:26}
+.guide-tutorial-panel .tutorial-done-icon{
+  font-size:42px;text-align:center;color:#43865a;font-weight:900}
+.guide-tutorial-panel .tutorial-preview{
+  white-space:pre-wrap;font-size:10px;background:#f6f8f5;
+  padding:10px;border-radius:8px;max-height:140px;overflow:auto}
+@media(max-width:950px){
+  .main-parity-ui.guide-training .canvas-shell:not(.is-fullscreen){margin-right:302px}
+}
+@media(max-width:800px){
+  .main-parity-ui.guide-training .canvas-shell:not(.is-fullscreen){margin-right:0;min-height:0}
+  .guide-tutorial-panel{top:auto;bottom:58px;left:6px;right:6px;width:auto;
+    max-height:41dvh;min-height:140px;border-radius:16px 16px 10px 10px}
+  .guide-tutorial-panel.is-minimized{min-height:0;bottom:60px}
+  .main-parity-ui.guide-training .viewport{margin-bottom:min(39dvh,235px)}
+}
+@media(max-width:650px){
+  .guide-tutorial-panel{bottom:59px;max-height:38dvh}
+  .main-parity-ui.guide-training .viewport{margin-bottom:min(36dvh,225px)}
+}
+
+/* Source-shaped full Person profile in the in-memory tutorial without routing away
+ * from the active lesson (main uses an inline profile view in the same SPA). */
+.main-parity-ui .training-profile {display:block;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}
+.main-parity-ui .training-profile .profile-container {max-width:1060px;margin:0 auto}
+.main-parity-ui .training-profile .profile-breadcrumb button {flex:none}
+.main-parity-ui .training-profile .person-photo {display:grid;place-items:center;overflow:hidden;flex:none}
+.main-parity-ui .training-profile .person-photo img {height:100%;width:100%;object-fit:cover}
+.main-parity-ui .training-profile .profile-relative {display:flex;justify-content:space-between;align-items:center;gap:9px}
+.main-parity-ui .training-profile .profile-section-tools {margin-top:20px}
+.main-parity-ui .training-profile .profile-placeholder {display:grid;gap:9px;padding:24px;justify-items:center;text-align:center}
+.main-parity-ui .drawer-notes {font-size:12px;white-space:pre-line;overflow-wrap:anywhere}
+.main-parity-ui .drawer-relation-hint {font-size:10px;padding:9px;margin:8px 0}
+.main-parity-ui .drawer-empty-rel {font-size:11px;color:#a1b0a2;padding:6px}
+.main-parity-ui .drawer .relation-person .person-photo {flex:none}
+.main-parity-ui .drawer .relation-person span.relation-text {text-align:left}
+@media(max-width:650px) {
+  .main-parity-ui .training-profile .profile-hero {padding:17px;flex-wrap:wrap;gap:12px}
+  .main-parity-ui .training-profile .profile-hero>.person-photo {height:74px;width:74px;border-radius:18px}
+  .main-parity-ui .training-profile .profile-stats {grid-template-columns:repeat(4,minmax(0,1fr))}
+  .main-parity-ui .training-profile .profile-fields {grid-template-columns:1fr}
+}

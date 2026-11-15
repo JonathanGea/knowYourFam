@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { FamilyTreeRepository, FAMILY_TREE_REPOSITORY } from '../domain/family-tree.repository';
 import { BranchKind, FamilyRelationship, FamilyTree, Person, PersonDraft, RelationKind } from '../domain/family-tree.model';
-import { MAIN_SAMPLE_TREE } from '../infrastructure/main-sample.data';
+import { createTutorialTree } from '../features/family-tree/tutorial-content.data';
 import { MAIN_REFERENCE_TREE } from '../infrastructure/main-reference.data';
 import { addRelation, archivePerson, createPerson, editPerson, linkChildToCouple as linkCouple,
   renameFamilyTree, unlinkRelation, PersonDetails } from './family-graph';
@@ -26,7 +26,11 @@ export class FamilyTreeStore {
   readonly collapsedBranches = signal<ReadonlySet<string>>(new Set());
   readonly focusHistory = signal<readonly string[]>([]);
   readonly tutorialActive = signal(false);
-  private tutorialOriginal: { tree: FamilyTree; focus: string; selected: string; mode: 'focus'|'overview' } | null = null;
+  private tutorialOriginal: {
+    tree: FamilyTree; focus: string; selected: string; mode: 'focus'|'overview';
+    history: readonly string[]; expanded: Readonly<Record<string, number>>;
+    collapsed: ReadonlySet<string>; zoom: number
+  } | null = null;
 
   readonly people = computed(() => this.tree().people.filter(person => !person.deletedAt));
   readonly relationships = computed(() => {
@@ -333,39 +337,67 @@ export class FamilyTreeStore {
     this.tree.set(next);
   }
 
-  startTutorialTree(): void {
-    if (this.tutorialActive()) return;
+  startTutorialTree(module = 'kartu', retained?: FamilyTree): void {
+    if (this.tutorialActive()) this.endTutorialTree();
     this.tutorialOriginal = {
-      tree:this.tree(),focus:this.focusPersonId(),selected:this.selectedPersonId(),mode:this.mode()
+      tree:this.tree(),focus:this.focusPersonId(),selected:this.selectedPersonId(),
+      mode:this.mode(),history:this.focusHistory(),expanded:this.expandedBranches(),
+      collapsed:this.collapsedBranches(),zoom:this.zoom()
     };
-    this.tutorialActive.set(true);
-    this.tree.set(structuredClone(MAIN_SAMPLE_TREE));
-    const first = MAIN_SAMPLE_TREE.people.find(p => p.claimed)?.id ?? MAIN_SAMPLE_TREE.people[0]?.id ?? '';
-    this.focusPersonId.set(first);
-    this.selectedPersonId.set(first);
+    const seed=createTutorialTree(module);
+    // Accept a prior tutorial snapshot only when it is a valid isolated graph;
+    // never accept a real family-tree object as a tutorial restore.
+    const ids=new Set(retained?.people.map(person=>person.id) ?? []);
+    const valid = retained?.id==='edu-family' &&
+      retained.people.length>=1 && retained.people.length<=200 &&
+      ids.size===retained.people.length && ids.has('edu-self') &&
+      retained.people.every(p=>typeof p.id==='string' && p.id.length>0) &&
+      retained.relationships.every(r=>ids.has(r.fromId) && ids.has(r.toId));
+    this.tree.set(structuredClone(valid?retained:seed));
+    this.focusPersonId.set('edu-self');
+    this.selectedPersonId.set('edu-self');
     this.mode.set('focus');
     this.focusHistory.set([]);
-    this.resetBranches();
+    this.expandedBranches.set({});
+    this.collapsedBranches.set(new Set());
+    this.tutorialActive.set(true);
   }
 
   endTutorialTree(): void {
     const original = this.tutorialOriginal;
     if (!original) return;
+    this.tutorialActive.set(false);
     this.tree.set(original.tree);
     this.focusPersonId.set(original.focus);
     this.selectedPersonId.set(original.selected);
     this.mode.set(original.mode);
-    this.tutorialActive.set(false);
+    this.focusHistory.set(original.history);
+    this.expandedBranches.set(original.expanded);
+    this.collapsedBranches.set(new Set(original.collapsed));
+    this.zoom.set(original.zoom);
     this.tutorialOriginal = null;
-    this.focusHistory.set([]);
-    this.resetBranches();
   }
 
   async addPerson(draft: PersonDraft, details?: Partial<Person>): Promise<Person> {
     const {tree, person} = createPerson(this.tree(), draft, details);
+    const hadFocus=!!this.focusPersonId() && !!this.findPerson(this.focusPersonId());
     await this.persist(tree);
-    this.setFocus(person.id);
+    // main adds a Person without silently changing the focus root.
+    if (!hadFocus) this.setFocus(person.id);
+    else this.select(person.id);
     return person;
+  }
+
+  /** Create a child and both explicit parental edges in one graph mutation. */
+  async addChildToCouple(parentA:string,parentB:string,draft:PersonDraft,
+    details?:Partial<Person>):Promise<Person> {
+    if(!this.findPerson(parentA)||!this.findPerson(parentB)||parentA===parentB)
+      throw new Error('Pilih dua orang tua yang valid.');
+    const result=createPerson(this.tree(),{...draft,relationTo:'none',targetId:undefined},details);
+    const next=linkCouple(result.tree,parentA,parentB,result.person.id);
+    await this.persist(next);
+    this.select(result.person.id);
+    return result.person;
   }
 
   async updatePerson(id: string, details: PersonDetails): Promise<void> {
