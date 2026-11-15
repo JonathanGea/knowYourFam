@@ -90,6 +90,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly trainingProfileOpen = signal(false);
   readonly trainingProfileTab = signal<'bio'|'family'|'memories'>('bio');
   private drawerStart: {pointerId:number;y:number} | null = null;
+  private suppressDrawerGrabClickUntil = 0;
   readonly helpOpen = signal(false);
   readonly onboardingDismissed = signal(false);
   readonly labelBoost = computed(() => Math.min(1.5, Math.max(1, 0.73 / this.store.zoom())));
@@ -614,23 +615,35 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   toggleDrawerExpanded():void {
+    // A swipe may generate a click on the grab button after pointerup.
+    // Do not let that browser click immediately reverse the drag gesture.
+    if(performance.now()<this.suppressDrawerGrabClickUntil)return;
     this.drawerExpanded.update(expanded=>!expanded);
   }
 
   onDrawerGrabDown(event:PointerEvent):void {
-    if(window.innerWidth>650)return;
+    if(window.innerWidth>650 || (event.pointerType==='mouse' && event.button!==0))return;
     this.drawerStart={pointerId:event.pointerId,y:event.clientY};
+    // Keep pointerup even when the finger moves outside the narrow handle.
+    // Synthetic events have no active pointer and cannot be captured.
+    try { (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId); }
+    catch { /* Ignore capture failure for synthetic test events. */ }
   }
 
   onDrawerGrabUp(event:PointerEvent):void {
     if(!this.drawerStart||event.pointerId!==this.drawerStart.pointerId)return;
     const delta=event.clientY-this.drawerStart.y;
     this.drawerStart=null;
+    if(Math.abs(delta)>30)this.suppressDrawerGrabClickUntil=performance.now()+420;
     if(delta<-36)this.drawerExpanded.set(true);
     else if(delta>65){
       if(this.drawerExpanded())this.drawerExpanded.set(false);
       else this.closePersonDrawer();
     }
+  }
+
+  onDrawerGrabCancel():void {
+    this.drawerStart=null;
   }
 
   yearsOf(person: Person): string {

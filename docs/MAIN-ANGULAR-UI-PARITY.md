@@ -87,3 +87,7 @@ The browser parity checks and source contract tests must pass before claiming pa
 - Source-shaped person detail drawer now has header, photo, birth/death details, directional navigation, direct vs inferred relationship labels and couple-based child actions.
 - Couple-based creation uses a single immutable graph update to add the Person and two parent edges; it never silently adds a partner relation.
 - On mobile, Quick Actions opens the bottom sheet; the explicit Profil lengkap button opens the full profile route.
+
+## Mobile sheet real-gesture parity (15 Nov 2026)
+
+The Angular grab zone now captures its active pointer so a swipe completes even if the finger leaves the narrow handle. A swipe suppresses the subsequent browser-generated button click for 420 ms, matching the HTML reference and preventing accidental expand/collapse reversal. Pointer cancellation clears only the pending gesture, not the panel's current expanded state. Chromium parity now uses real pointer drags for the Angular sheet in addition to source HTML event tests. Device touch QA is still recommended.

@@ -397,7 +397,8 @@
     <div class="sheet-grab-zone"
       (pointerdown)="onDrawerGrabDown($event)"
       (pointerup)="onDrawerGrabUp($event)"
-      (pointercancel)="drawerExpanded.set(false)">
+      (pointercancel)="onDrawerGrabCancel()"
+      (lostpointercapture)="onDrawerGrabCancel()">
       <button type="button" class="sheet-grab"
         aria-label="Perbesar atau perkecil panel profil"
         (click)="toggleDrawerExpanded()"><span></span></button>

@@ -156,20 +156,36 @@ try{
      assert.ok(await main.locator('.drawer.open').isVisible(),'main profile bottom-sheet missing');
      assert.ok(await angular.locator('.drawer.open').isVisible(),'Angular profile bottom-sheet missing');
      await snapshot(main,angular,size.name+'-sheet');
-     for(const page of [main,angular]){
-       const grab=page.locator('.sheet-grab-zone');
-       await grab.dispatchEvent('pointerdown',{pointerId:41,clientY:700,pointerType:'touch'});
-       await grab.dispatchEvent('pointerup',{pointerId:41,clientY:625,pointerType:'touch'});
-       assert.ok(await page.locator('.drawer.expanded').count(),'Up-swipe did not expand profile sheet');
-       await grab.dispatchEvent('pointerdown',{pointerId:42,clientY:600,pointerType:'touch'});
-       await grab.dispatchEvent('pointerup',{pointerId:42,clientY:690,pointerType:'touch'});
-       assert.equal(await page.locator('.drawer.expanded').count(),0,
-         'Down-swipe did not collapse profile sheet');
-       await grab.dispatchEvent('pointerdown',{pointerId:43,clientY:600,pointerType:'touch'});
-       await grab.dispatchEvent('pointerup',{pointerId:43,clientY:690,pointerType:'touch'});
-       assert.equal(await page.locator('.drawer.open').count(),0,
-         'Second down-swipe did not close profile sheet');
-     }
+     // The HTML reference uses synthetic events; keep its contract unchanged.
+     const mainGrab=main.locator('.sheet-grab-zone');
+     await mainGrab.dispatchEvent('pointerdown',{pointerId:41,clientY:700,pointerType:'touch'});
+     await mainGrab.dispatchEvent('pointerup',{pointerId:41,clientY:625,pointerType:'touch'});
+     assert.ok(await main.locator('.drawer.expanded').count(),'main up-swipe did not expand');
+     await mainGrab.dispatchEvent('pointerdown',{pointerId:42,clientY:600,pointerType:'touch'});
+     await mainGrab.dispatchEvent('pointerup',{pointerId:42,clientY:690,pointerType:'touch'});
+     assert.equal(await main.locator('.drawer.expanded').count(),0,'main down-swipe did not collapse');
+     await mainGrab.dispatchEvent('pointerdown',{pointerId:43,clientY:600,pointerType:'touch'});
+     await mainGrab.dispatchEvent('pointerup',{pointerId:43,clientY:690,pointerType:'touch'});
+     assert.equal(await main.locator('.drawer.open').count(),0,'main second down-swipe did not close');
+     // Real browser pointer drags catch click-after-swipe bugs dispatchEvent misses.
+     const swipeAngular=async deltaY=>{
+       const box=await angular.locator('.sheet-grab').boundingBox();
+       assert.ok(box,'Angular drawer grab handle missing');
+       const x=box.x+box.width/2,y=box.y+box.height/2;
+       await angular.mouse.move(x,y);
+       await angular.mouse.down();
+       await angular.mouse.move(x,y+deltaY,{steps:6});
+       await angular.mouse.up();
+     };
+     await swipeAngular(-80);
+     assert.ok(await angular.locator('.drawer.expanded').count(),
+       'Real up-swipe must expand Angular sheet without click toggling it back');
+     await swipeAngular(90);
+     assert.equal(await angular.locator('.drawer.expanded').count(),0,
+       'Real down-swipe must collapse Angular sheet');
+     await swipeAngular(90);
+     assert.equal(await angular.locator('.drawer.open').count(),0,
+       'Second real down-swipe must close Angular sheet');
    }
    if(size.name==='desktop'){
      const focusId=await main.locator('.node').first().getAttribute('data-person');
