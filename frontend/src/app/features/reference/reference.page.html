@@ -134,9 +134,9 @@
               <section class="guide-progress">
                 <div class="guide-progress-top">
                   <b>Tutorial Interaktif</b>
-                  <span>{{ completedCount }} dari {{ courses.length }} modul selesai</span>
+                  <span>{{ completedCount() }} dari {{ courses.length }} modul selesai</span>
                 </div>
-                <div class="guide-progress-bar"><div [style.width.%]="courseProgress"></div></div>
+                <div class="guide-progress-bar"><div [style.width.%]="courseProgress()"></div></div>
                 <div class="guide-course-grid">
                   @for (course of courses; track course.id) {
                     <a class="guide-course" routerLink="/" [queryParams]="{tutorial:course.id}">

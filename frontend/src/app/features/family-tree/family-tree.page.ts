@@ -11,13 +11,8 @@ import type { TutorialStep } from './tutorial-content.data';
 import type { FamilyTree } from '../../domain/family-tree.model';
 import { parseDemoTreeJson } from '../../infrastructure/demo-import';
 import { SupabaseConnectionService } from '../../infrastructure/supabase-connection.service';
+import { LearningProgressService, LearningState } from '../../infrastructure/learning-progress.service';
 
-interface LearningState {
-  dismissed: boolean;
-  completed: string[];
-  progress: Record<string, number>;
-  snapshots: Record<string, FamilyTree>;
-}
 interface TutorialSession {
   module: string; index: number; minimized: boolean; preview: string;
 }
@@ -47,6 +42,8 @@ interface PinchGesture {
 export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly store = inject(FamilyTreeStore);
   readonly cloud = inject(SupabaseConnectionService);
+  private readonly learningProgress = inject(LearningProgressService);
+  readonly learningError = this.learningProgress.error;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private queryApplied = false;
@@ -58,7 +55,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly photoData = signal('');
   readonly tutorial = signal<TutorialSession | null>(null);
   readonly courses = TUTORIAL_COURSES;
-  readonly learning = signal<LearningState>(this.readLearning());
+  readonly learning = this.learningProgress.state;
   readonly tutorialCourse = computed(() => getTutorialCourse(this.tutorial()?.module ?? ''));
   readonly tutorialSteps = computed(() => this.tutorialCourse()?.steps ?? []);
   readonly tutorialStep = computed(() => this.tutorialSteps()[this.tutorial()?.index ?? 0]);
@@ -169,10 +166,8 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   private suppressClickUntil = 0;
 
   constructor() {
-    try {
-      const raw = localStorage.getItem('knowyourfam_learning_v1');
-      if (raw && JSON.parse(raw)?.dismissed) this.onboardingDismissed.set(true);
-    } catch { /* Browser storage is optional in demo. */ }
+    void this.learningProgress.load().catch(() => { /* Error is visible in learningError. */ });
+    effect(() => this.onboardingDismissed.set(this.learning().dismissed));
     effect(() => {
       const ready = !this.store.loading() && this.layout().nodes.length > 0;
       if (ready && !this.fitted) requestAnimationFrame(() => this.fitThenFocus());
@@ -237,26 +232,9 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     }
   }
 
-  private readLearning(): LearningState {
-    try {
-      const parsed: unknown=JSON.parse(localStorage.getItem('knowyourfam_learning_v1') ?? '{}');
-      const record=parsed && typeof parsed==='object' && !Array.isArray(parsed)
-        ? parsed as Record<string,unknown> : {};
-      const completed=Array.isArray(record['completed']) ? record['completed'].filter(
-        (id):id is string=>typeof id==='string'&&!!getTutorialCourse(id)) : [];
-      const progress=record['progress'] && typeof record['progress']==='object'
-        ? record['progress'] as Record<string,number> : {};
-      const snapshots=record['snapshots'] && typeof record['snapshots']==='object'
-        ? record['snapshots'] as Record<string,FamilyTree> : {};
-      return {dismissed:record['dismissed']===true,completed,progress,snapshots};
-    } catch { return {dismissed:false,completed:[],progress:{},snapshots:{}}; }
-  }
-
   private saveLearning(next: LearningState): void {
-    this.learning.set(next);
     this.onboardingDismissed.set(next.dismissed);
-    try { localStorage.setItem('knowyourfam_learning_v1',JSON.stringify(next)); }
-    catch { /* Browser storage is optional; never overwrite real family data. */ }
+    void this.learningProgress.save(next).catch(() => { /* Visible in learningError. */ });
   }
 
   dismissOnboarding(): void {
@@ -701,21 +679,8 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     });
   }
 
-  async addTestGenerations(): Promise<void> {
-    if (!window.confirm('Tambahkan anggota uji dari main untuk menguji 10 generasi? Data yang ada tidak akan dihapus.')) return;
-    try {
-      const changed = await this.store.mergeTestMembers();
-      window.alert(changed.persons || changed.relationships
-        ? changed.persons + ' anggota uji dan ' + changed.relationships + ' hubungan ditambahkan.'
-        : 'Seluruh anggota uji sudah ada pada pohon ini.');
-      requestAnimationFrame(() => this.fitCanvas());
-    } catch (error) {
-      window.alert(error instanceof Error ? error.message : 'Tidak dapat menambah data uji.');
-    }
-  }
-
   async createNewTree(): Promise<void> {
-    if (!window.confirm('Buat pohon baru? Pohon demo saat ini akan diganti di browser ini. Ekspor JSON terlebih dahulu untuk cadangan.')) return;
+    if (!window.confirm('Buat Family Tree baru di database? Pohon lama tetap tersimpan. Ekspor JSON jika ingin cadangan.')) return;
     try {
       await this.store.createEmptyTree();
       this.quickPersonId.set(null);
@@ -975,8 +940,8 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     try {
       if (file.size>3_000_000) throw new Error('Maksimal ukuran JSON adalah 3 MB.');
       const parsed=parseDemoTreeJson(await file.text());
-      if (!window.confirm('Impor '+parsed.people.length+' anggota dan mengganti data demo di browser ini? Sebaiknya ekspor cadangan terlebih dahulu.')) return;
-      await this.store.importDemoTree(parsed);
+      if (!window.confirm('Impor '+parsed.people.length+' anggota menjadi Family Tree baru di Supabase? Pohon sebelumnya tidak akan dihapus.')) return;
+      await this.store.importTree(parsed);
       this.quickPersonId.set(null);
       requestAnimationFrame(()=>this.fitCanvas());
     } catch(error: unknown) {

@@ -2,7 +2,6 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { FamilyTreeRepository, FAMILY_TREE_REPOSITORY } from '../domain/family-tree.repository';
 import { BranchKind, FamilyRelationship, FamilyTree, Person, PersonDraft, RelationKind } from '../domain/family-tree.model';
 import { createTutorialTree } from '../features/family-tree/tutorial-content.data';
-import { MAIN_REFERENCE_TREE } from '../infrastructure/main-reference.data';
 import { addRelation, archivePerson, createPerson, editPerson, linkChildToCouple as linkCouple,
   renameFamilyTree, unlinkRelation, PersonDetails } from './family-graph';
 
@@ -46,17 +45,19 @@ export class FamilyTreeStore {
   });
   readonly defaultBranchKeys = computed(() => this.focusDefaultKeys(this.focusPersonId()));
 
-  constructor() { void this.initialize(); }
+  constructor() { void this.reload(); }
 
-  private async initialize(): Promise<void> {
+  async reload(): Promise<void> {
+    this.loadError.set(null);
+    this.loading.set(true);
     try {
       const tree = await this.repository.load();
       this.tree.set(tree);
       const first = tree.people.find(person => person.claimed)?.id ?? tree.people.find(person => person.id === 'p7')?.id ?? tree.people.find(person => person.id === 'rudi')?.id ?? tree.people[0]?.id ?? '';
       this.focusPersonId.set(first);
       this.selectedPersonId.set(first);
-    } catch {
-      this.loadError.set('Gagal memuat data pohon keluarga.');
+    } catch (error) {
+      this.loadError.set(error instanceof Error ? error.message : 'Gagal memuat data pohon keluarga dari Supabase.');
     } finally {
       this.loading.set(false);
     }
@@ -327,12 +328,9 @@ export class FamilyTreeStore {
   changeZoom(delta: number): void { this.setZoom(this.zoom() + delta); }
   resetZoom(): void { this.setZoom(1); }
 
-  /**
-   * Offline demo mutations. These deliberately DO NOT implement the collaborative
-   * permission policy; production writes must use an authenticated backend.
-   */
+  /** Writes to Supabase unless running an isolated, memory-only tutorial. */
   private async persist(next: FamilyTree): Promise<void> {
-    // Tutorial mutations must NEVER reach the user's browser storage.
+    // Tutorial mutations are isolated in memory and must never reach the real database.
     if (!this.tutorialActive()) await this.repository.save(next);
     this.tree.set(next);
   }
@@ -437,37 +435,6 @@ export class FamilyTreeStore {
   async renameTree(name: string): Promise<void> {
     await this.persist(renameFamilyTree(this.tree(), name));
   }
-  /** Mirrors main.mergeTestingMembers() without replacing an existing family. */
-  async mergeTestMembers(): Promise<{ persons: number; relationships: number }> {
-    if (this.tutorialActive()) throw new Error('Selesaikan tutorial terlebih dahulu.');
-    const tree = this.tree();
-    const existing = new Set(tree.people.map(p => p.id));
-    const additions = MAIN_REFERENCE_TREE.people.filter(
-      p => p.id.startsWith('uji-') && !existing.has(p.id)
-    );
-    const allIds = new Set([...existing, ...additions.map(p => p.id)]);
-    const allEdges = new Set(tree.relationships.map(r =>
-      r.kind + ':' + (r.kind === 'parent' ? r.fromId + '>' + r.toId
-        : [r.fromId, r.toId].sort().join('|'))));
-    const links = MAIN_REFERENCE_TREE.relationships.filter(r => {
-      if (!r.fromId.startsWith('uji-') && !r.toId.startsWith('uji-')) return false;
-      if (!allIds.has(r.fromId) || !allIds.has(r.toId)) return false;
-      const key = r.kind + ':' + (r.kind === 'parent' ? r.fromId + '>' + r.toId
-        : [r.fromId, r.toId].sort().join('|'));
-      if (allEdges.has(key)) return false;
-      allEdges.add(key);
-      return true;
-    });
-    if (additions.length || links.length) {
-      await this.persist({
-        ...tree,
-        people: [...tree.people, ...additions],
-        relationships: [...tree.relationships, ...links]
-      });
-    }
-    return { persons: additions.length, relationships: links.length };
-  }
-
   async createEmptyTree(name = 'Keluarga Saya'): Promise<void> {
     if (this.tutorialActive()) throw new Error('Selesaikan tutorial terlebih dahulu.');
     const next: FamilyTree = {
@@ -488,7 +455,7 @@ export class FamilyTreeStore {
       (r.fromId === from && r.toId === to || kind !== 'parent' && r.fromId === to && r.toId === from));
   }
 
-  async importDemoTree(next: FamilyTree): Promise<void> {
+  async importTree(next: FamilyTree): Promise<void> {
     if (this.tutorialActive()) throw new Error('Tutup tutorial sebelum mengimpor data.');
     const previous=this.tree();
     this.tree.set(next);

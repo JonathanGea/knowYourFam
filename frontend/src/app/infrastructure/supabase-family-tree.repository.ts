@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import type { FamilyRelationship, FamilyTree, Person, RelationKind } from '../domain/family-tree.model';
 import type { FamilyTreeRepository } from '../domain/family-tree.repository';
-import { DemoFamilyTreeRepository } from './demo-family-tree.repository';
 import { SupabaseConnectionService } from './supabase-connection.service';
 
 type TreeRow = { id: string; client_id: string; title: string };
@@ -53,12 +52,10 @@ function fromDb(row: PersonRow): Person {
 @Injectable()
 export class SupabaseFamilyTreeRepository implements FamilyTreeRepository {
   private readonly supabase = inject(SupabaseConnectionService);
-  private readonly demo = inject(DemoFamilyTreeRepository);
 
-  /** Guest mode remains the existing offline demo; signed-in errors never fall back. */
+  /** Data always comes from Supabase; an unauthenticated call fails closed. */
   async load(): Promise<FamilyTree> {
-    const userId = await this.supabase.userId();
-    if (!userId) return this.demo.load();
+    const userId = await this.supabase.requireUserId();
     const db = this.supabase.client;
     const treeResult = await db.from('family_trees').select('id,client_id,title')
       .eq('owner_id', userId).order('created_at', { ascending: false }).limit(1);
@@ -105,8 +102,7 @@ export class SupabaseFamilyTreeRepository implements FamilyTreeRepository {
    * Writes are ordered but not atomic across requests; collaboration comes later.
    */
   async save(next: FamilyTree): Promise<void> {
-    const userId = await this.supabase.userId();
-    if (!userId) return this.demo.save(next);
+    const userId = await this.supabase.requireUserId();
     const db = this.supabase.client;
     const lookup = await db.from('family_trees').select('id,client_id,title')
       .eq('owner_id', userId).eq('client_id', next.id).maybeSingle();

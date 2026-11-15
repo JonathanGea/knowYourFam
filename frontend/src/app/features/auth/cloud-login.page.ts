@@ -20,13 +20,13 @@ import { SupabaseConnectionService } from '../../infrastructure/supabase-connect
   `],
   template: `
     <main>
-      <h1>☁ Data KnowYourFam Online</h1>
+      <h1>KnowYourFam · Login</h1>
       @if (connection.signedIn()) {
-        <p>Anda sudah login. Data Family Tree berasal dari Supabase.</p>
+        <p>Anda sudah login. Semua data silsilah diambil dari Supabase.</p>
         <a class="action" routerLink="/">Buka Family Tree</a>
         <p><button type="button" (click)="signOut()" [disabled]="busy()">Keluar dari akun</button></p>
       } @else {
-        <p>Login dengan email agar data silsilah tersimpan di database.</p>
+        <p>Login diperlukan untuk membuka silsilah keluarga di Supabase.</p>
         <form (submit)="sendLink($event)">
           <label for="cloud-email">Alamat email</label>
           <input id="cloud-email" type="email" required autocomplete="email"
@@ -34,7 +34,7 @@ import { SupabaseConnectionService } from '../../infrastructure/supabase-connect
             placeholder="nama@email.com" />
           <button type="submit" [disabled]="busy()">{{ busy() ? 'Mengirim...' : 'Kirim link login' }}</button>
         </form>
-        <p class="note">Klik link yang dikirim ke email. Data demo tidak otomatis diunggah.</p>
+        <p class="note">Klik link login yang dikirim lewat email. Aplikasi tidak lagi memakai penyimpanan pohon lokal.</p>
       }
       @if (message()) { <p [class.error]="isError()">{{ message() }}</p> }
       <a class="back" routerLink="/">← Kembali ke Family Tree</a>
@@ -54,7 +54,7 @@ export class CloudLoginPage {
     this.busy.set(true);
     const { error } = await this.connection.client.auth.signInWithOtp({
       email: this.email().trim(),
-      options: { emailRedirectTo: window.location.origin + '/' }
+      options: { emailRedirectTo: window.location.origin + '/cloud' }
     });
     this.isError.set(!!error);
     this.message.set(error?.message ?? 'Link login terkirim. Buka email Anda.');
