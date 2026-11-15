@@ -238,6 +238,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   private pinchGesture: PinchGesture | null = null;
   private fitted = false;
   private suppressClickUntil = 0;
+  private viewportObserver?: ResizeObserver;
 
   constructor() {
     void this.cloud.userId().then(id => this.viewerUserId.set(id))
@@ -266,31 +267,40 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => { if (!this.store.loading()) this.fitThenFocus(); });
+    requestAnimationFrame(() => {
+      if (!this.store.loading()) this.fitThenFocus();
+      const viewport=this.canvasWindow?.nativeElement;
+      if (viewport && typeof ResizeObserver!=='undefined') {
+        this.viewportObserver=new ResizeObserver(()=>this.scheduleViewportReconcile());
+        this.viewportObserver.observe(viewport);
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.viewportObserver?.disconnect();
     if (this.store.tutorialActive()) this.store.endTutorialTree();
   }
 
+  private reconcileViewportSize(): void {
+    const viewport=this.canvasWindow?.nativeElement;
+    if (!viewport) return;
+    const current={width:viewport.clientWidth,height:viewport.clientHeight};
+    if (!current.width || !current.height) return;
+    const previous=this.viewportSize();
+    if(this.fitted && previous.width>1 && previous.height>1) {
+      this.panX.update(x=>x+(current.width-previous.width)/2);
+      this.panY.update(y=>y+(current.height-previous.height)/2);
+    }
+    this.viewportSize.set(current);
+  }
+  private scheduleViewportReconcile(): void {
+    requestAnimationFrame(()=>this.reconcileViewportSize());
+  }
   @HostListener('window:resize')
   onResize(): void {
-    if (!this.fitted) return;
-    // Keep the world point under the old viewport centre at the new centre.
-    // Re-fitting on rotation unexpectedly shrank the user's expanded tree.
-    const previous = this.viewportSize();
-    requestAnimationFrame(() => {
-      const viewport = this.canvasWindow?.nativeElement;
-      if (!viewport || !viewport.clientWidth || !viewport.clientHeight) return;
-      const current = {width:viewport.clientWidth,height:viewport.clientHeight};
-      if (previous.width>1 && previous.height>1) {
-        this.panX.update(x => x + (current.width-previous.width)/2);
-        this.panY.update(y => y + (current.height-previous.height)/2);
-        this.viewportSize.set(current);
-      } else {
-        this.fitThenFocus();
-      }
-    });
+    // A resize must preserve the visible world centre, not invoke Fit All.
+    this.scheduleViewportReconcile();
   }
 
   @HostListener('document:keydown.escape')
@@ -304,16 +314,10 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   private preserveCameraWhenDockChanges(change:()=>void): void {
-    const viewport=this.canvasWindow?.nativeElement;
-    const beforeWidth=viewport?.clientWidth ?? 0;
+    // Multiple panel transitions during one click reconcile once against
+    // the last measured viewport, preventing double compensation.
     change();
-    if (!viewport || !beforeWidth) return;
-    requestAnimationFrame(() => {
-      const width=viewport.clientWidth,height=viewport.clientHeight;
-      if (!width || !height) return;
-      this.panX.update(x=>x+(width-beforeWidth)/2);
-      this.viewportSize.set({width,height});
-    });
+    this.scheduleViewportReconcile();
   }
   openWorkspaceExplorer(tab:'search'|'branches'|'history'|'settings'): void {
     this.preserveCameraWhenDockChanges(()=>{
@@ -340,14 +344,17 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
   private previewPerson(id:string):void {
     if (!this.store.findPerson(id)) return;
-    // Previewing a Person never re-centers, zooms or replaces the active tree.
-    this.store.select(id);
-    this.quickPersonId.set(id);
-    this.explorerHistory.set([]);
-    this.explorerUnavailableTarget.set(null);
-    this.explorerBranchError.set(false);
-    this.personClaimError.set('');
-    this.helpOpen.set(false);
+    // Previewing never changes selected focus or zoom. An inspector dock resize
+    // only compensates the canvas width to retain the same world centre.
+    this.preserveCameraWhenDockChanges(()=>{
+      this.store.select(id);
+      this.quickPersonId.set(id);
+      this.explorerHistory.set([]);
+      this.explorerUnavailableTarget.set(null);
+      this.explorerBranchError.set(false);
+      this.personClaimError.set('');
+      this.helpOpen.set(false);
+    });
   }
   returnToMyPerson(): void {
     this.closeWorkspaceExplorer();
@@ -816,20 +823,13 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   closeExplorer():void {
-    // Preserve the same canvas center when the desktop inspector column disappears.
-    const viewport=this.canvasWindow?.nativeElement;
-    const previousWidth=viewport?.clientWidth ?? 0;
-    this.quickPersonId.set(null);
-    if(viewport && previousWidth){
-      requestAnimationFrame(() => {
-        const change=viewport.clientWidth-previousWidth;
-        if(change) this.panX.update(x => x+change/2);
-      });
-    }
-    this.explorerHistory.set([]);
-    this.explorerUnavailableTarget.set(null);
-    this.explorerBranchError.set(false);
-    this.personClaimError.set('');
+    this.preserveCameraWhenDockChanges(()=>{
+      this.quickPersonId.set(null);
+      this.explorerHistory.set([]);
+      this.explorerUnavailableTarget.set(null);
+      this.explorerBranchError.set(false);
+      this.personClaimError.set('');
+    });
   }
 
   private centerExplorerPerson(id:string):void {
