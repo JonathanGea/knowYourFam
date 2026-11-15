@@ -3,7 +3,8 @@
     <div class="brand"><span class="logo">♧</span>Know <b>Your</b> Fam</div>
     <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
     <div class="header-right">
-      <span class="save-indicator">Tersimpan di browser</span>
+      <span class="save-indicator">{{ cloud.signedIn() ? (store.tutorialActive() ? "Mode latihan lokal" : "Tersimpan di Supabase") : "Tersimpan di browser" }}</span>
+      <a class="btn" routerLink="/cloud">{{ cloud.signedIn() ? "☁ Akun" : "☁ Data online" }}</a>
       <button type="button" id="export-btn" class="btn" (click)="downloadLegacyJson()" title="Ekspor dengan format HTML main">↓ Ekspor</button>
       <button type="button" id="top-add" class="btn primary" (click)="openAdd(store.people().length ? 'child' : 'none')">＋ Tambah anggota</button>
     </div>

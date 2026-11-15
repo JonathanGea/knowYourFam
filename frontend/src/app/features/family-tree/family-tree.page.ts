@@ -10,6 +10,7 @@ import { getTutorialCourse, TUTORIAL_COURSES } from './tutorial-content.data';
 import type { TutorialStep } from './tutorial-content.data';
 import type { FamilyTree } from '../../domain/family-tree.model';
 import { parseDemoTreeJson } from '../../infrastructure/demo-import';
+import { SupabaseConnectionService } from '../../infrastructure/supabase-connection.service';
 
 interface LearningState {
   dismissed: boolean;
@@ -45,6 +46,7 @@ interface PinchGesture {
 })
 export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly store = inject(FamilyTreeStore);
+  readonly cloud = inject(SupabaseConnectionService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private queryApplied = false;
