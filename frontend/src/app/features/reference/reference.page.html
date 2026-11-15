@@ -176,9 +176,9 @@
   </div>
   <nav class="mobile-nav family-page-mobile-navigation" aria-label="Menu bawah">
     <a routerLink="/" ><span>♧</span>Pohon</a>
-    <a routerLink="/members" ><span>☷</span>Anggota</a>
-    <a routerLink="/guide" ><span>ⓘ</span>Panduan</a>
-    <a routerLink="/rules" ><span>▤</span>Aturan</a>
+    <a routerLink="/members" [class.active]="view==='members'"><span>☷</span>Anggota</a>
+    <a routerLink="/guide" [class.active]="view==='guide'"><span>ⓘ</span>Panduan</a>
+    <a routerLink="/rules" [class.active]="view==='rules'"><span>▤</span>Aturan</a>
   </nav>
 
 </div>

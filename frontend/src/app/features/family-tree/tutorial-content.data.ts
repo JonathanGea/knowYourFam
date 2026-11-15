@@ -42,9 +42,9 @@ export const TUTORIAL_COURSES=[
   {title:'Buka saudara lagi',hint:'Tekan ↔ untuk menampilkan kembali saudara.',type:'branch',key:'side:edu-self',open:true,target:'edu-self'},
   {title:'Tutup anak pasangan',hint:'Tekan ↓ pada kelompok anak "Saya (latihan)" dan "Pasangan (latihan)".',type:'branch',key:'pair:edu-self|edu-spouse',open:false,target:'edu-self'},
   {title:'Buka anak pasangan lagi',hint:'Tekan ↓ untuk membuka kembali anak yang sama.',type:'branch',key:'pair:edu-self|edu-spouse',open:true,target:'edu-self'}]},
- {id:'kanvas',title:'Navigasi kanvas',icon:'⤢',description:'Pindah mode, zoom, pan, dan Fit All.',steps:[
-  {title:'Lihat Seluruh Pohon',hint:'Tekan "Seluruh Pohon" di atas kanvas.',type:'mode',mode:'overview'},
-  {title:'Kembali ke Fokus Orang',hint:'Tekan "Fokus Orang" untuk melihat keluarga terdekat.',type:'mode',mode:'focus'},
+ {id:'kanvas',title:'Navigasi kanvas',icon:'⤢',description:'Jelajahi keluarga, Peta Keluarga, zoom, pan, dan Fit.',steps:[
+  {title:'Buka Peta Keluarga',hint:'Tekan "Peta keluarga" di toolbar kanvas.',type:'mode',mode:'overview'},
+  {title:'Kembali menjelajahi pohon',hint:'Tekan "Jelajahi pohon" untuk kembali ke keluarga terdekat.',type:'mode',mode:'focus'},
   {title:'Perbesar pohon',hint:'Gunakan zoom +, scroll mouse, atau cubit dua jari pada layar sentuh.',type:'zoom'},
   {title:'Geser kanvas',hint:'Geser satu jari atau drag ruang kosong di kanvas.',type:'pan'},
   {title:'Temukan seluruh anggota',hint:'Tekan tombol ⛶ Fit All di kanan atas kanvas.',type:'fit'}]},

@@ -92,6 +92,10 @@ body .main-parity-ui.family-explorer-page .workspace-result-copy strong{
   font-weight:750;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
 }
 body .main-parity-ui.family-explorer-page .workspace-result-copy small{font-size:10px;color:#899a8d}
+body .main-parity-ui.family-explorer-page .workspace-more-results{
+  margin:0 15px 12px;padding:10px;border:1px solid #d6e5d8;border-radius:10px;
+  background:#f1f7f2;color:#2f6645;font:inherit;font-size:11px;font-weight:750;cursor:pointer
+}
 body .main-parity-ui.family-explorer-page .workspace-panel-bottom-link{
   margin:auto 16px 16px;padding:11px 12px;display:block;
   border:1px solid var(--workspace-line);border-radius:10px;text-align:center;
@@ -119,7 +123,7 @@ body .main-parity-ui.family-explorer-page .workspace-branch-meta strong{
 body .main-parity-ui.family-explorer-page .workspace-branch-meta small{font-size:10px;color:#859888;line-height:1.35}
 body .main-parity-ui.family-explorer-page .workspace-branch-action,body .main-parity-ui.family-explorer-page .workspace-branch-pin{
   border:1px solid var(--workspace-line);border-radius:8px;background:#fff;
-  padding:7px;color:#42644d;cursor:pointer;font:inherit;font-size:10px;font-weight:700
+  min-height:36px;min-width:36px;padding:7px;color:#42644d;cursor:pointer;font:inherit;font-size:11px;font-weight:700
 }
 body .main-parity-ui.family-explorer-page .workspace-branch-pin.is-pinned{background:#ddefe0;border-color:#7eab89;color:#175c3c}
 body .main-parity-ui.family-explorer-page .workspace-history-item,body .main-parity-ui.family-explorer-page .workspace-settings-button{

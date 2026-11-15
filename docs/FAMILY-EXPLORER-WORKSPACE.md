@@ -23,7 +23,7 @@ Keep “Semua anggota” as the complete directory, not a second list of 204 mem
 - Expansion is paginated using the existing store's `BRANCH_PAGE_SIZE`.
 - Explicitly opened ancestor/sibling branches are retained when switching the active origin (user ↔ partner).
 - **Pinned** branches are UI-local and excluded from conservative automated collapse.
-- Conservative collapse is triggered only during a user branch expansion, when **all** of these guardrails hold: focus mode, at least 85 visible persons, and layout width at least seven viewport widths. Under pressure, collapse at most one older, unpinned manual branch, excluding the active focus and just-opened branch.
+- Conservative collapse is evaluated only after explicit branch expansion. A wide-but-readable canvas never triggers collapse. It measures card crowding, tries older unpinned branches, and only retains a reduction if collisions decrease without hiding a pinned branch or its visible relatives.
 - An automatic collapse has a visible Undo restoring pre-collapse expanded/collapsed states.
 - Zooming, panning, selecting a Person, and opening the Identity Card do not trigger automatic collapse.
 
@@ -67,6 +67,6 @@ Use touch-friendly interaction targets and keep pan/pinch behavior. At far zoom,
 
 ## Limitations / subsequent improvements
 
-The new conservative guard is a first-stage heuristic using person count and world width; it is not yet a measured connector-crossing/layout-pressure score. Pin state lives only in component memory and is not synchronized across accounts/sessions. Runtime layout remains based on the current engine; complex multi-partner and historical graph cases require dedicated interactive regression scenarios.
+Conservative auto-collapse now measures card crowding rather than person count or width; it does not yet score connector congestion and route crossings. Pin state lives only in component memory and is not synchronized across accounts/sessions. Runtime layout remains based on the current engine; complex multi-partner and historical graph cases require dedicated interactive regression scenarios.
 
 The original `docs/MAIN-ANGULAR-UI-PARITY.md` and legacy developer chapters are source-parity reference material, **not** the current workspace UX contract.

@@ -127,15 +127,15 @@ export const LEARNING_ARTICLES: readonly LearningArticle[] = [
   {
     "id": "focus",
     "group": "jelajah",
-    "title": "Apa bedanya Fokus dan Seluruh Pohon?",
-    "summary": "Fokus menampilkan keluarga terdekat; Seluruh Pohon menampilkan seluruh data.",
+    "title": "Menjelajahi keluarga dan membuka Peta Keluarga",
+    "summary": "Mulai dari keluarga terdekat, buka cabang sesuai kebutuhan, dan gunakan peta untuk melihat struktur lengkap.",
     "steps": [
-      "Pilih mode Fokus Orang di atas kanvas.",
-      "Gunakan Jadikan fokus pada kartu yang ingin dijelajahi.",
-      "Beralih ke Seluruh Pohon untuk melihat semua anggota.",
-      "Gunakan Fit All saat kehilangan posisi."
+      "Buka Pohon Keluarga: Person terdekat akan ditampilkan lebih dahulu.",
+      "Ketuk Person untuk melihat Identity Card tanpa memindahkan kanvas.",
+      "Pilih Jelajahi keluarganya untuk berpindah pusat eksplorasi.",
+      "Buka Peta keluarga untuk melihat seluruh struktur; kembali ke pohon untuk melanjutkan."
     ],
-    "result": "Anggota yang tidak terlihat di mode Fokus tidak hilang dari data.",
+    "result": "Anggota yang tersembunyi tetap ada di database dan bisa ditampilkan kembali.",
     "module": "kanvas"
   },
   {
@@ -144,12 +144,12 @@ export const LEARNING_ARTICLES: readonly LearningArticle[] = [
     "title": "Expand dan Collapse cabang",
     "summary": "Buka dan tutup orang tua ↑, saudara ↔, atau anak ↓.",
     "steps": [
-      "Di Fokus Orang, tekan ↑ pada kartu untuk satu tingkat leluhur.",
+      "Pada kanvas keluarga, tekan ↑ pada kartu untuk membuka orang tua.",
       "Tekan ↔ untuk membuka saudara pada generasi yang sama.",
       "Tekan ↓ untuk membuka anak; setiap kelompok pasangan mempunyai cabang anak sendiri.",
       "Tekan lagi tombol arah yang terbuka untuk menutup cabang tanpa menghapus siapa pun."
     ],
-    "result": "Cabang yang awalnya terlihat otomatis tetap boleh di-Collapse. Reset cabang mengembalikan tampilan Fokus awal.",
+    "result": "Collapse hanya menyembunyikan Person pada kanvas. Reset cabang memulihkan tampilan keluarga terdekat.",
     "module": "cabang"
   },
   {
@@ -175,7 +175,7 @@ export const LEARNING_ARTICLES: readonly LearningArticle[] = [
       "Geser satu jari pada HP atau drag pada ruang kosong dengan mouse.",
       "Cubit dua jari pada HP atau gunakan +/− pada desktop untuk zoom.",
       "Tekan ⛶ Fit All untuk melihat keseluruhan area yang sedang ditampilkan.",
-      "Jadikan fokus orang lain untuk berpindah pusat eksplorasi."
+      "Ketuk Person lalu pilih Jelajahi keluarganya untuk berpindah pusat eksplorasi."
     ],
     "result": "Zoom hanya mengubah tampilan, bukan hubungan atau posisi yang disimpan.",
     "module": "kanvas"
@@ -191,19 +191,19 @@ export const LEARNING_ARTICLES: readonly LearningArticle[] = [
       "Garis biru putus-putus menunjukkan hubungan saudara dalam situasi tertentu, misalnya saat orang tua tersembunyi.",
       "Tekan ? di kanvas untuk membaca legenda."
     ],
-    "result": "Konektor mengikuti hubungan data; garis yang tersembunyi oleh Focus tidak berarti hubungannya terhapus.",
+    "result": "Konektor mengikuti hubungan data; garis yang tersembunyi akibat cabang diringkas tidak berarti hubungannya terhapus.",
     "module": "cabang"
   },
   {
     "id": "storage",
     "group": "data",
     "title": "Di mana data keluarga tersimpan?",
-    "summary": "Pahami penyimpanan lokal dan batas sinkronisasi.",
+    "summary": "Data asli berada di Supabase dan dapat dibuka dari perangkat lain menggunakan akun yang sama.",
     "steps": [
-      "Perubahan pada pohon asli disimpan di browser perangkat ini.",
-      "Data tidak otomatis tersinkron ke akun atau perangkat lain.",
-      "Ekspor JSON secara berkala untuk membuat cadangan.",
-      "Impor hanya jika kamu ingin mengganti data aktif dengan isi berkas tersebut."
+      "Masuk ke akun sebelum membuka Family Tree.",
+      "Penambahan dan pengubahan data keluarga disimpan ke Supabase ketika berhasil.",
+      "Gunakan akun yang sama pada perangkat lain untuk memuat data tersimpan.",
+      "Ekspor JSON dari Pengaturan pohon sebagai cadangan tambahan."
     ],
     "result": "Tutorial latihan terpisah dan tidak menyimpan perubahan ke pohon asli.",
     "module": "data"
@@ -217,9 +217,9 @@ export const LEARNING_ARTICLES: readonly LearningArticle[] = [
       "Buka tombol Ekspor untuk mengunduh cadangan JSON dari pohon asli.",
       "Simpan file di tempat yang aman.",
       "Saat hendak mengimpor, periksa jumlah anggota dan nama pohon.",
-      "Konfirmasi hanya jika memang ingin mengganti data aktif."
+      "Konfirmasi pembuatan pohon baru di Supabase; pohon lama tidak otomatis dihapus."
     ],
-    "result": "Impor menggantikan pohon di browser. Pada latihan, tombol simulasi tidak mengunduh atau mengimpor file sungguhan.",
+    "result": "Impor membuat Family Tree baru di Supabase, tanpa menghapus pohon sebelumnya. Simulasi pada tutorial tidak memodifikasi data asli.",
     "module": "data"
   },
   {
@@ -230,7 +230,7 @@ export const LEARNING_ARTICLES: readonly LearningArticle[] = [
     "steps": [
       "Buka profil orang yang akan dikoreksi.",
       "Gunakan Hapus pada relasi langsung bila hanya hubungannya yang salah.",
-      "Gunakan Hapus anggota hanya bila benar-benar ingin menghapus profil.",
+      "Gunakan Arsipkan anggota hanya bila benar-benar ingin mengarsipkan profil.",
       "Ekspor cadangan sebelum perubahan besar."
     ],
     "result": "Menghapus hubungan tidak sama dengan menghapus kedua orang yang terlibat.",
