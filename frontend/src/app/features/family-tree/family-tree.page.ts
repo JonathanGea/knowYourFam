@@ -303,21 +303,36 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     if (this.tutorial()) this.stopTutorial();
   }
 
+  private preserveCameraWhenDockChanges(change:()=>void): void {
+    const viewport=this.canvasWindow?.nativeElement;
+    const beforeWidth=viewport?.clientWidth ?? 0;
+    change();
+    if (!viewport || !beforeWidth) return;
+    requestAnimationFrame(() => {
+      const width=viewport.clientWidth,height=viewport.clientHeight;
+      if (!width || !height) return;
+      this.panX.update(x=>x+(width-beforeWidth)/2);
+      this.viewportSize.set({width,height});
+    });
+  }
   openWorkspaceExplorer(tab:'search'|'branches'|'history'|'settings'): void {
-    this.explorerTab.set(tab);
-    this.explorerOpen.set(true);
-    this.mobileMenuOpen.set(false);
+    this.preserveCameraWhenDockChanges(()=>{
+      this.explorerTab.set(tab);
+      this.explorerOpen.set(true);
+      this.mobileMenuOpen.set(false);
+      if (window.matchMedia('(max-width:1279px), (any-pointer:coarse)').matches && this.quickPersonId()) {
+        this.closeExplorer();
+      }
+    });
     if (tab==='search') requestAnimationFrame(() => this.explorerSearchInput?.nativeElement.focus());
-    if (window.matchMedia('(max-width:1279px), (any-pointer:coarse)').matches && this.quickPersonId()) {
-      this.closeExplorer();
-    }
   }
   toggleWorkspaceExplorer(tab:'search'|'branches'|'history'|'settings'): void {
     if (this.explorerOpen() && this.explorerTab()===tab) this.closeWorkspaceExplorer();
     else this.openWorkspaceExplorer(tab);
   }
   closeWorkspaceExplorer(): void {
-    this.explorerOpen.set(false);
+    if (!this.explorerOpen()) return;
+    this.preserveCameraWhenDockChanges(()=>this.explorerOpen.set(false));
   }
   openSearchPerson(id:string): void {
     this.closeWorkspaceExplorer();
@@ -391,7 +406,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       this.store.isBranchOpen(key));
     for (const candidate of candidates) {
       this.store.collapseBranch(candidate);
-      const preserved=[...pinnedKeys].every(key=>!this.store.isBranchOpen(key) ||
+      const preserved=[...pinnedKeys].every(key=>this.store.isBranchOpen(key) &&
         branchOwnerIds(key).every(id=>this.store.visiblePersonIds().has(id))) &&
         [...pinnedVisible].every(id=>this.store.visiblePersonIds().has(id));
       const afterCrowding=countNodeCrowding(this.layout().nodes,CANVAS_CARD_WIDTH,CANVAS_CARD_HEIGHT);
