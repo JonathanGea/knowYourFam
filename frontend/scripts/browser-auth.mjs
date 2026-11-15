@@ -21,7 +21,7 @@ try {
   }
   if (!ready) throw new Error('Server not ready: ' + logs.slice(-2500));
   browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 768, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 640 }]) {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     const errors = [];
@@ -47,6 +47,28 @@ try {
     assert.equal(await page.getByRole('button', { name: 'Kirim link reset' }).count(), 1);
     await page.goto(url + '/reset-password');
     assert.equal(await page.locator('#auth-password').count(), 1);
+    // Layout regression checks run in real Chromium at four viewport sizes.
+    for (const route of ['/login', '/register', '/forgot-password', '/reset-password']) {
+      await page.goto(url + route);
+      const metrics = await page.evaluate(() => {
+        const card = document.querySelector('.auth-card').getBoundingClientRect();
+        const footer = document.querySelector('.auth-footer').getBoundingClientRect();
+        return {
+          overflow: document.documentElement.scrollWidth - window.innerWidth,
+          cardBottom: card.bottom,
+          footerTop: footer.top,
+          bodyOverflowY: getComputedStyle(document.body).overflowY
+        };
+      });
+      assert.ok(metrics.overflow <= 1,
+        `${viewport.width}px ${route}: unexpected horizontal scroll ${metrics.overflow}px`);
+      assert.ok(metrics.footerTop >= metrics.cardBottom - 1,
+        `${viewport.width}px ${route}: footer overlaps authentication content`);
+      if (viewport.width <= 650) {
+        assert.notEqual(metrics.bodyOverflowY, 'hidden',
+          `${viewport.width}px ${route}: mobile scrolling is locked`);
+      }
+    }
     assert.deepEqual(errors, [], 'Angular runtime errors');
     const storedFamily = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('knowyourfam')));
     assert.deepEqual(storedFamily, [], 'New browser session must not write family data to localStorage');

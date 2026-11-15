@@ -30,3 +30,45 @@
   .main-parity-ui .guide-hero{padding:20px}
   .main-parity-ui .guide-tree-icon{display:none}
 }
+
+/* Prevent guide content from collapsing into narrow horizontal rows. */
+.main-parity-ui .guide-category .guide-topic {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 20px;
+  grid-template-rows:auto auto;
+  align-items:start;
+  gap:4px 8px;
+  min-width:0;
+}
+.main-parity-ui .guide-category .guide-topic strong {
+  grid-column:1; grid-row:1; min-width:0; overflow-wrap:anywhere;
+}
+.main-parity-ui .guide-category .guide-topic small {
+  grid-column:1; grid-row:2; display:block; min-width:0;
+  line-height:1.5; overflow-wrap:anywhere;
+}
+.main-parity-ui .guide-category .guide-topic > span {
+  grid-column:2; grid-row:1; justify-self:end;
+}
+.main-parity-ui .guide-category .guide-topic::after { content:none; }
+.main-parity-ui .member-list.active { overflow:visible; flex:initial; }
+.main-parity-ui .member-grid,
+.main-parity-ui .guide-categories,
+.main-parity-ui .guide-course-grid { min-width:0; }
+.main-parity-ui .guide-illustration { max-width:100%; overflow-x:auto; }
+.main-parity-ui .guide-article { overflow-wrap:anywhere; }
+@media(max-width:650px) {
+  .main-parity-ui .heading { flex-wrap:wrap; }
+  .main-parity-ui .heading-actions { width:auto; }
+  .main-parity-ui .stats { flex-wrap:wrap; }
+  .main-parity-ui .stat { min-width:0; }
+  .main-parity-ui .guide-page.active,
+  .main-parity-ui .rules-page.active { min-width:0; }
+}
+@media(max-width:520px) {
+  .main-parity-ui .guide-categories,
+  .main-parity-ui .guide-course-grid { grid-template-columns:minmax(0,1fr); }
+  .main-parity-ui .guide-hero-actions .btn,
+  .main-parity-ui .heading-actions .btn { white-space:normal; text-align:center; }
+  .main-parity-ui .guide-progress-top { flex-wrap:wrap; }
+}
