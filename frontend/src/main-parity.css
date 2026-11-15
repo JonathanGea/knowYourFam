@@ -1086,3 +1086,36 @@ body .main-parity-ui .person-preview .explorer-footer-links button:disabled {
     gap:8px;
   }
 }
+
+
+/* Contextual Family Branch Switching: toolbar is outside the zoomed canvas. */
+.main-parity-ui .family-origin-toolbar {
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  gap:10px;padding:10px 14px;background:#f7faf7;border-bottom:1px solid #e3eae3;
+}
+.main-parity-ui .family-origin-intro {display:grid;gap:2px;min-width:170px}
+.main-parity-ui .family-origin-intro strong {font-size:12px;color:#304a3a}
+.main-parity-ui .family-origin-intro small {font-size:10px;color:#738476;line-height:1.45}
+.main-parity-ui .family-origin-options {display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.main-parity-ui .family-origin-choice {
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 11px;border:1px solid #d8e2da;border-radius:9px;
+  background:white;color:#4c6253;font:inherit;font-size:11px;font-weight:650;
+  max-width:220px;min-height:34px;cursor:pointer;
+}
+.main-parity-ui .family-origin-choice:hover {border-color:#83b293;background:#f3f9f4}
+.main-parity-ui .family-origin-choice.active {
+  background:#e6f3e9;color:#276142;border-color:#7db08e;
+  box-shadow:inset 0 0 0 1px #7db08e;
+}
+.main-parity-ui .family-origin-choice:focus-visible {outline:2px solid #367c54;outline-offset:2px}
+.main-parity-ui .family-origin-hidden {
+  font-size:9px;font-weight:600;color:#6f8475;background:#eef2ef;
+  border-radius:12px;padding:2px 5px;white-space:nowrap;
+}
+@media(max-width:650px) {
+  .main-parity-ui .family-origin-toolbar {align-items:stretch;padding:9px 10px;gap:8px}
+  .main-parity-ui .family-origin-intro {min-width:0}
+  .main-parity-ui .family-origin-options {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .main-parity-ui .family-origin-choice {min-width:0;max-width:none;padding:7px 6px;flex-wrap:wrap;overflow-wrap:anywhere}
+}

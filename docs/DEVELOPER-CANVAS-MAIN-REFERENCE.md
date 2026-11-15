@@ -334,3 +334,37 @@ Buka Panduan Pengguna ↗
 ## Catatan migrasi ke Angular
 
 Dokumen ini mempertahankan terminologi dan keterangan teknis dari **main**. Implementasi Angular dan ketidaksesuaian dijelaskan terpisah di `docs/CANVAS-MAIN-ANGULAR-MIGRATION.md`. Jangan menganggap panduan main sebagai bukti bahwa semua fitur sudah tersedia di Angular; pengujian paritas diperlukan.
+
+
+## Family Branch Switching — MVP (2026-11-15)
+
+The Angular Focus canvas offers **Keluarga yang ditampilkan** when the focus
+Person has a recorded partner. Users switch between their own birth family
+and any partner's birth family without changing graph data or Supabase rows.
+
+- `FamilyTreeStore.activeFamilyOriginId` determines whose ancestors,
+  siblings and parents' siblings supply the default focus branches.
+- Focus Person, partners, shared children and the focused Person's direct
+  child branches remain available when selecting the partner's family.
+- Other birth-family side branches are *collapsed in the current view*.
+  The `+N kerabat` badge counts hidden direct parents and siblings only,
+  not every hidden descendant.
+- Manually expanded/collapsed branch keys are cached **per origin** in memory
+  and restored on switching back. Reset, focus change, reload and imports
+  clear that cache. Tutorials snapshot/restore the original view state.
+- Selecting an inactive partner's ↑ parents or ↔ siblings in the canvas
+  switches origin automatically instead of stacking both birth families.
+- The same layout engine continues to enforce person uniqueness, spouse
+  adjacency and birth-order sorting. No database migrations required.
+- Toolbar switches retain the Focus card's screen anchor; regular branch
+  actions retain their own card anchor. Overview continues to show everyone.
+
+### Regression checklist
+
+1. Focus a person with siblings, partner and children. Expand a sibling's
+   descendants; switch origin and expand the partner's sibling descendants.
+2. Verify only one birth-family sibling side is shown, with User, partner
+   and children present. Switch back and verify previous expansions restore.
+3. Verify the inactive spouse ↑/↔ control changes origin automatically.
+4. Check birth ordering, direct parent links, no duplicated card IDs.
+5. Check mobile wrapping, Reset cabang, Full Tree and tutorial restore.
