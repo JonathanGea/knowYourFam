@@ -45,6 +45,12 @@ try {
     assert.equal(response.status, 200, route);
     assert.match(await response.text(), /<app-root\b/i, route);
   }
+  // The self-hosted SVG icon vocabulary must ship with the Angular build,
+  // otherwise controls silently disappear after Railway deployment.
+  const icons = await fetch(base + '/icons.svg');
+  assert.equal(icons.status, 200, 'SVG icon asset unavailable');
+  assert.match(icons.headers.get('content-type') ?? '', /image\/svg\+xml/);
+  assert.match(await icons.text(), /<symbol id="tree"/);
   const asset404 = await fetch(base + '/missing-bundle.js');
   assert.equal(asset404.status, 404);
   const head = await fetch(base + '/', {method:'HEAD'});
