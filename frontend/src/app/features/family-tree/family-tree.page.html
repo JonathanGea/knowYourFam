@@ -194,7 +194,7 @@
               <strong>{{ store.focusPerson()?.name ?? 'Anggota' }}</strong></div>
           </div>
           <div class="focus-side">
-            <span>{{ store.visiblePeople().length }} / {{ store.people().length }} terlihat</span>
+            <span id="visible-count">{{ store.visiblePeople().length }} / {{ store.people().length }} terlihat</span>
             <button type="button" class="focus-link" [disabled]="!store.focusHistory().length"
               title="Kembali ke fokus sebelumnya" (click)="goBackFocus()">↶ Kembali</button>
             <button type="button" class="focus-link" title="Kembalikan tampilan Fokus awal"

@@ -52,3 +52,61 @@ form input::placeholder{color:#98a99c}
 .auth-footer{position:absolute;bottom:18px;text-align:center;color:#99a79c;font-size:11px}
 @media(max-width:800px){.auth-shell{display:block}.auth-story{display:none}.auth-main{min-height:100dvh;padding:55px 23px 65px}.mobile-brand{display:inline-flex;margin-bottom:52px;color:#165b36}.auth-card h2{font-size:34px}.auth-footer{bottom:14px}}
 @media(max-width:420px){.auth-main{padding:35px 24px 64px}.mobile-brand{margin-bottom:45px}}
+
+/* Responsive auth: the form and its footer must remain scrollable even when the
+   keyboard is open or the screen height is small. */
+.auth-shell {
+  grid-template-columns:minmax(0, 44%) minmax(0, 1fr);
+}
+.auth-card {
+  min-width:0;
+}
+.auth-story {
+  min-width:0;
+}
+.auth-main {
+  min-width:0;
+}
+@media (max-width:800px) {
+  .auth-shell {
+    display:block;
+    min-height:100dvh;
+  }
+  .auth-main {
+    min-height:100dvh;
+    height:auto;
+    padding:clamp(22px, 5vh, 52px) clamp(16px, 5vw, 28px)
+      max(24px, env(safe-area-inset-bottom, 0px));
+    justify-content:flex-start;
+    overflow:visible;
+  }
+  .auth-card {
+    width:min(100%, 430px);
+    flex:0 0 auto;
+    margin:auto 0;
+  }
+  .mobile-brand {
+    margin-bottom:clamp(24px, 5vh, 48px);
+  }
+  .auth-footer {
+    position:static;
+    flex:0 0 auto;
+    max-width:100%;
+    margin:28px 0 0;
+    line-height:1.5;
+  }
+}
+@media (max-width:420px) {
+  .auth-main {
+    padding-inline:18px;
+  }
+  .auth-card h2 {
+    font-size:clamp(29px, 8vw, 34px);
+  }
+  .subtitle {
+    margin-bottom:24px;
+  }
+  .mobile-brand {
+    margin-bottom:26px;
+  }
+}

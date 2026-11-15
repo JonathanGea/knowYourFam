@@ -46,7 +46,7 @@
 body.fullscreen-open{overflow:hidden}
 @media(max-width:900px){.side{display:none}}
 @media(max-width:650px){
-  html,body{height:100%;overflow:hidden}
+  html,body{height:100%}
   .app{height:100dvh;min-height:0}
   .header{height:51px;gap:6px;padding:0 13px}
   .brand{font-size:16px;gap:7px}
@@ -56,7 +56,7 @@ body.fullscreen-open{overflow:hidden}
   .main{padding:9px 8px 7px;gap:7px;min-height:0}
   .heading{align-items:center;flex-wrap:nowrap;gap:6px}
   .heading h1{font-size:19px;letter-spacing:-.55px;white-space:nowrap}
-  .heading p,.eyebrow{display:none}
+  .main-parity-ui .heading p,.main-parity-ui .heading .eyebrow{display:none}
   .heading-actions{width:auto;gap:5px;flex-wrap:nowrap}
   .heading-actions #rename-btn,.heading-actions #add-btn{display:none}
   .heading-actions #link-btn{padding:7px 9px;font-size:10px}
@@ -363,4 +363,199 @@ body.guide-training #add-test-members,body.guide-training #import-btn{opacity:.3
 @media(max-width:800px){body.guide-training #canvas-shell:not(.is-fullscreen){margin-right:0;min-height:0}body.guide-training .guide-tutorial-panel{top:auto;bottom:58px;left:6px;right:6px;width:auto;max-height:41dvh;min-height:140px;border-radius:16px 16px 10px 10px}body.guide-training .guide-tutorial-panel.is-minimized{min-height:0;bottom:60px}.guide-tutorial-panel .guide-tutorial-inner{padding-top:2px}body.guide-training .viewport{margin-bottom:min(39dvh,235px)}body.guide-training .canvas-shell{min-height:0}}
 @media(max-width:650px){.guide-wrap{padding:2px 0 22px}.guide-hero{padding:18px;display:block;border-radius:13px}.guide-hero h2{font-size:21px}.guide-hero p{font-size:12px}.guide-categories,.guide-course-grid{grid-template-columns:1fr 1fr;gap:8px}.guide-category{padding:12px}.guide-course{min-height:120px;padding:11px}.guide-category h3{font-size:12px}.guide-topic{font-size:11px}.guide-article{padding:15px}.guide-article h2{font-size:19px}.guide-onboard{right:9px;bottom:9px;padding:12px}body.guide-training .guide-tutorial-panel{bottom:59px;max-height:38dvh}.guide-tutorial-head{padding:11px 13px 6px}.guide-tutorial-inner{padding:4px 13px 10px}.guide-tutorial-bottom{padding:9px 13px}.guide-tutorial-inner h4{font-size:14px}.guide-tutorial-inner p{font-size:11px;margin:5px 0 9px}body.guide-training .viewport{margin-bottom:min(36dvh,225px)}}
 
+/* UI polish: do not hide navigation at tablet widths or lock auth-page scrolling.
+   Main's fixed-height tree workspace is scoped to .main-parity-ui only. */
+.main-parity-ui {
+  min-height:0;
+  min-width:0;
+}
+.main-parity-ui .header {
+  min-width:0;
+}
+.main-parity-ui .header-right {
+  min-width:0;
+}
+.main-parity-ui .heading,
+.main-parity-ui .heading > div {
+  min-width:0;
+}
+.main-parity-ui .heading h1 {
+  overflow-wrap:anywhere;
+}
+.main-parity-ui .side,
+.main-parity-ui .person-links,
+.main-parity-ui .drawer {
+  scrollbar-width:thin;
+  scrollbar-color:#cfddd0 transparent;
+}
+.main-parity-ui .person-link {
+  min-width:0;
+}
+.main-parity-ui .person-link span:last-child,
+.main-parity-ui .family-chip > div:last-child {
+  min-width:0;
+}
+.main-parity-ui .family-chip strong,
+.main-parity-ui .info-row strong,
+.main-parity-ui .profile-identity h2 {
+  overflow-wrap:anywhere;
+}
+@media (max-width:900px) {
+  /* Sidebar is hidden below 900px, so bottom navigation must start here. */
+  .main-parity-ui .body {
+    padding-bottom:calc(62px + env(safe-area-inset-bottom, 0px));
+    min-height:0;
+  }
+  .main-parity-ui .mobile-nav {
+    display:flex;
+    height:calc(62px + env(safe-area-inset-bottom, 0px));
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+    justify-content:space-around;
+    align-items:center;
+  }
+  .main-parity-ui .mobile-nav > * {
+    flex:1 1 0;
+    min-width:0;
+    min-height:44px;
+    text-align:center;
+  }
+  .main-parity-ui .main {
+    min-height:0;
+  }
+}
+@media (max-width:650px) {
+  .main-parity-ui .body {
+    padding-bottom:calc(58px + env(safe-area-inset-bottom, 0px));
+  }
+  .main-parity-ui .mobile-nav {
+    height:calc(58px + env(safe-area-inset-bottom, 0px));
+  }
+  /* A bottom "Tambah" action already exists; do not duplicate it in a tiny header. */
+  .main-parity-ui .header-right #top-add {
+    display:none;
+  }
+  .main-parity-ui .heading h1 {
+    white-space:normal;
+    font-size:clamp(16px, 4.8vw, 19px);
+    line-height:1.16;
+  }
+  .main-parity-ui .header .brand {
+    min-width:0;
+  }
+  .main-parity-ui .focus-toolbar {
+    min-width:0;
+    gap:6px;
+  }
+  .main-parity-ui .focus-identity {
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .main-parity-ui .focus-side {
+    flex:0 0 auto;
+    gap:5px;
+  }
+  .main-parity-ui .focus-side .focus-link {
+    padding:7px 2px;
+  }
+}
+@media (max-width:420px) {
+  .main-parity-ui .focus-side #visible-count {
+    display:none;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .main-parity-ui .drawer,
+  .main-parity-ui .node,
+  .main-parity-ui .btn {
+    transition-duration:0.01ms!important;
+  }
+}
 
+/* Scoped Angular canvas and form improvements: kept global to avoid
+   exceeding Angular's per-component stylesheet size budget. */
+/* Angular canvas UI refinements. All selectors are scoped to this page,
+   keeping the geometry and relationship connectors unchanged. */
+.main-parity-ui .canvas-shell {
+  min-width:0;
+}
+.main-parity-ui .canvas-top,
+.main-parity-ui .canvas-ops,
+.main-parity-ui .mode-switch {
+  min-width:0;
+}
+.main-parity-ui .canvas-top .mode-switch {
+  flex-shrink:1;
+}
+.main-parity-ui .viewport {
+  min-width:0;
+}
+.main-parity-ui .drawer .info-row strong,
+.main-parity-ui .drawer .relation-text,
+.main-parity-ui .quick-panel .quick-identity {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.main-parity-ui .quick-panel .quick-actions button,
+.main-parity-ui .quick-panel .quick-directions button {
+  min-width:0;
+}
+body .modal-backdrop {
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  align-items:safe center;
+  padding:max(12px, env(safe-area-inset-top, 0px)) 12px
+    max(12px, env(safe-area-inset-bottom, 0px));
+}
+.modal-card.extended-modal {
+  min-width:0;
+  width:min(555px, 100%);
+  max-height:calc(100dvh - 24px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.modal-card input,
+.modal-card select,
+.modal-card textarea,
+.modal-card input[type=file] {
+  box-sizing:border-box;
+  max-width:100%;
+  min-width:0;
+}
+.modal-card .form-grid > label {
+  min-width:0;
+}
+@media(max-width:700px) {
+  .modal-card.extended-modal {
+    padding:19px 16px;
+  }
+  body .modal-card .modal-actions {
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+  body .modal-card .modal-actions button {
+    min-width:0;
+  }
+}
+@media(max-width:420px) {
+  .main-parity-ui .canvas-top {
+    gap:3px;
+    padding:6px 4px;
+  }
+  .main-parity-ui .canvas-ops {
+    gap:3px;
+    flex-shrink:0;
+  }
+  .main-parity-ui .canvas-ops .btn {
+    min-width:30px;
+    height:34px;
+    padding:5px;
+  }
+  .main-parity-ui .mode {
+    min-width:0;
+    padding:8px 4px;
+    font-size:10px;
+  }
+  body .main-parity-ui .quick-panel.main-angular-quick {
+    max-height:min(68dvh, 72%);
+  }
+}

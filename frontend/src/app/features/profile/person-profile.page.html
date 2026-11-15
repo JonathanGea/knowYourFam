@@ -4,7 +4,7 @@
       <span class="logo">♧</span>Know <b>Your</b> Fam
     </a>
     <div class="crumb">Workspace / <strong>{{ store.tree().name }}</strong></div>
-    <div class="header-right"><span class="save-indicator">Tersimpan di browser</span>
+    <div class="header-right"><span class="save-indicator">Supabase • Database aktif</span>
       <a class="btn" routerLink="/">♧ Pohon keluarga</a>
     </div>
   </header>
@@ -159,7 +159,7 @@
                 </section>
                 <div class="profile-section-tools">
                   <a class="btn primary" routerLink="/" [queryParams]="{person:p.id,action:'link'}">⚭ Hubungkan dua orang</a>
-                  <a class="btn danger" routerLink="/" [queryParams]="{person:p.id,action:'delete'}">Hapus anggota (demo)</a>
+                  <a class="btn danger" routerLink="/" [queryParams]="{person:p.id,action:'delete'}">Arsipkan anggota</a>
                 </div>
               } @else {
                 <div class="profile-placeholder">
