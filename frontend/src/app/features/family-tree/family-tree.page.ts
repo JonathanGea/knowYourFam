@@ -304,7 +304,18 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
   openSearchPerson(id:string): void {
     this.closeWorkspaceExplorer();
-    this.activateExplorerPerson(id);
+    this.previewPerson(id);
+  }
+  private previewPerson(id:string):void {
+    if (!this.store.findPerson(id)) return;
+    // Previewing a Person never re-centers, zooms or replaces the active tree.
+    this.store.select(id);
+    this.quickPersonId.set(id);
+    this.explorerHistory.set([]);
+    this.explorerUnavailableTarget.set(null);
+    this.explorerBranchError.set(false);
+    this.personClaimError.set('');
+    this.helpOpen.set(false);
   }
   returnToMyPerson(): void {
     this.closeWorkspaceExplorer();
@@ -865,10 +876,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
 
   selectPerson(id: string): void {
     if (Date.now() < this.suppressClickUntil) return;
-    this.store.select(id);
-    this.explorerHistory.set([]);
-    this.activateExplorerPerson(id);
-    this.helpOpen.set(false);
+    this.previewPerson(id);
     this.mobileListOpen.set(false);
     this.tutorialRecord('card',{id});
   }
