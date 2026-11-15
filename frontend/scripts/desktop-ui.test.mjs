@@ -1,41 +1,42 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {dirname,resolve} from 'node:path';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const read = path => readFileSync(resolve(root, path), 'utf8');
-const template = read('src/app/features/family-tree/family-tree.page.html');
-const component = read('src/app/features/family-tree/family-tree.page.ts');
-const css = read('src/main-parity.css');
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const read=path=>readFileSync(resolve(root,path),'utf8');
+const html=read('src/app/features/family-tree/family-tree.page.html');
+const component=read('src/app/features/family-tree/family-tree.page.ts');
+const workspace=read('src/family-explorer-workspace.css');
+const original=read('src/main-parity.css');
 
-test('desktop sidebar is searchable and bounded instead of rendering every member', () => {
-  assert.match(template, /class="sidebar-search"/);
-  assert.match(template, /@for \(person of sidebarPeople\(\); track person\.id\)/);
-  const sidebar = template.slice(template.indexOf('<aside class="side"'), template.indexOf('</aside>'));
-  assert.doesNotMatch(sidebar, /@for \(person of store\.people\(\); track person\.id\)/);
-  assert.match(component, /readonly sidebarQuery = signal\(''\)/);
-  assert.match(component, /readonly sidebarPeople = computed\(/);
-  assert.match(component, /\.slice\(0, 18\)/);
-  assert.match(template, /class="sidebar-person-focus"/);
-  assert.match(template, /\(click\)="setFocus\(person\.id\)"/);
-  assert.match(template, /class="sidebar-view-all" routerLink="\/members"/);
+test('navigation rail and contextual member explorer replace persistent sidebar',()=>{
+  assert.match(html,/class="workspace-navigation-rail"/);
+  assert.match(html,/class="workspace-explorer-panel"/);
+  assert.match(html,/class="workspace-search-field"/);
+  assert.match(html,/@for \(person of sidebarPeople\(\); track person\.id\)/);
+  assert.match(html,/openSearchPerson\(person\.id\)/);
+  assert.match(component,/readonly sidebarQuery = signal\(''\)/);
+  assert.match(component,/readonly sidebarPeople = computed\(/);
+  assert.match(component,/\.slice\(0, 18\)/);
+  assert.match(workspace,/width:68px;flex:0 0 68px/);
 });
 
-test('desktop keeps one primary add action and moves backups to collapsible tools', () => {
-  assert.match(template, /id="top-add"/);
-  assert.match(template, /id="add-btn"/);
-  assert.match(css, /\.main-parity-ui \.header #top-add \{ display:none; \}/);
-  assert.match(template, /<details class="sidebar-tools">/);
-  assert.match(template, /id="export-btn"/);
-  assert.match(template, /class="side-bottom"/);
+test('primary actions are accessible while backups stay behind settings panel',()=>{
+  assert.match(html,/class="btn primary workspace-header-add"/);
+  assert.match(html,/explorerTab\(\)==='settings'/);
+  assert.match(html,/id="export-btn"/);
+  assert.match(html,/id="rename-btn"|dialog\.set\('rename'\)/);
+  assert.match(html,/\(click\)="downloadJson\(\)"/);
+  assert.match(html,/routerLink="\/developer"/);
 });
 
-test('desktop focus starts at a readable scale while Fit still spans the whole layout', () => {
-  assert.match(component, /width < 1150 \? 1\.0 : width < 1600 \? 1\.08 : 1\.15/);
-  assert.match(component, /fitCanvasFromToolbar\(\): void/);
-  assert.match(template, /generasi terlihat/);
-  assert.match(css, /\.main-parity-ui \.scene:not\(\.zoom-compact\) \.node-name/);
-  assert.match(template, /\[title\]="node\.person\.name"/);
+test('desktop focus remains readable and Fit remains explicitly available',()=>{
+  assert.match(component,/width < 1150 \? 1\.0 : width < 1600 \? 1\.08 : 1\.15/);
+  assert.match(component,/fitCanvasFromToolbar\(\): void/);
+  assert.match(html,/generasi terlihat/);
+  assert.match(original,/\.main-parity-ui \.scene:not\(\.zoom-compact\) \.node-name/);
+  assert.match(html,/\[title\]="node\.person\.name"/);
+  assert.match(workspace,/scene\.zoom-far/);
 });

@@ -328,19 +328,21 @@ export class FamilyTreeStore {
     return ids;
   }
 
-  /** Restore each birth-family's own expanded/collapsed state when switching back. */
+  /** Switching origins keeps the previously opened birth family visible.
+   * Previous automatic defaults become explicit expansions, so two sets of
+   * siblings can coexist rather than replacing each other.
+   */
   switchFamilyOrigin(id: string): boolean {
     if (this.mode() !== 'focus' || !this.familyOrigins().some(origin => origin.id === id)) return false;
-    const current = this.activeFamilyOriginId();
-    if (id === current) return false;
-    this.originBranchStates.set(current, {
-      expanded: { ...this.expandedBranches() },
-      collapsed: new Set(this.collapsedBranches())
-    });
-    const saved = this.originBranchStates.get(id);
+    if (id === this.activeFamilyOriginId()) return false;
+    const manual = {...this.expandedBranches()};
+    for (const key of this.defaultBranchKeys()) {
+      if (this.isBranchOpen(key) && !this.collapsedBranches().has(key)) {
+        manual[key] = Math.max(manual[key] ?? 0, this.branchMembers(key).length);
+      }
+    }
     this.familyOriginId.set(id);
-    this.expandedBranches.set(saved ? { ...saved.expanded } : {});
-    this.collapsedBranches.set(new Set(saved?.collapsed ?? []));
+    this.expandedBranches.set(manual);
     return true;
   }
 
@@ -367,7 +369,11 @@ export class FamilyTreeStore {
     this.focusPersonId.set(id);
     this.selectedPersonId.set(id);
     this.mode.set('focus');
-    this.resetBranches();
+    // Keep manually explored branches when the central Person changes.
+    // The new focus provides its own default relatives; old branches remain
+    // reachable if their graph anchors are still present.
+    this.familyOriginId.set(null);
+    this.originBranchStates.clear();
   }
   select(id: string): void { if (this.findPerson(id)) this.selectedPersonId.set(id); }
   setMode(mode: 'focus' | 'overview'): void { this.mode.set(mode); }
