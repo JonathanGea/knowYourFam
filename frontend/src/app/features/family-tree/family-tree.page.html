@@ -396,6 +396,7 @@
     aria-label="Detail anggota">
     <div class="sheet-grab-zone"
       (pointerdown)="onDrawerGrabDown($event)"
+      (pointermove)="onDrawerGrabMove($event)"
       (pointerup)="onDrawerGrabUp($event)"
       (pointercancel)="onDrawerGrabCancel()">
       <button type="button" class="sheet-grab"

@@ -91,6 +91,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly trainingProfileTab = signal<'bio'|'family'|'memories'>('bio');
   private drawerStart: {pointerId:number;y:number} | null = null;
   private suppressDrawerGrabClickUntil = 0;
+  private drawerGestureHandled = false;
   readonly helpOpen = signal(false);
   readonly onboardingDismissed = signal(false);
   readonly labelBoost = computed(() => Math.min(1.5, Math.max(1, 0.73 / this.store.zoom())));
@@ -624,26 +625,36 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   onDrawerGrabDown(event:PointerEvent):void {
     if(window.innerWidth>650 || (event.pointerType==='mouse' && event.button!==0))return;
     this.drawerStart={pointerId:event.pointerId,y:event.clientY};
+    this.drawerGestureHandled=false;
     // Keep pointerup even when the finger moves outside the narrow handle.
     // Synthetic events have no active pointer and cannot be captured.
     try { (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId); }
     catch { /* Ignore capture failure for synthetic test events. */ }
   }
 
+  onDrawerGrabMove(event:PointerEvent):void {
+    if(!this.drawerStart||event.pointerId!==this.drawerStart.pointerId||this.drawerGestureHandled)return;
+    const delta=event.clientY-this.drawerStart.y;
+    if(delta>=-36 && delta<=65)return;
+    // Commit the gesture while moving. Pointerup may leave the drag region
+    // or be intercepted by the browser after implicit pointer capture.
+    this.drawerGestureHandled=true;
+    this.suppressDrawerGrabClickUntil=performance.now()+420;
+    if(delta<-36)this.drawerExpanded.set(true);
+    else if(this.drawerExpanded())this.drawerExpanded.set(false);
+    else this.closePersonDrawer();
+  }
+
   onDrawerGrabUp(event:PointerEvent):void {
     if(!this.drawerStart||event.pointerId!==this.drawerStart.pointerId)return;
-    const delta=event.clientY-this.drawerStart.y;
+    if(!this.drawerGestureHandled)this.onDrawerGrabMove(event);
     this.drawerStart=null;
-    if(Math.abs(delta)>30)this.suppressDrawerGrabClickUntil=performance.now()+420;
-    if(delta<-36)this.drawerExpanded.set(true);
-    else if(delta>65){
-      if(this.drawerExpanded())this.drawerExpanded.set(false);
-      else this.closePersonDrawer();
-    }
+    this.drawerGestureHandled=false;
   }
 
   onDrawerGrabCancel():void {
     this.drawerStart=null;
+    this.drawerGestureHandled=false;
   }
 
   // Pointer capture is best-effort; if the swipe ends outside the drawer,

@@ -176,6 +176,8 @@ try{
        await angular.mouse.down();
        await angular.mouse.move(x,y+deltaY,{steps:6});
        await angular.mouse.up();
+       // The drawer uses a 230ms height transition; wait before finding the next grab.
+       await angular.waitForTimeout(280);
      };
      await angular.evaluate(()=>{
        window.__kyfGestureTrace=[];
@@ -187,7 +189,7 @@ try{
            expanded:!!document.querySelector('.drawer.expanded')
          });
        };
-       for(const type of ['pointerdown','pointermove','pointerup','lostpointercapture','click'])
+       for(const type of ['pointerdown','pointermove','pointerup','pointercancel','gotpointercapture','lostpointercapture','click'])
          document.addEventListener(type,record,true);
      });
      await swipeAngular(-80);
