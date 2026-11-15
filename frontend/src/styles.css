@@ -11,4 +11,15 @@
   h2 { font-size: 1.5em; font-weight: 700; }
   h3 { font-size: 1.17em; font-weight: 700; }
 }
-::selection { background: #cae8d0; }
+::selection { background: #d5e2d8; }
+
+/* Shared, self-hosted visual vocabulary. No emoji or platform-specific glyphs. */
+.ui-icon {
+  display:inline-block;flex:none;width:18px;height:18px;
+  fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;
+}
+button:focus-visible,a:focus-visible{outline:2px solid #50775e;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
