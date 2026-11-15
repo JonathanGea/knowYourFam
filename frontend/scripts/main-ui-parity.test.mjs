@@ -82,7 +82,7 @@ test('canvas commands retain zoom, fit, fullscreen and reliable return-to-self a
 test('panel search, branch and settings retain original capabilities',()=>{
   assert.match(html,/class="workspace-search-field"/);
   assert.match(html,/@for \(person of sidebarPeople\(\); track person\.id\)/);
-  assert.match(ts,/\.slice\(0, 18\)/);
+  assert.match(ts,/\\.slice\\(0, this\\.searchResultsLimit\\(\\)\\)/);
   for(const command of ['downloadLegacyJson()','downloadJson()',
     'importJson($event)','createNewTree()',"dialog.set('rename')",'openLink()']){
     assert.ok(html.includes(command),'Missing management command '+command);

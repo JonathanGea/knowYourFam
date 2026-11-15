@@ -19,7 +19,7 @@ test('navigation rail and contextual member explorer replace persistent sidebar'
   assert.match(html,/openSearchPerson\(person\.id\)/);
   assert.match(component,/readonly sidebarQuery = signal\(''\)/);
   assert.match(component,/readonly sidebarPeople = computed\(/);
-  assert.match(component,/\.slice\(0, 18\)/);
+  assert.match(component,/\\.slice\\(0, this\\.searchResultsLimit\\(\\)\\)/);
   assert.match(workspace,/width:68px;flex:0 0 68px/);
 });
 
