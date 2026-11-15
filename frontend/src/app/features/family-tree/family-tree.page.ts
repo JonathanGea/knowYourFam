@@ -80,6 +80,36 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly panX = signal(0);
   readonly panY = signal(0);
   readonly mobileListOpen = signal(false);
+  readonly sidebarQuery = signal('');
+  readonly sidebarMatchCount = computed(() => {
+    const query = this.sidebarQuery().trim().toLocaleLowerCase('id');
+    if (!query) return this.store.people().length;
+    return this.store.people().filter(person =>
+      (person.name + ' ' + (person.nickname ?? '')).toLocaleLowerCase('id').includes(query)
+    ).length;
+  });
+  readonly sidebarPeople = computed(() => {
+    const people = this.store.people();
+    const query = this.sidebarQuery().trim().toLocaleLowerCase('id');
+    if (query) return people.filter(person =>
+      (person.name + ' ' + (person.nickname ?? '')).toLocaleLowerCase('id').includes(query)
+    ).slice(0, 18);
+
+    // Keep the sidebar useful without rendering a 100+ person catalog.
+    const focus = this.store.focusPersonId();
+    const family = this.store.relationsFor(focus);
+    const candidates = [focus, ...family.parents, ...family.partners, ...family.children, ...family.siblings];
+    const selected: Person[] = [];
+    const seen = new Set<string>();
+    const add = (person?: Person) => {
+      if (person && !seen.has(person.id) && selected.length < 8) {
+        selected.push(person);
+        seen.add(person.id);
+      }
+    };
+    candidates.forEach(id => add(people.find(person => person.id === id)));
+    return selected.length ? selected : people.slice(0, 8);
+  });
   readonly formError = signal('');
   readonly canvasWarning = computed(() => this.layout().warnings[0] ?? '');
   readonly quickPersonId = signal<string | null>(null);
@@ -748,7 +778,11 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const viewport = this.canvasWindow?.nativeElement;
     const person = this.layout().nodes.find(node => node.person.id === this.store.focusPersonId());
     if (!viewport || !person) return;
-    const z = viewport.clientWidth <= 650 ? 0.88 : 0.78;
+    // Desktop: show readable cards by default, instead of shrinking Focus to 78%.
+    // Large graphs still use fitCanvas() for the explicit Fit action.
+    const width = viewport.clientWidth;
+    const z = width <= 650 ? 0.88 : width <= 900 ? 0.92
+      : width < 1150 ? 1.0 : width < 1600 ? 1.08 : 1.15;
     this.store.setZoom(z);
     this.panX.set(viewport.clientWidth/2 - (person.x + CANVAS_CARD_WIDTH/2)*z);
     this.panY.set(viewport.clientHeight/2 - (person.y + CANVAS_CARD_HEIGHT/2)*z);

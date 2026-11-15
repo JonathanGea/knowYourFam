@@ -5,7 +5,6 @@
     <div class="header-right">
       <span class="save-indicator">{{ store.tutorialActive() ? "Mode latihan sementara" : "Supabase • Database aktif" }}</span>
       <a class="btn" routerLink="/account">♧ Akun</a>
-      <button type="button" id="export-btn" class="btn" (click)="downloadLegacyJson()" title="Ekspor dengan format HTML main">↓ Ekspor</button>
       <button type="button" id="top-add" class="btn primary" (click)="openAdd(store.people().length ? 'child' : 'none')">＋ Tambah anggota</button>
     </div>
   </header>
@@ -24,28 +23,64 @@
         <div class="family-icon">♧</div>
         <div><strong>{{ store.tree().name }}</strong><small>Family Tree</small></div>
       </div>
-      <div class="side-title" style="margin-top:15px">Anggota</div>
-      <div class="person-links">
-        @for (person of store.people(); track person.id) {
-          <button type="button" class="person-link" [class.active]="person.id===store.selectedPersonId()"
-            (click)="openSidebarPerson(person.id)">
-            <span class="person-photo mini" [class.female]="person.gender==='female'" [class.male]="person.gender==='male'">
-              @if (person.photo) { <img [src]="person.photo" alt="" /> }
-              @else { {{ initials(person.name) }} }
-            </span>
-            <span>{{ person.name }}</span>
-          </button>
+      <div class="sidebar-members-heading">
+        <span class="side-title">Cari anggota</span>
+        <span class="sidebar-member-total">{{ store.people().length }} orang</span>
+      </div>
+      <label class="sidebar-search">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" aria-label="Cari nama anggota keluarga"
+          placeholder="Cari nama keluarga..." [value]="sidebarQuery()"
+          (input)="sidebarQuery.set($any($event.target).value)" autocomplete="off" />
+      </label>
+      <div class="sidebar-results-caption" aria-live="polite">
+        @if (sidebarQuery().trim()) {
+          <span>{{ sidebarPeople().length }} dari {{ sidebarMatchCount() }} hasil</span>
+          <button type="button" (click)="sidebarQuery.set('')">Hapus</button>
+        } @else {
+          <span>Keluarga terdekat</span>
+          <span>Fokus & kerabat</span>
         }
       </div>
+      <div class="person-links" aria-label="Daftar anggota keluarga">
+        @for (person of sidebarPeople(); track person.id) {
+          <div class="sidebar-person-row">
+            <button type="button" class="person-link"
+              [title]="'Lihat detail '+person.name"
+              [class.active]="person.id===store.selectedPersonId()"
+              (click)="openSidebarPerson(person.id)">
+              <span class="person-photo mini" [class.female]="person.gender==='female'" [class.male]="person.gender==='male'">
+                @if (person.photo) { <img [src]="person.photo" alt="" /> }
+                @else { {{ initials(person.name) }} }
+              </span>
+              <span>{{ person.name }}</span>
+            </button>
+            <button type="button" class="sidebar-person-focus"
+              [attr.aria-label]="'Fokuskan pohon pada '+person.name"
+              [title]="'Fokuskan pohon pada '+person.name"
+              (click)="setFocus(person.id)">◎</button>
+          </div>
+        } @empty {
+          <div class="sidebar-empty">Tidak ada anggota dengan nama tersebut.</div>
+        }
+      </div>
+      <a class="sidebar-view-all" routerLink="/members">Lihat semua {{ store.people().length }} anggota <span aria-hidden="true">↗</span></a>
       <div class="side-bottom">
-        <div class="note">
-          <strong>Versi MVP</strong>
-          <p>Bangun silsilah ke atas atau ke bawah sebanyak generasi yang dibutuhkan.</p>
-          <button type="button" (click)="createNewTree()">Buat pohon baru</button>
-        </div>
-        <input #importFile type="file" accept=".json,application/json" class="hidden-import" aria-label="Pilih berkas JSON" (change)="importJson($event)" />
-        <button type="button" class="btn" (click)="importFile.click()">↑ Impor data JSON</button>
-        <button type="button" class="btn secondary-export" (click)="downloadJson()" title="Cadangan data Angular lengkap">⇩ Cadangan lengkap</button>
+        <details class="sidebar-tools">
+          <summary>⚙ Pengaturan & cadangan <span aria-hidden="true">⌄</span></summary>
+          <div class="sidebar-tools-body">
+            <div class="note">
+              <strong>Kelola Family Tree</strong>
+              <p>Buat pohon baru atau kelola cadangan data keluarga.</p>
+              <button type="button" (click)="createNewTree()">Buat pohon baru</button>
+            </div>
+            <input #importFile type="file" accept=".json,application/json" class="hidden-import"
+              aria-label="Pilih berkas JSON" (change)="importJson($event)" />
+            <button type="button" class="btn" (click)="importFile.click()">↑ Impor data JSON</button>
+            <button type="button" id="export-btn" class="btn" (click)="downloadLegacyJson()" title="Ekspor dengan format HTML main">↓ Ekspor JSON</button>
+            <button type="button" class="btn secondary-export" (click)="downloadJson()" title="Cadangan data Angular lengkap">⇩ Cadangan lengkap</button>
+          </div>
+        </details>
       </div>
     </aside>
 
@@ -155,7 +190,7 @@
         <div>
           <div class="eyebrow">Ruang keluarga</div>
           <h1>Pohon Keluarga</h1>
-          <p>{{ store.tree().name }} · {{ layout().generationCount }} generasi yang saling terhubung</p>
+          <p>{{ store.tree().name }} · {{ layout().generationCount }} generasi {{ store.mode()==='focus' ? 'terlihat dalam fokus' : 'di seluruh pohon' }}</p>
         </div>
         <div class="heading-actions">
           <button type="button" id="rename-btn" class="btn" (click)="dialog.set('rename')">✎ Nama pohon</button>
@@ -165,7 +200,7 @@
       </div>
       <div class="stats" aria-label="Statistik keluarga">
         <div class="stat">♙ <strong>{{ store.people().length }}</strong> anggota</div>
-        <div class="stat">♧ <strong>{{ layout().generationCount }}</strong> generasi</div>
+        <div class="stat" [title]="store.mode()==='focus' ? 'Generasi dalam tampilan fokus saat ini' : 'Generasi pada seluruh pohon'">♧ <strong>{{ layout().generationCount }}</strong> generasi terlihat</div>
         <div class="stat">♢ <strong>{{ store.relationships().length }}</strong> hubungan</div>
       </div>
 
@@ -191,7 +226,7 @@
           <div class="focus-identity">
             <span class="focus-icon">◎</span>
             <div><span class="focus-label">Keluarga dua generasi ke atas</span>
-              <strong>{{ store.focusPerson()?.name ?? 'Anggota' }}</strong></div>
+              <strong [title]="store.focusPerson()?.name ?? 'Anggota'">{{ store.focusPerson()?.name ?? 'Anggota' }}</strong></div>
           </div>
           <div class="focus-side">
             <span id="visible-count">{{ store.visiblePeople().length }} / {{ store.people().length }} terlihat</span>
@@ -259,7 +294,7 @@
                 [class.partner-person]="store.mode()==='focus' && store.relationsFor(store.focusPersonId()).partners.includes(node.person.id)"
                 [class.test-node]="node.person.id.startsWith('uji-')"
                 [attr.data-person-id]="node.person.id" [style.left.px]="node.x" [style.top.px]="node.y"
-                [attr.aria-label]="'Aksi cepat '+node.person.name" (click)="selectPerson(node.person.id)">
+                [attr.aria-label]="'Aksi cepat '+node.person.name" [title]="node.person.name" (click)="selectPerson(node.person.id)">
                 <span class="node-top">
                   <span class="person-photo" [class.female]="node.person.gender==='female'"
                     [class.male]="node.person.gender==='male'">
