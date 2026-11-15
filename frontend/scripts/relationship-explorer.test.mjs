@@ -14,13 +14,20 @@ const identity=read('src/app/application/person-identity.service.ts');
 const resolver=read('src/app/application/relationship-kinship.ts');
 
 test('person preview contains identity, viewer relationship and a reason, not family lists or branches',()=>{
-  for(const text of ['PROFIL ANGGOTA','HUBUNGAN DENGAN ANDA','kinshipPreview().label',
-    'kinshipPreview().explanation','Lihat profil lengkap','Fokus pohon','Tambah hubungan']){
+  for(const text of ['PROFIL ANGGOTA','kinshipPreview().label','personOverview()?.nickname',
+    'overview.familyContext','overview.facts','Lihat profil lengkap','Fokus pohon','Tambah hubungan']){
     assert.ok(template.includes(text),'Missing Person Preview feature: '+text);
   }
   assert.doesNotMatch(template,/KELUARGA TERDEKAT/);
   assert.doesNotMatch(template,/CABANG POHON/);
   assert.doesNotMatch(template,/@for \(group of explorerGroups/);
+  assert.doesNotMatch(template,/HUBUNGAN DENGAN ANDA/);
+  assert.doesNotMatch(template,/preview-relation-route/);
+  assert.doesNotMatch(template,/Berdasarkan hubungan yang tercatat/);
+  assert.match(template,/@if \(overview\.familyContext; as familyContext\)/);
+  assert.match(template,/@if \(overview\.facts\.length\)/);
+  assert.match(template,/@for \(fact of overview\.facts; track fact\.id\)/);
+  assert.match(template,/@if \(qp\.birthDate \|\| qp\.deathDate\)/);
   assert.doesNotMatch(template,/\(click\)="exploreRelative/);
   assert.match(template,/\(click\)="viewPersonDetails\(\)"/);
   assert.match(template,/class="explorer-focus preview-profile-primary"/);
@@ -49,4 +56,17 @@ test('mobile/tablet centered popup and desktop right inspector remain intact',()
   assert.match(css,/max-height:min\(82dvh,620px\)/);
   assert.match(css,/\.explorer-stage\.explorer-open \{\s*grid-template-columns:minmax\(0,1fr\) 342px/);
   assert.match(page,/isExplorerPopup\(\):boolean/);
+});
+
+test('overview derives its semantic context from kinship resolver, not names or focus person',()=>{
+  const source=read('src/app/application/person-overview.ts');
+  assert.match(source,/kinship\.kind/);
+  assert.match(source,/case 'partner'/);
+  assert.match(source,/case 'aunt-uncle'/);
+  assert.match(source,/facts\.length < 2/);
+  assert.doesNotMatch(source,/focusPersonId/);
+  assert.match(page,/buildPersonOverview\(/);
+  assert.match(css,/\.overview-personal-grid/);
+  assert.match(css,/\.overview-family-context/);
+  assert.match(css,/backdrop-filter:none/);
 });

@@ -3,6 +3,8 @@ import type { FamilyRelationship, Person } from '../domain/family-tree.model';
 export type KinshipStatus = 'unlinked' | 'self' | 'known' | 'unknown' | 'ambiguous';
 export interface KinshipPreview {
   readonly status: KinshipStatus;
+  /** Stable semantic category, independent from localized display labels. */
+  readonly kind?: string;
   readonly label: string;
   readonly explanation: string;
   /** Human-readable route, never a claim of independently verified ancestry. */
@@ -174,5 +176,5 @@ export function resolveKinship(
     route:[]
   };
   const selected=nearest[0];
-  return {status:selected.status,label:selected.label,explanation:selected.explanation,route:selected.route};
+  return {status:selected.status,kind:selected.category,label:selected.label,explanation:selected.explanation,route:selected.route};
 }

@@ -400,31 +400,59 @@
                 </span>
                 <div class="explorer-person-text">
                   <h2>{{ qp.name }}</h2>
-                  <small>{{ yearsOf(qp) }}</small>
-                  <span class="preview-kinship-badge">{{ kinshipPreview().label }}</span>
+                  @if (personOverview()?.nickname; as nickname) {
+                    <p class="overview-nickname">Biasa dipanggil {{ nickname }}</p>
+                  }
+                  @if (qp.birthDate || qp.deathDate) {
+                    <small>{{ yearsOf(qp) }}</small>
+                  }
+                  <span class="preview-kinship-badge"
+                    [class.is-unresolved]="kinshipPreview().status==='unknown' || kinshipPreview().status==='ambiguous' || kinshipPreview().status==='unlinked'">
+                    {{ kinshipPreview().label }}
+                  </span>
                 </div>
               </div>
-              <div class="explorer-main-content">
-                <div class="preview-relation">
-                  <span class="explorer-section-label">HUBUNGAN DENGAN ANDA</span>
-                  <p class="preview-relation-explanation">{{ kinshipPreview().explanation }}</p>
-                  @if (kinshipPreview().route.length > 1) {
-                    <div class="preview-relation-route" aria-label="Jalur hubungan keluarga">
-                      @for (part of kinshipPreview().route; track $index) {
-                        @if (!$first) { <span aria-hidden="true">→</span> }
-                        <span>{{ part }}</span>
-                      }
+              @if (personOverview(); as overview) {
+                <div class="explorer-main-content person-overview-content">
+                  @if (overview.familyContext; as familyContext) {
+                    <div class="overview-family-context">
+                      <span class="overview-context-symbol" aria-hidden="true">♧</span>
+                      <p>{{ familyContext }}</p>
                     </div>
                   }
-                  @if (kinshipPreview().status==='known') {
-                    <p class="preview-data-note">Berdasarkan hubungan yang tercatat dalam silsilah.</p>
+                  @if (overview.facts.length) {
+                    <section class="overview-personal-section" aria-label="Informasi singkat anggota keluarga">
+                      <h3>SEKILAS TENTANGNYA</h3>
+                      <div class="overview-personal-grid">
+                        @for (fact of overview.facts; track fact.id) {
+                          <div class="overview-personal-fact">
+                            <span class="overview-personal-icon" aria-hidden="true">
+                              @switch (fact.id) {
+                                @case ('residence') { ⌖ }
+                                @case ('occupation') { ▣ }
+                                @default { ◇ }
+                              }
+                            </span>
+                            <div class="overview-personal-value">
+                              <span>{{ fact.label }}</span>
+                              <strong>{{ fact.value }}</strong>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </section>
+                  }
+                  @if (kinshipPreview().status==='unknown' || kinshipPreview().status==='ambiguous') {
+                    <p class="overview-unresolved">{{ kinshipPreview().explanation }}</p>
                   }
                   @if (kinshipPreview().status==='unlinked' && !store.tutorialActive()) {
-                    <button type="button" class="preview-claim-action"
-                      [disabled]="personClaimBusy()" (click)="claimThisAsMe()">
-                      {{ personClaimBusy() ? 'Menghubungkan akun…' : 'Ini profil saya' }}
-                    </button>
-                    <p class="preview-data-note">Pilih hanya jika Person ini benar-benar mewakili diri Anda.</p>
+                    <div class="overview-link-prompt">
+                      <p>Tautkan akun Anda ke profil diri sendiri untuk mengenali hubungan keluarga.</p>
+                      <button type="button" class="preview-claim-action"
+                        [disabled]="personClaimBusy()" (click)="claimThisAsMe()">
+                        {{ personClaimBusy() ? 'Menghubungkan akun…' : 'Ini profil saya' }}
+                      </button>
+                    </div>
                   }
                   @if (kinshipPreview().status==='self' && !store.tutorialActive()) {
                     <button type="button" class="preview-unlink-action" [disabled]="personClaimBusy()"
@@ -434,7 +462,7 @@
                     <p class="preview-claim-error" role="alert">{{ personClaimError() }}</p>
                   }
                 </div>
-              </div>
+              }
               <div class="explorer-footer">
                 <button type="button" class="explorer-focus preview-profile-primary" (click)="viewPersonDetails()">
                   ☷ Lihat profil lengkap

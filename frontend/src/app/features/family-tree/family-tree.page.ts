@@ -13,6 +13,7 @@ import { parseDemoTreeJson } from '../../infrastructure/demo-import';
 import { SupabaseConnectionService } from '../../infrastructure/supabase-connection.service';
 import { PersonIdentityService } from '../../application/person-identity.service';
 import { resolveKinship } from '../../application/relationship-kinship';
+import { buildPersonOverview } from '../../application/person-overview';
 import { LearningProgressService, LearningState } from '../../infrastructure/learning-progress.service';
 
 interface TutorialSession {
@@ -146,6 +147,13 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   readonly kinshipPreview = computed(() => resolveKinship(
     this.store.people(), this.store.relationships(), this.viewerPerson()?.id ?? null, this.quickPersonId()
   ));
+  readonly personOverview = computed(() => {
+    const person = this.quickPerson();
+    return person ? buildPersonOverview(
+      person, this.viewerPerson()?.id ?? null,
+      this.store.people(), this.store.relationships(), this.kinshipPreview()
+    ) : null;
+  });
   readonly viewportSize = signal({ width: 1, height: 1 });
   readonly branchControls = computed(() => {
     if (this.store.mode() !== 'focus') return [];

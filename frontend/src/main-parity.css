@@ -1119,3 +1119,118 @@ body .main-parity-ui .person-preview .explorer-footer-links button:disabled {
   .main-parity-ui .family-origin-options {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
   .main-parity-ui .family-origin-choice {min-width:0;max-width:none;padding:7px 6px;flex-wrap:wrap;overflow-wrap:anywhere}
 }
+
+
+/* Person Overview Card — contextual identity, not a full profile in a modal.
+   All optional sections disappear when no real facts are available. */
+body .main-parity-ui .person-preview .explorer-header {padding:15px 18px 6px}
+body .main-parity-ui .person-preview .explorer-person {
+  padding:11px 18px 17px;gap:13px;align-items:flex-start;
+}
+body .main-parity-ui .person-preview .explorer-person > .person-photo {
+  width:65px;height:65px;border-radius:17px;font-size:19px;
+}
+body .main-parity-ui .person-preview .explorer-person-text {gap:5px}
+body .main-parity-ui .person-preview .explorer-person-text h2 {
+  font-size:18px;line-height:1.36;letter-spacing:-.22px;
+}
+body .main-parity-ui .person-preview .explorer-person-text .overview-nickname {
+  margin:0;color:#75897a;font-size:11px;line-height:1.45;
+}
+body .main-parity-ui .person-preview .explorer-person-text small {
+  color:#778b7c;font-size:11px;
+}
+body .main-parity-ui .person-preview .preview-kinship-badge {
+  padding:5px 10px;margin-top:4px;font-size:11px;
+}
+body .main-parity-ui .person-preview .preview-kinship-badge.is-unresolved {
+  color:#677b6b;background:#f2f5f1;border-color:#dce7dc;
+}
+body .main-parity-ui .person-preview .person-overview-content {
+  display:flex;flex-direction:column;gap:14px;
+  padding:0 18px 17px;min-height:0;
+}
+body .main-parity-ui .person-preview .overview-family-context {
+  display:flex;align-items:flex-start;gap:9px;
+  border-radius:10px;background:#f3f8f3;
+  padding:11px 12px;color:#3d6047;
+}
+body .main-parity-ui .person-preview .overview-context-symbol {
+  width:23px;height:23px;display:grid;place-items:center;flex:none;
+  background:#e1eee3;border-radius:7px;
+  color:#568468;font-size:13px;
+}
+body .main-parity-ui .person-preview .overview-family-context p {
+  margin:2px 0 0;color:#3e5f48;font-size:12px;
+  font-weight:600;line-height:1.55;overflow-wrap:anywhere;
+}
+body .main-parity-ui .person-preview .overview-personal-section {display:grid;gap:10px}
+body .main-parity-ui .person-preview .overview-personal-section h3 {
+  margin:0;color:#8b9f8f;font-size:10px;font-weight:850;letter-spacing:1px;
+}
+body .main-parity-ui .person-preview .overview-personal-grid {
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:12px;
+}
+body .main-parity-ui .person-preview .overview-personal-fact {
+  display:flex;align-items:flex-start;gap:8px;min-width:0;
+}
+body .main-parity-ui .person-preview .overview-personal-icon {
+  display:grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:9px;
+  color:#638a6e;background:#f0f5ef;font-size:14px;
+}
+body .main-parity-ui .person-preview .overview-personal-value {
+  display:flex;flex-direction:column;gap:4px;min-width:0;
+}
+body .main-parity-ui .person-preview .overview-personal-value>span {
+  color:#879589;font-size:10px;line-height:1.3;
+}
+body .main-parity-ui .person-preview .overview-personal-value>strong {
+  color:#32513d;font-size:12px;line-height:1.45;
+  font-weight:740;overflow-wrap:anywhere;
+}
+body .main-parity-ui .person-preview .overview-unresolved {
+  font-size:12px;line-height:1.5;color:#748477;
+  margin:0;border-top:1px solid #e3ebe2;padding-top:10px;
+}
+body .main-parity-ui .person-preview .overview-link-prompt {
+  border-radius:10px;background:#f4f8f3;padding:12px;
+}
+body .main-parity-ui .person-preview .overview-link-prompt p {
+  font-size:11px;line-height:1.5;color:#637d69;margin:0;
+}
+body .main-parity-ui .person-preview .explorer-footer {
+  margin-top:auto;padding:14px 18px 16px;
+  gap:9px;border-top:1px solid #edf2ed;
+}
+@media(max-width:1100px), (any-pointer:coarse) {
+  body .main-parity-ui .relationship-explorer-backdrop {
+    background:rgba(21,40,29,.22);
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+  body .main-parity-ui .explorer-stage > .person-preview {
+    width:min(490px,calc(100vw - 30px));
+    max-height:min(82dvh,680px);
+  }
+}
+@media(max-width:650px) {
+  body .main-parity-ui .explorer-stage > .person-preview {
+    width:calc(100vw - 26px);max-height:min(82dvh,620px);
+  }
+  body .main-parity-ui .person-preview .explorer-header {padding:12px 15px 5px}
+  body .main-parity-ui .person-preview .explorer-person {padding:9px 15px 15px;gap:11px}
+  body .main-parity-ui .person-preview .explorer-person > .person-photo {
+    width:58px;height:58px;border-radius:14px;font-size:17px;
+  }
+  body .main-parity-ui .person-preview .explorer-person-text h2 {font-size:16px}
+  body .main-parity-ui .person-preview .person-overview-content {padding:0 15px 14px;gap:12px}
+  body .main-parity-ui .person-preview .overview-personal-grid {column-gap:10px}
+  body .main-parity-ui .person-preview .explorer-footer {
+    padding:12px 15px max(14px,env(safe-area-inset-bottom,0px));
+  }
+}
+@media(max-width:350px) {
+  body .main-parity-ui .person-preview .overview-personal-grid {
+    grid-template-columns:1fr;
+  }
+}

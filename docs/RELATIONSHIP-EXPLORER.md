@@ -1,19 +1,31 @@
-# KnowYourFam — Person Preview & hubungan terhadap pengguna login
+# KnowYourFam — Person Overview Card adaptif
 
 ## Tujuan
 
-Person Preview muncul ketika kartu Person diklik, dengan tiga informasi inti:
-foto/nama/tahun lahir-wafat, panggilan terhadap akun yang sedang login,
-dan alasan/jalur hubungan yang benar-benar tercatat. Popup ini **bukan**
-daftar Keluarga Terdekat, bukan kontrol Cabang Pohon, dan bukan halaman profil.
+Person Overview Card muncul ketika kartu Person dipilih. Komponen ini
+menjawab siapa orangnya, hubungan terhadap akun login, **satu fakta keluarga
+kontekstual** apabila ada, serta **maksimal dua fakta personal** yang terisi.
+Tujuannya mengenali anggota dengan cepat tanpa menduplikasi halaman profil.
+Popup **bukan** daftar Keluarga Terdekat atau pengatur Cabang Pohon.
 
 ## Susunan popup
 
-- Header: foto, nama penuh, tahun lahir/wafat, badge 'Paman Anda'/'Ini Anda'.
-- Body: hubungan dengan Anda, alasan relasi, jalur singkat bila tersedia.
+- Identitas: foto, nama penuh, nama panggilan yang berbeda dari nama lengkap
+  (jika ada), tahun lahir/wafat yang tercatat, serta badge hubungan terhadap
+  akun login yang hanya tampil satu kali.
+- Konteks keluarga: maksimal satu informasi yang menambah nilai. Contoh
+  pasangan: jumlah anak bersama yang benar-benar tercatat; paman/bibi: jalur
+  dari ayah/ibu; cucu: nama orang tua perantara. Hubungan langsung tanpa
+  konteks baru tidak menampilkan bagian ini.
+- Sekilas tentangnya: hingga dua dari domisili, pekerjaan, atau tempat lahir
+  (urutan prioritas demikian). Tidak ada placeholder kosong.
+- Tidak ada lagi label 'Hubungan dengan Anda' di body, pengulangan badge,
+  diagram breadcrumb untuk relasi langsung, atau kotak informasi kosong.
 - Footer: Lihat profil lengkap sebagai tombol utama.
   Di bawah: Fokus pohon (sekunder) dan Tambah hubungan (sekunder).
-- Tablet/mobile: dialog tengah dengan overlay, scroll internal, tinggi maksimum 82dvh.
+- Tablet/mobile: dialog tengah dengan overlay lebih ringan (tanpa blur),
+  tinggi mengikuti konten sampai maksimum 82dvh. Konten saja yang
+  dapat di-scroll ketika tinggi terbatas.
   Desktop: inspector di kanan kanvas.
 
 ## Identitas akun ↔ Person
@@ -50,6 +62,11 @@ No derived kinship labels are persisted in PostgreSQL.
 ## Validation
 
 - `frontend/scripts/relationship-kinship.test.mjs` tests resolver scenarios.
+- `frontend/src/app/application/person-overview.ts` derives one contextual
+  insight and two personal facts from the authorised graph. It never
+  persists calculated data.
+- `frontend/scripts/person-overview.test.mjs` tests data selection,
+  complexity adaptation, missing data and disputed relations.
 - `frontend/scripts/relationship-explorer.test.mjs` checks popup and identity linkage.
 - Angular production build checks TypeScript/template.
 - Browser geometry test ensures desktop dock and centered tablet/mobile dialogs.
