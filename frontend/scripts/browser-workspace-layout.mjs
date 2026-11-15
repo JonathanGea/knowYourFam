@@ -19,7 +19,7 @@ try {
      <div class="body"><nav class="family-page-rail">
        <a class="family-page-rail-link is-active"><span>♧</span><small>Pohon</small></a></nav>
        <main class="main family-page-main"><div class="heading"><h1>Semua Anggota</h1></div>
-         <section class="member-list">${'<p style="height:55px">Anggota keluarga</p>'.repeat(25)}</section>
+         <section class="member-list active">${'<p style="height:55px">Anggota keluarga</p>'.repeat(25)}</section>
        </main></div>
      <nav class="mobile-nav family-page-mobile-navigation">
        <a class="active"><span>♧</span>Pohon</a><a><span>☷</span>Anggota</a></nav>
