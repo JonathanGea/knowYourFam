@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
-import {clampReadableFamilyZoom} from '../src/app/features/family-tree/readable-zoom-policy.ts';
+import {clampReadableFamilyZoom,readableFitCenter} from '../src/app/features/family-tree/readable-zoom-policy.ts';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const read=p=>readFileSync(resolve(root,p),'utf8');
 const css=[read('src/main-parity.css'),
@@ -16,7 +16,11 @@ const people=[
   {id:'sibling',name:'Saudara User',x:410,y:260},
   {id:'child',name:'Anak User',x:190,y:440}
 ];
-const zoom=clampReadableFamilyZoom(.15,'focus');
+// Free manual zoom is 15%; a separate explicit Fit keeps a readable 78%
+ // framing for this screenshot-style viewport.
+assert.equal(clampReadableFamilyZoom(.15,'focus'),.15);
+const zoom=readableFitCenter(.15,'focus',{x:282.5,y:316.5},
+  {width:390,height:620},{width:1200,height:800}).zoom;
 assert.equal(zoom,.78);
 const browser=await chromium.launch({headless:true});
 try{

@@ -245,8 +245,8 @@
             }
             <div class="canvas-ops">
               <button type="button" id="zoom-out" class="btn icon" aria-label="Perkecil" (click)="zoomBy(-0.1)"
-                  [disabled]="store.mode()==='focus' && store.zoom()<=0.78001"
-                  [attr.title]="store.mode()==='focus' ? 'Perkecil hingga kartu masih terbaca; Peta Keluarga untuk tampilan penuh' : 'Perkecil peta'"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#minus"></use></svg></button>
+                  [disabled]="store.zoom() <= (store.mode()==='focus' ? 0.12001 : 0.00401)"
+                  title="Perkecil tampilan pohon"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#minus"></use></svg></button>
               <span id="zoom-value" class="zoom-info">{{ (store.zoom()*100).toFixed(0) }}%</span>
               <button type="button" id="zoom-in" class="btn icon" aria-label="Perbesar" (click)="zoomBy(0.1)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg></button>
               <button type="button" id="fit-btn" class="btn icon" (click)="fitCanvasFromToolbar()"

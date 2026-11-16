@@ -1145,10 +1145,9 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     this.viewportSize.set({width,height});
     const naturalFit = Math.min(1.13,Math.max(.004,
       Math.min((width-24)/layout.width,(height-24)/layout.height)));
-    // Fitting 200+ people to a phone may require 15% zoom. At that scale
-    // every Person card is unreadable; keeping fixed-size overlay cards would
-    // suppress all but one card. Focus mode therefore fits its local context,
-    // while Peta Keluarga alone fits the entire graph.
+    // Fit prioritizes readable Person cards in Focus; do not use the Fit
+    // preference as a hard limit on wheel, buttons, or two-finger pinch.
+    // Peta Keluarga remains available for a complete-graph fit.
     const focus=layout.nodes.find(n=>n.person.id===this.store.focusPersonId())??layout.nodes[0];
     const camera=readableFitCenter(naturalFit,this.store.mode(),{
       x:focus.x+CANVAS_CARD_WIDTH/2,y:focus.y+CANVAS_CARD_HEIGHT/2
@@ -1167,7 +1166,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const viewport = this.canvasWindow?.nativeElement;
     const person = this.layout().nodes.find(node => node.person.id === this.store.focusPersonId());
     if (!viewport || !person) return;
-    // Keep at least 78% in focus mode; no blank-card/floating-label overlay.
+    // Initial framing is readable; manual zoom-out can subsequently go below it.
     const width = viewport.clientWidth;
     const z = width <= 650 ? 0.88 : width <= 900 ? 0.92
       : width < 1150 ? 1.0 : width < 1600 ? 1.08 : 1.15;

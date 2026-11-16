@@ -29,22 +29,27 @@ Keep “Semua anggota” as the complete directory, not a second list of 204 mem
 - Auth, data storage, birth order, branch expansion, camera and layout semantics are outside the visual-only change.
 - QA requires testing actual graph readability with a realistically large family after deployment. A green build validates code, **not** subjective visual quality.
 
-## Readable graph zoom: no hidden Person cards
+## Zoom and readable Fit — no hidden Person cards
 
-The previous screen-space name-only (PR #9) and compact overlay (PR #10)
-were regressions: at 15% zoom, many world anchors occupy only a few pixels,
-and a fixed 144px collision policy hid almost all relatives while leaving
-their edges visible.
+The PR #11 fix accidentally made **78% a hard lower zoom limit**, so
+zoom-out and pinch-out stopped working on mobile. Zoom interaction and camera
+framing are now distinct:
 
-The Family Tree focus view now **never zooms below 78%** by any input
-(Fit, wheel, pinch, zoom buttons, restored camera). The full Person cards
-stay attached to the existing layout coordinates and remain visible; cards
-do not disappear because of overlap filtering. At 78%, cards are approximately
-144px wide on screen. Fit in Focus centers the active Person if fitting the
-whole graph would require zoom below 78%. Use the secondary **Peta Keluarga**
-view for a full graph fit at smaller scales; the map keeps every original node
-and connection, without a replacement overlay. The two views use the same
-layout engine, Person IDs, connectors, birth order and Supabase data.
+- **Manual zoom** (buttons, wheel, two-finger pinch): 12%–250% in Focus mode,
+  0.4%–250% in Peta Keluarga mode. No collision filtering, floating card
+  overlay, or Person culling. All original cards and relationship paths remain
+  in the graph at the same coordinates.
+- **Initial framing**: the active Person remains centered and readable.
+- **Fit in Focus**: uses at least 78% to show readable nearby Person cards and
+  centers on the active Person when the whole tree is larger than the viewport.
+- **Fit in Peta Keluarga**: fits the entire graph, including at smaller zoom.
+- **Switching back from Peta Keluarga** restores the previous Focus zoom and
+  pan, including a manual zoom below 78%.
+
+At extremely small manual zoom the native cards physically shrink, as expected.
+Zoom in to read them; unlike the previous screen-space overlay regression, they
+are not selectively hidden, and connections and panning remain intact. Prevent
+another recurrence with browser tests of real pointer/wheel/zoom handlers.
 
 ## Branch semantics
 
