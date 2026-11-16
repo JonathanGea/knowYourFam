@@ -351,14 +351,40 @@ body .main-parity-ui.family-explorer-page .person-preview .explorer-close{
   border-radius:8px;background:transparent;color:#657469
 }
 
-body .main-parity-ui.family-explorer-page .scene.zoom-far .node{
-  background:#dae5db!important;border-color:#b7cbb9!important;border-radius:4px!important;
-  box-shadow:none!important
+/* Names-only semantic zoom: invisible card hitboxes are replaced by
+ * screen-space labels, preserving connections, order and graph coordinates. */
+body .main-parity-ui.family-explorer-page .scene.zoom-far .node,
+body .main-parity-ui.family-explorer-page .scene.zoom-far .node.selected,
+body .main-parity-ui.family-explorer-page .scene.zoom-far .node.focus-person,
+body .main-parity-ui.family-explorer-page .scene.zoom-far .node.partner-person{
+  background:transparent!important;border:0!important;outline:0!important;
+  box-shadow:none!important;pointer-events:none!important
 }
+body .main-parity-ui.family-explorer-page .scene.zoom-far .node::before,
 body .main-parity-ui.family-explorer-page .scene.zoom-far .node .node-top,
-body .main-parity-ui.family-explorer-page .scene.zoom-far .node .node-bottom,
-body .main-parity-ui.family-explorer-page .scene.zoom-far .branch-toggle{opacity:0}
-body .main-parity-ui.family-explorer-page .scene.zoom-far .node.focus-person{background:#365c46!important;border-color:#365c46!important}
+body .main-parity-ui.family-explorer-page .scene.zoom-far .node .node-self-tag,
+body .main-parity-ui.family-explorer-page .scene.zoom-far .lane-label{display:none!important}
+body .main-parity-ui.family-explorer-page .scene.zoom-far .branch-toggle{display:none!important}
+body .main-parity-ui.family-explorer-page .family-name-only-layer{
+  position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none
+}
+body .main-parity-ui.family-explorer-page .family-name-label{
+  position:absolute;display:block;transform:translate(-50%,-50%);
+  max-width:148px;min-height:24px;padding:3px 0;border:0;border-radius:0;
+  background:transparent;box-shadow:none;cursor:pointer;pointer-events:auto;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:inherit;font-size:12px;font-weight:600;line-height:18px;
+  color:#334e3b;text-align:center;
+  text-shadow:-1px 0 #fafbf8,1px 0 #fafbf8,0 -1px #fafbf8,0 1px #fafbf8;
+  touch-action:pan-x pan-y
+}
+body .main-parity-ui.family-explorer-page .family-name-label.is-focus,
+body .main-parity-ui.family-explorer-page .family-name-label.is-selected{
+  color:#194b31;font-weight:750;text-decoration:underline;text-underline-offset:3px
+}
+body .main-parity-ui.family-explorer-page .family-name-label:focus-visible{
+  outline:2px solid #365c46;outline-offset:2px;border-radius:3px
+}
 body .main-parity-ui.family-explorer-page .person-preview .explorer-footer{border-top:1px solid #e8eee8}
 @media(max-width:1279px){
   body .main-parity-ui.family-explorer-page .workspace-global-header{padding:0 15px;height:60px;min-height:60px}

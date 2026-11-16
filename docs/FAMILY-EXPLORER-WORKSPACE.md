@@ -29,6 +29,10 @@ Keep “Semua anggota” as the complete directory, not a second list of 204 mem
 - Auth, data storage, birth order, branch expansion, camera and layout semantics are outside the visual-only change.
 - QA requires testing actual graph readability with a realistically large family after deployment. A green build validates code, **not** subjective visual quality.
 
+## Name-only semantic zoom
+
+Below 42% zoom, anonymous empty Person rectangles are replaced by **readable names** projected into a screen-space overlay. Names remain 12px on screen even when the diagram is scaled to 15%, and each visible name can still open its Person Identity Card. Labels are prioritized for the active/selected Person and collision-filtered to avoid overlap; zooming in reveals the remaining names. No Family Graph data, connection coordinates, birth ordering, branch expansion or Supabase records are modified.
+
 ## Branch semantics
 
 - Existing family graph, persons and relationships are never mutated by visual branch collapse.
