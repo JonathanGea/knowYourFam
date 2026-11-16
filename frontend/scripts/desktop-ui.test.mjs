@@ -38,5 +38,7 @@ test('desktop focus remains readable and Fit remains explicitly available',()=>{
   assert.match(html,/dari \{\{ store\.people\(\)\.length \}\} terlihat/);
   assert.match(original,/\.main-parity-ui \.scene:not\(\.zoom-compact\) \.node-name/);
   assert.match(html,/\[title\]="node\.person\.name"/);
-  assert.match(workspace,/scene\.zoom-far/);
+  assert.match(component,/readableFitCenter\(/);
+  assert.match(component,/clampReadableFamilyZoom\(/);
+  assert.doesNotMatch(workspace,/visibility:hidden!important;pointer-events:none!important/);
 });
