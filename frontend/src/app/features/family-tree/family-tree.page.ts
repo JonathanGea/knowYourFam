@@ -1211,12 +1211,12 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const target = event.target as HTMLElement;
     if (target.closest('.branch-toggle, .quick-panel')) return;
     // Mouse clicks on cards open quick actions; touch drag can start on cards.
-    if (event.pointerType === 'mouse' && target.closest('.person-node, .node, ')) return;
+    if (event.pointerType === 'mouse' && target.closest('.person-node, .node')) return;
     const element = this.canvasWindow?.nativeElement;
     if (!element) return;
     const rect = element.getBoundingClientRect();
     const point = {x:event.clientX-rect.left, y:event.clientY-rect.top};
-    const tapId = target.closest<HTMLElement>('.person-node, .node, ')?.dataset['personId'] ?? null;
+    const tapId = target.closest<HTMLElement>('.person-node, .node')?.dataset['personId'] ?? null;
     this.pointers.set(event.pointerId,point);
     try { element.setPointerCapture(event.pointerId); } catch { /* some browsers deny capture */ }
     if (this.pointers.size === 1) {
@@ -1287,7 +1287,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   onCanvasBackground(event: MouseEvent): void {
-    if ((event.target as HTMLElement).closest('.person-node,.node,,.branch-toggle,.quick-panel')) return;
+    if ((event.target as HTMLElement).closest('.person-node, .node, .branch-toggle, .quick-panel')) return;
     this.closeExplorer();
   }
 
