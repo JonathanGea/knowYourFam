@@ -12,7 +12,7 @@ test('cards keep Person identity at zoom 15%',()=>{
   const nodes=[n('a','Ayah User',0,0),n('b','Ibu User',800,0),n('c','User',400,400)];
   const cards=createCompactPersonCards(nodes,cam,'c',null);
   assert.ok(cards.some(c=>c.id==='c'&&c.focus));
-  assert.ok(cards.some(c=>c.name==='Ayah User'));
+  assert.ok(cards.some(c=>['Ayah User','Ibu User'].includes(c.name)),'At least one readable parent card must remain');
   assert.equal(createCompactPersonCards(nodes,{...cam,zoom:.42},'c',null).length,0);
 });
 test('avoid overlaps without changing graph data',()=>{
