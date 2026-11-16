@@ -6,7 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
-import { createNameOnlyLabels } from './name-only-layout';
+import { createCompactPersonCards } from './compact-person-card-layout';
 import { countNodeCrowding, branchOwnerIds } from './branch-layout-policy';
 import { getTutorialCourse, TUTORIAL_COURSES } from './tutorial-content.data';
 import type { TutorialStep } from './tutorial-content.data';
@@ -186,8 +186,8 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     ) : null;
   });
   readonly viewportSize = signal({ width: 1, height: 1 });
-  /** Names projected at stable on-screen type size when zoomed far out. */
-  readonly nameOnlyLabels = computed(() => createNameOnlyLabels(
+  /** Miniature Person cards remain legible as the graph zooms out. */
+  readonly compactPersonCards = computed(() => createCompactPersonCards(
     this.layout().nodes,
     {panX:this.panX(),panY:this.panY(),zoom:this.store.zoom(),
       viewportWidth:this.viewportSize().width,viewportHeight:this.viewportSize().height},
@@ -1213,12 +1213,12 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const target = event.target as HTMLElement;
     if (target.closest('.branch-toggle, .quick-panel')) return;
     // Mouse clicks on cards open quick actions; touch drag can start on cards.
-    if (event.pointerType === 'mouse' && target.closest('.person-node, .node, .family-name-label')) return;
+    if (event.pointerType === 'mouse' && target.closest('.person-node, .node, .compact-person-card')) return;
     const element = this.canvasWindow?.nativeElement;
     if (!element) return;
     const rect = element.getBoundingClientRect();
     const point = {x:event.clientX-rect.left, y:event.clientY-rect.top};
-    const tapId = target.closest<HTMLElement>('.person-node, .node, .family-name-label')?.dataset['personId'] ?? null;
+    const tapId = target.closest<HTMLElement>('.person-node, .node, .compact-person-card')?.dataset['personId'] ?? null;
     this.pointers.set(event.pointerId,point);
     try { element.setPointerCapture(event.pointerId); } catch { /* some browsers deny capture */ }
     if (this.pointers.size === 1) {
@@ -1288,7 +1288,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   onCanvasBackground(event: MouseEvent): void {
-    if ((event.target as HTMLElement).closest('.person-node,.node,.family-name-label,.branch-toggle,.quick-panel')) return;
+    if ((event.target as HTMLElement).closest('.person-node,.node,.compact-person-card,.branch-toggle,.quick-panel')) return;
     this.closeExplorer();
   }
 
