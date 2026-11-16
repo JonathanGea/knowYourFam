@@ -44,8 +44,8 @@ jobs:
         run: node scripts/browser-explorer-layout.mjs
       - name: Verify visual design readability and canvas geometry
         run: node scripts/browser-visual-system.mjs
-      - name: Verify compact Person cards at far zoom
-        run: node scripts/browser-compact-cards.mjs
+      - name: Verify family cards are never culled at mobile zoom
+        run: node scripts/browser-readable-zoom.mjs
       - name: Verify responsive shell geometry across authenticated pages
         run: node scripts/browser-workspace-layout.mjs
       - name: Verify private Angular routes and guest auth boundary

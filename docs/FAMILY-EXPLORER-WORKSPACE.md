@@ -29,14 +29,22 @@ Keep “Semua anggota” as the complete directory, not a second list of 204 mem
 - Auth, data storage, birth order, branch expansion, camera and layout semantics are outside the visual-only change.
 - QA requires testing actual graph readability with a realistically large family after deployment. A green build validates code, **not** subjective visual quality.
 
-## Compact Person cards at far zoom
+## Readable graph zoom: no hidden Person cards
 
-Below 42%, project **mini Person cards** (initials/photo, two-line name, white
-surface, focus outline) in screen coordinates from the same family graph
-positions. This corrects the earlier floating text-only names. On 15% zoom
-the cards remain legible, but crowding prevention may hide some: zoom in or
-pan to see the others. Above 42% the existing full Person Card and branch
-controls continue unchanged. No relationship data or family ordering changes.
+The previous screen-space name-only (PR #9) and compact overlay (PR #10)
+were regressions: at 15% zoom, many world anchors occupy only a few pixels,
+and a fixed 144px collision policy hid almost all relatives while leaving
+their edges visible.
+
+The Family Tree focus view now **never zooms below 78%** by any input
+(Fit, wheel, pinch, zoom buttons, restored camera). The full Person cards
+stay attached to the existing layout coordinates and remain visible; cards
+do not disappear because of overlap filtering. At 78%, cards are approximately
+144px wide on screen. Fit in Focus centers the active Person if fitting the
+whole graph would require zoom below 78%. Use the secondary **Peta Keluarga**
+view for a full graph fit at smaller scales; the map keeps every original node
+and connection, without a replacement overlay. The two views use the same
+layout engine, Person IDs, connectors, birth order and Supabase data.
 
 ## Branch semantics
 

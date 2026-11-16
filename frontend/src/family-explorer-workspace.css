@@ -351,45 +351,11 @@ body .main-parity-ui.family-explorer-page .person-preview .explorer-close{
   border-radius:8px;background:transparent;color:#657469
 }
 
-/* Compact screen-space cards at far zoom, preserving the genealogy node UI.
- * The original scaled nodes remain in the graph for edges and layout geometry. */
-body .main-parity-ui.family-explorer-page .scene.zoom-far .node,
-body .main-parity-ui.family-explorer-page .scene.zoom-far .node.selected,
-body .main-parity-ui.family-explorer-page .scene.zoom-far .node.focus-person{
-  visibility:hidden!important;pointer-events:none!important
-}
-body .main-parity-ui.family-explorer-page .scene.zoom-far .branch-toggle,
-body .main-parity-ui.family-explorer-page .scene.zoom-far .lane-label{display:none!important}
-body .main-parity-ui.family-explorer-page .compact-person-layer{
-  position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none
-}
-body .main-parity-ui.family-explorer-page .compact-person-card{
-  position:absolute;transform:translate(-50%,-50%);
-  width:144px;height:52px;box-sizing:border-box;display:flex;align-items:center;gap:9px;
-  padding:8px 9px;border:1px solid #d5ded5;border-radius:8px;
-  background:#fff;box-shadow:0 1px 3px #213f2a12;
-  color:#294332;text-align:left;cursor:pointer;pointer-events:auto;
-  touch-action:pan-x pan-y
-}
-body .main-parity-ui.family-explorer-page .compact-person-card.is-focus,
-body .main-parity-ui.family-explorer-page .compact-person-card.is-selected{
-  border:2px solid #366d4a;background:#f7faf6;padding:7px 8px
-}
-body .main-parity-ui.family-explorer-page .compact-person-avatar{
-  width:29px;height:29px;min-width:29px;border-radius:7px;
-  background:#e8eeea;color:#44604e;display:grid;place-items:center;
-  font-family:inherit;font-size:10px;font-weight:650;line-height:1.1;flex:none;overflow:hidden
-}
-body .main-parity-ui.family-explorer-page .compact-person-avatar img{
-  width:100%;height:100%;object-fit:cover
-}
-body .main-parity-ui.family-explorer-page .compact-person-name{
-  display:-webkit-box;flex:1;min-width:0;overflow:hidden;
-  font-size:12px;font-weight:650;line-height:1.3;
-  -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere
-}
-body .main-parity-ui.family-explorer-page .compact-person-card:focus-visible{
-  outline:2px solid #365c46;outline-offset:2px
+/* All graph Person nodes remain visible. Focus exploration never scales below
+ * a readable threshold; the complete structure is available via Peta Keluarga.
+ * No overlay replaces or silently suppresses family members. */
+body .main-parity-ui.family-explorer-page #zoom-out:disabled{
+  opacity:.38;cursor:not-allowed
 }
 body .main-parity-ui.family-explorer-page .person-preview .explorer-footer{border-top:1px solid #e8eee8}
 @media(max-width:1279px){

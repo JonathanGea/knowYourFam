@@ -244,10 +244,16 @@
               <button type="button" class="workspace-map-toggle" (click)="setMode('overview')" title="Lihat peta seluruh keluarga"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#map"></use></svg> <span>Peta keluarga</span></button>
             }
             <div class="canvas-ops">
-              <button type="button" id="zoom-out" class="btn icon" aria-label="Perkecil" (click)="zoomBy(-0.1)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#minus"></use></svg></button>
+              <button type="button" id="zoom-out" class="btn icon" aria-label="Perkecil" (click)="zoomBy(-0.1)"
+                  [disabled]="store.mode()==='focus' && store.zoom()<=0.78001"
+                  [attr.title]="store.mode()==='focus' ? 'Perkecil hingga kartu masih terbaca; Peta Keluarga untuk tampilan penuh' : 'Perkecil peta'"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#minus"></use></svg></button>
               <span id="zoom-value" class="zoom-info">{{ (store.zoom()*100).toFixed(0) }}%</span>
               <button type="button" id="zoom-in" class="btn icon" aria-label="Perbesar" (click)="zoomBy(0.1)"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#plus"></use></svg></button>
-              <button type="button" id="fit-btn" class="btn icon" (click)="fitCanvasFromToolbar()" aria-label="Sesuaikan tampilan" title="Pas seluruh area"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#maximize"></use></svg></button>
+              <button type="button" id="fit-btn" class="btn icon" (click)="fitCanvasFromToolbar()"
+                  [attr.aria-label]="store.mode()==='focus' ? 'Pusatkan keluarga terdekat' : 'Pas seluruh peta'"
+                  [attr.title]="store.mode()==='focus' ? 'Pusatkan keluarga terdekat' : 'Pas seluruh peta'">
+                  <svg class="ui-icon" aria-hidden="true"><use [attr.href]="store.mode()==='focus' ? '/icons.svg#target' : '/icons.svg#maximize'"></use></svg>
+              </button>
               <button type="button" id="fullscreen-btn" class="btn icon" (click)="toggleFullscreen()"
                 [attr.aria-label]="fullscreen() ? 'Tutup layar penuh' : 'Buka layar penuh'"
                 [attr.title]="fullscreen() ? 'Tutup layar penuh' : 'Perbesar kanvas'">
@@ -321,8 +327,6 @@
                 [class.partner-person]="store.mode()==='focus' && store.relationsFor(store.focusPersonId()).partners.includes(node.person.id)"
                 [class.test-node]="node.person.id.startsWith('uji-')"
                 [attr.data-person-id]="node.person.id" [style.left.px]="node.x" [style.top.px]="node.y"
-                [attr.tabindex]="store.zoom()<0.42 ? -1 : 0"
-                [attr.aria-hidden]="store.zoom()<0.42 ? 'true' : null"
                 [attr.aria-label]="'Aksi cepat '+node.person.name" [title]="node.person.name" (click)="selectPerson(node.person.id)">
                 <span class="node-top">
                   <span class="person-photo" [class.female]="node.person.gender==='female'"
@@ -356,24 +360,6 @@
               </button>
             }
           </div>
-          @if (store.zoom()<0.42) {
-            <div class="compact-person-layer" aria-label="Kartu anggota keluarga ringkas">
-              @for (card of compactPersonCards(); track card.id) {
-                <button type="button" class="compact-person-card"
-                  [class.is-focus]="card.focus" [class.is-selected]="card.selected"
-                  [style.left.px]="card.x" [style.top.px]="card.y"
-                  [attr.data-person-id]="card.id"
-                  [attr.aria-label]="'Lihat profil '+card.name" [title]="card.name"
-                  (click)="$event.stopPropagation();selectPerson(card.id)">
-                  <span class="compact-person-avatar">
-                    @if (card.photo) { <img [src]="card.photo" alt="" /> }
-                    @else { {{ initials(card.name) }} }
-                  </span>
-                  <span class="compact-person-name">{{ card.name }}</span>
-                </button>
-              }
-            </div>
-          }
           @if (!onboardingDismissed() && !tutorial() && store.people().length>0) {
             <div class="guide-onboard" role="region" aria-label="Panduan untuk pengguna baru">
               <div class="guide-onboard-head">
