@@ -19,7 +19,7 @@ const selectors=[...realHandlers.matchAll(/\.closest(?:<[^>]+>)?\(['"]([^'"]+)['
 // must break this test if they break the actual component.
 const harness=String.raw`
 function clampReadableFamilyZoom(z,mode) {
-  return Math.min(2.5,Math.max(mode==='focus'?.78:.004,z));
+  return Math.min(2.5,Math.max(mode==='focus'?.12:.004,z));
 }
 class CanvasPointerHarness {
   constructor(){

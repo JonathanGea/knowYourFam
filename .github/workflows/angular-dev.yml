@@ -42,6 +42,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Verify real canvas pointer handlers and mobile drag
         run: node scripts/browser-canvas-pan.mjs
+      - name: Verify actual pinch, wheel and zoom button behavior
+        run: node scripts/browser-canvas-zoom.mjs
       - name: Validate relationship explorer geometry on desktop, tablet and phone
         run: node scripts/browser-explorer-layout.mjs
       - name: Verify visual design readability and canvas geometry
