@@ -29,9 +29,14 @@ Keep “Semua anggota” as the complete directory, not a second list of 204 mem
 - Auth, data storage, birth order, branch expansion, camera and layout semantics are outside the visual-only change.
 - QA requires testing actual graph readability with a realistically large family after deployment. A green build validates code, **not** subjective visual quality.
 
-## Name-only semantic zoom
+## Compact Person cards at far zoom
 
-Below 42% zoom, anonymous empty Person rectangles are replaced by **readable names** projected into a screen-space overlay. Names remain 12px on screen even when the diagram is scaled to 15%, and each visible name can still open its Person Identity Card. Labels are prioritized for the active/selected Person and collision-filtered to avoid overlap; zooming in reveals the remaining names. No Family Graph data, connection coordinates, birth ordering, branch expansion or Supabase records are modified.
+Below 42%, project **mini Person cards** (initials/photo, two-line name, white
+surface, focus outline) in screen coordinates from the same family graph
+positions. This corrects the earlier floating text-only names. On 15% zoom
+the cards remain legible, but crowding prevention may hide some: zoom in or
+pan to see the others. Above 42% the existing full Person Card and branch
+controls continue unchanged. No relationship data or family ordering changes.
 
 ## Branch semantics
 

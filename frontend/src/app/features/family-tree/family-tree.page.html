@@ -357,15 +357,19 @@
             }
           </div>
           @if (store.zoom()<0.42) {
-            <div class="family-name-only-layer" aria-label="Nama anggota keluarga pada tampilan ringkas">
-              @for (label of nameOnlyLabels(); track label.id) {
-                <button type="button" class="family-name-label"
-                  [class.is-focus]="label.focus" [class.is-selected]="label.selected"
-                  [style.left.px]="label.x" [style.top.px]="label.y"
-                  [style.width.px]="label.width" [attr.data-person-id]="label.id"
-                  [attr.aria-label]="'Lihat profil '+label.name" [title]="label.name"
-                  (click)="$event.stopPropagation();selectPerson(label.id)">
-                  {{ label.name }}
+            <div class="compact-person-layer" aria-label="Kartu anggota keluarga ringkas">
+              @for (card of compactPersonCards(); track card.id) {
+                <button type="button" class="compact-person-card"
+                  [class.is-focus]="card.focus" [class.is-selected]="card.selected"
+                  [style.left.px]="card.x" [style.top.px]="card.y"
+                  [attr.data-person-id]="card.id"
+                  [attr.aria-label]="'Lihat profil '+card.name" [title]="card.name"
+                  (click)="$event.stopPropagation();selectPerson(card.id)">
+                  <span class="compact-person-avatar">
+                    @if (card.photo) { <img [src]="card.photo" alt="" /> }
+                    @else { {{ initials(card.name) }} }
+                  </span>
+                  <span class="compact-person-name">{{ card.name }}</span>
                 </button>
               }
             </div>
