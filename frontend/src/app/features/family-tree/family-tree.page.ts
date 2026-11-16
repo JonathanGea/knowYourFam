@@ -6,7 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
-import { clampReadableFamilyZoom, READABLE_FOCUS_MIN_ZOOM } from './readable-zoom-policy';
+import { clampReadableFamilyZoom, readableFitCenter } from './readable-zoom-policy';
 import { countNodeCrowding, branchOwnerIds } from './branch-layout-policy';
 import { getTutorialCourse, TUTORIAL_COURSES } from './tutorial-content.data';
 import type { TutorialStep } from './tutorial-content.data';
@@ -1149,17 +1149,13 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     // every Person card is unreadable; keeping fixed-size overlay cards would
     // suppress all but one card. Focus mode therefore fits its local context,
     // while Peta Keluarga alone fits the entire graph.
-    const scale=clampReadableFamilyZoom(naturalFit,this.store.mode());
-    this.store.setZoom(scale);
-    if(this.store.mode()==='focus'&&naturalFit<READABLE_FOCUS_MIN_ZOOM){
-      const focus=layout.nodes.find(n=>n.person.id===this.store.focusPersonId())??layout.nodes[0];
-      this.panX.set(width/2-(focus.x+CANVAS_CARD_WIDTH/2)*scale);
-      this.panY.set(height/2-(focus.y+CANVAS_CARD_HEIGHT/2)*scale);
-    }else{
-      const extraY=height-layout.height*scale;
-      this.panX.set((width-layout.width*scale)/2);
-      this.panY.set(extraY>80?Math.max(16,extraY*.22):extraY/2);
-    }
+    const focus=layout.nodes.find(n=>n.person.id===this.store.focusPersonId())??layout.nodes[0];
+    const camera=readableFitCenter(naturalFit,this.store.mode(),{
+      x:focus.x+CANVAS_CARD_WIDTH/2,y:focus.y+CANVAS_CARD_HEIGHT/2
+    },{width,height},{width:layout.width,height:layout.height});
+    this.store.setZoom(camera.zoom);
+    this.panX.set(camera.panX);
+    this.panY.set(camera.panY);
     this.fitted=true;
   }
 
