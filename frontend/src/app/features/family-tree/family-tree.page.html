@@ -321,6 +321,8 @@
                 [class.partner-person]="store.mode()==='focus' && store.relationsFor(store.focusPersonId()).partners.includes(node.person.id)"
                 [class.test-node]="node.person.id.startsWith('uji-')"
                 [attr.data-person-id]="node.person.id" [style.left.px]="node.x" [style.top.px]="node.y"
+                [attr.tabindex]="store.zoom()<0.42 ? -1 : 0"
+                [attr.aria-hidden]="store.zoom()<0.42 ? 'true' : null"
                 [attr.aria-label]="'Aksi cepat '+node.person.name" [title]="node.person.name" (click)="selectPerson(node.person.id)">
                 <span class="node-top">
                   <span class="person-photo" [class.female]="node.person.gender==='female'"
@@ -354,6 +356,20 @@
               </button>
             }
           </div>
+          @if (store.zoom()<0.42) {
+            <div class="family-name-only-layer" aria-label="Nama anggota keluarga pada tampilan ringkas">
+              @for (label of nameOnlyLabels(); track label.id) {
+                <button type="button" class="family-name-label"
+                  [class.is-focus]="label.focus" [class.is-selected]="label.selected"
+                  [style.left.px]="label.x" [style.top.px]="label.y"
+                  [style.width.px]="label.width" [attr.data-person-id]="label.id"
+                  [attr.aria-label]="'Lihat profil '+label.name" [title]="label.name"
+                  (click)="$event.stopPropagation();selectPerson(label.id)">
+                  {{ label.name }}
+                </button>
+              }
+            </div>
+          }
           @if (!onboardingDismissed() && !tutorial() && store.people().length>0) {
             <div class="guide-onboard" role="region" aria-label="Panduan untuk pengguna baru">
               <div class="guide-onboard-head">

@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
+import { createNameOnlyLabels } from './name-only-layout';
 import { countNodeCrowding, branchOwnerIds } from './branch-layout-policy';
 import { getTutorialCourse, TUTORIAL_COURSES } from './tutorial-content.data';
 import type { TutorialStep } from './tutorial-content.data';
@@ -185,6 +186,13 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     ) : null;
   });
   readonly viewportSize = signal({ width: 1, height: 1 });
+  /** Names projected at stable on-screen type size when zoomed far out. */
+  readonly nameOnlyLabels = computed(() => createNameOnlyLabels(
+    this.layout().nodes,
+    {panX:this.panX(),panY:this.panY(),zoom:this.store.zoom(),
+      viewportWidth:this.viewportSize().width,viewportHeight:this.viewportSize().height},
+    this.store.focusPersonId(),this.store.selectedPersonId()
+  ));
   readonly branchControls = computed(() => {
     if (this.store.mode() !== 'focus') return [];
     const nodes = this.layout().nodes;
@@ -1205,12 +1213,12 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const target = event.target as HTMLElement;
     if (target.closest('.branch-toggle, .quick-panel')) return;
     // Mouse clicks on cards open quick actions; touch drag can start on cards.
-    if (event.pointerType === 'mouse' && target.closest('.person-node, .node')) return;
+    if (event.pointerType === 'mouse' && target.closest('.person-node, .node, .family-name-label')) return;
     const element = this.canvasWindow?.nativeElement;
     if (!element) return;
     const rect = element.getBoundingClientRect();
     const point = {x:event.clientX-rect.left, y:event.clientY-rect.top};
-    const tapId = target.closest<HTMLElement>('.person-node, .node')?.dataset['personId'] ?? null;
+    const tapId = target.closest<HTMLElement>('.person-node, .node, .family-name-label')?.dataset['personId'] ?? null;
     this.pointers.set(event.pointerId,point);
     try { element.setPointerCapture(event.pointerId); } catch { /* some browsers deny capture */ }
     if (this.pointers.size === 1) {
@@ -1263,8 +1271,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     if (tapId) {
       // Canvas has pointer capture. Resolve the original tapped node manually.
       this.suppressClickUntil=Date.now()+450;
-      this.explorerHistory.set([]);
-        this.activateExplorerPerson(tapId);
+      this.previewPerson(tapId);
       this.tutorialRecord('card',{id:tapId});
     }
     if (wasPinch) this.tutorialRecord('zoom');
@@ -1281,7 +1288,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   onCanvasBackground(event: MouseEvent): void {
-    if ((event.target as HTMLElement).closest('.person-node,.node,.branch-toggle,.quick-panel')) return;
+    if ((event.target as HTMLElement).closest('.person-node,.node,.family-name-label,.branch-toggle,.quick-panel')) return;
     this.closeExplorer();
   }
 
