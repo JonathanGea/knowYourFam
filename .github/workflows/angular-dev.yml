@@ -40,6 +40,8 @@ jobs:
         run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright
       - name: Install Chromium for UI parity
         run: npx playwright install --with-deps chromium
+      - name: Verify real canvas pointer handlers and mobile drag
+        run: node scripts/browser-canvas-pan.mjs
       - name: Validate relationship explorer geometry on desktop, tablet and phone
         run: node scripts/browser-explorer-layout.mjs
       - name: Verify visual design readability and canvas geometry
