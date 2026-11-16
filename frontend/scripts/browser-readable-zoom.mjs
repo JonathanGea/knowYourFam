@@ -26,7 +26,7 @@ try{
     '<meta name="viewport" content="width=device-width,initial-scale=1"><style>'+
     css+'</style></head><body><div class="app main-parity-ui family-explorer-page">'+
     '<div class="viewport" style="position:relative;width:390px;height:620px;overflow:hidden">'+
-    '<div class="scene zoom-compact" style="width:1200px;height:800px;transform:translate(-60px,16px) scale('+zoom+')">'+
+    '<div class="scene" style="width:1200px;height:800px;transform:translate(-60px,16px) scale('+zoom+')">'+
     people.map(p=>'<button class="node'+(p.id==='focus'?' focus-person':'')+
       '" data-person-id="'+p.id+'" style="left:'+p.x+'px;top:'+p.y+'px" onclick="window.selected=this.dataset.personId">'+
       '<span class="node-top"><span class="person-photo">U</span><span class="node-copy">'+
