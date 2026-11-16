@@ -6,7 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FamilyTreeStore } from '../../application/family-tree.store';
 import { Gender, Person } from '../../domain/family-tree.model';
 import { CANVAS_CARD_WIDTH, CANVAS_CARD_HEIGHT, createFamilyLayout } from './family-layout';
-import { createCompactPersonCards } from './compact-person-card-layout';
+import { clampReadableFamilyZoom, readableFitCenter } from './readable-zoom-policy';
 import { countNodeCrowding, branchOwnerIds } from './branch-layout-policy';
 import { getTutorialCourse, TUTORIAL_COURSES } from './tutorial-content.data';
 import type { TutorialStep } from './tutorial-content.data';
@@ -186,13 +186,6 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     ) : null;
   });
   readonly viewportSize = signal({ width: 1, height: 1 });
-  /** Miniature Person cards remain legible as the graph zooms out. */
-  readonly compactPersonCards = computed(() => createCompactPersonCards(
-    this.layout().nodes,
-    {panX:this.panX(),panY:this.panY(),zoom:this.store.zoom(),
-      viewportWidth:this.viewportSize().width,viewportHeight:this.viewportSize().height},
-    this.store.focusPersonId(),this.store.selectedPersonId()
-  ));
   readonly branchControls = computed(() => {
     if (this.store.mode() !== 'focus') return [];
     const nodes = this.layout().nodes;
@@ -1088,7 +1081,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     requestAnimationFrame(() => {
       if (mode==='focus' && this.focusCameraBeforeMap) {
         const saved=this.focusCameraBeforeMap;
-        this.store.setZoom(saved.zoom);
+        this.store.setZoom(clampReadableFamilyZoom(saved.zoom,'focus'));
         this.panX.set(saved.x);
         this.panY.set(saved.y);
         this.focusCameraBeforeMap=null;
@@ -1150,26 +1143,31 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const width = viewport.clientWidth, height = viewport.clientHeight;
     if (!width || !height) return;
     this.viewportSize.set({width,height});
-    const z = Math.min(1.13, Math.max(.004,
-      Math.min((width - 24) / layout.width, (height - 24) / layout.height)));
-    this.store.setZoom(z);
-    const scale = this.store.zoom();
-    const extraY = height - layout.height * scale;
-    this.panX.set((width - layout.width * scale) / 2);
-    this.panY.set(extraY > 80 ? Math.max(16,extraY*.22) : extraY/2);
-    this.fitted = true;
+    const naturalFit = Math.min(1.13,Math.max(.004,
+      Math.min((width-24)/layout.width,(height-24)/layout.height)));
+    // Fitting 200+ people to a phone may require 15% zoom. At that scale
+    // every Person card is unreadable; keeping fixed-size overlay cards would
+    // suppress all but one card. Focus mode therefore fits its local context,
+    // while Peta Keluarga alone fits the entire graph.
+    const focus=layout.nodes.find(n=>n.person.id===this.store.focusPersonId())??layout.nodes[0];
+    const camera=readableFitCenter(naturalFit,this.store.mode(),{
+      x:focus.x+CANVAS_CARD_WIDTH/2,y:focus.y+CANVAS_CARD_HEIGHT/2
+    },{width,height},{width:layout.width,height:layout.height});
+    this.store.setZoom(camera.zoom);
+    this.panX.set(camera.panX);
+    this.panY.set(camera.panY);
+    this.fitted=true;
   }
 
-  /** Main's render({fit:true}) first fits then centers the Focus Person at .78/.88 zoom.
-   * The explicit Fit button must still fit ALL visible members instead. */
+  /** Initial exploration centers Person at an optical zoom that is readable.
+   * Whole-tree fit is exclusively available in Peta Keluarga mode. */
   private fitThenFocus(): void {
     this.fitCanvas();
     if (this.store.mode() !== 'focus') return;
     const viewport = this.canvasWindow?.nativeElement;
     const person = this.layout().nodes.find(node => node.person.id === this.store.focusPersonId());
     if (!viewport || !person) return;
-    // Desktop: show readable cards by default, instead of shrinking Focus to 78%.
-    // Large graphs still use fitCanvas() for the explicit Fit action.
+    // Keep at least 78% in focus mode; no blank-card/floating-label overlay.
     const width = viewport.clientWidth;
     const z = width <= 650 ? 0.88 : width <= 900 ? 0.92
       : width < 1150 ? 1.0 : width < 1600 ? 1.08 : 1.15;
@@ -1185,7 +1183,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
 
   zoomAt(newZoom: number, screenX: number, screenY: number): void {
     const before = this.store.zoom();
-    this.store.setZoom(newZoom);
+    this.store.setZoom(clampReadableFamilyZoom(newZoom,this.store.mode()));
     const after = this.store.zoom();
     const ratio = after / before;
     this.panX.set(screenX - (screenX - this.panX()) * ratio);
@@ -1213,12 +1211,12 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
     const target = event.target as HTMLElement;
     if (target.closest('.branch-toggle, .quick-panel')) return;
     // Mouse clicks on cards open quick actions; touch drag can start on cards.
-    if (event.pointerType === 'mouse' && target.closest('.person-node, .node, .compact-person-card')) return;
+    if (event.pointerType === 'mouse' && target.closest('.person-node, .node, ')) return;
     const element = this.canvasWindow?.nativeElement;
     if (!element) return;
     const rect = element.getBoundingClientRect();
     const point = {x:event.clientX-rect.left, y:event.clientY-rect.top};
-    const tapId = target.closest<HTMLElement>('.person-node, .node, .compact-person-card')?.dataset['personId'] ?? null;
+    const tapId = target.closest<HTMLElement>('.person-node, .node, ')?.dataset['personId'] ?? null;
     this.pointers.set(event.pointerId,point);
     try { element.setPointerCapture(event.pointerId); } catch { /* some browsers deny capture */ }
     if (this.pointers.size === 1) {
@@ -1245,7 +1243,8 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
       const pinch=this.pinchGesture;
       if (!pinch) return;
       const distance=Math.hypot(a.x-b.x,a.y-b.y);
-      this.store.setZoom(pinch.initialZoom*distance/pinch.initialDistance);
+      this.store.setZoom(clampReadableFamilyZoom(
+        pinch.initialZoom*distance/pinch.initialDistance,this.store.mode()));
       const zoom=this.store.zoom();
       this.panX.set(mid.x-pinch.worldX*zoom);
       this.panY.set(mid.y-pinch.worldY*zoom);
@@ -1288,7 +1287,7 @@ export class FamilyTreePage implements AfterViewInit, OnDestroy {
   }
 
   onCanvasBackground(event: MouseEvent): void {
-    if ((event.target as HTMLElement).closest('.person-node,.node,.compact-person-card,.branch-toggle,.quick-panel')) return;
+    if ((event.target as HTMLElement).closest('.person-node,.node,,.branch-toggle,.quick-panel')) return;
     this.closeExplorer();
   }
 
